@@ -9,6 +9,16 @@ public class AdvancedPortalSpawner : MonoBehaviour
     [Header("Portal Prefabs")]
     public GameObject portalPrefabA, portalPrefabB, portalPrefabC;
 
+    [Header("Portal Positions")]
+    public Vector3 portalAPosition = new Vector3(5.2f, -4.3f, -87.1f);
+    public Vector3 portalBPosition = new Vector3(5.2f, -4.5f, 105f);
+    public Vector3 portalCPosition = new Vector3(-116.2f, -4.6f, 1.8f);
+
+    [Header("Portal Rotations")]
+    public Vector3 portalARotation = new Vector3(0, 90, 0);
+    public Vector3 portalBRotation = new Vector3(0, 90, 0);
+    public Vector3 portalCRotation = Vector3.zero;
+
     [Header("Enemy Prefabs")]
     public GameObject tur1Enemy;
     public GameObject tur2Enemy;
@@ -62,21 +72,32 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
         if (currentStage == 1 && score >= stage2ScoreThreshold)
         {
-            Debug.LogError("[STAGE] Stage 2'ye geçildi!");
+            Debug.LogError("[STAGE] Stage 2'ye geï¿½ildi!");
             currentStage = 2;
         }
         else if (currentStage == 2 && score >= stage3ScoreThreshold)
         {
-            Debug.LogError("[STAGE] Stage 3'e geçildi!");
+            Debug.LogError("[STAGE] Stage 3'e geï¿½ildi!");
             currentStage = 3;
         }
     }
 
     void SpawnPortals()
     {
-        Instantiate(portalPrefabA, new Vector3(5.2f, -4.3f, -87.1f), Quaternion.Euler(0, 90, 0));
-        Instantiate(portalPrefabB, new Vector3(5.2f, -4.5f, 105f), Quaternion.Euler(0, 90, 0));
-        Instantiate(portalPrefabC, new Vector3(-116.2f, -4.6f, 1.8f), Quaternion.identity);
+        if (portalPrefabA != null)
+        {
+            Instantiate(portalPrefabA, portalAPosition, Quaternion.Euler(portalARotation));
+        }
+        
+        if (portalPrefabB != null)
+        {
+            Instantiate(portalPrefabB, portalBPosition, Quaternion.Euler(portalBRotation));
+        }
+        
+        if (portalPrefabC != null)
+        {
+            Instantiate(portalPrefabC, portalCPosition, Quaternion.Euler(portalCRotation));
+        }
     }
 
     IEnumerator SpawnEnemiesContinuously()
@@ -101,7 +122,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
             lastEnemyPerPortal[portal] = enemyPrefab;
 
-            Debug.LogError($"[SPAWN] {enemyPrefab.name} türü {portal} portalýndan spawn oldu. Pozisyon: {spawnPos}");
+            Debug.LogError($"[SPAWN] {enemyPrefab.name} tï¿½rï¿½ {portal} portalï¿½ndan spawn oldu. Pozisyon: {spawnPos}");
 
             yield return new WaitForSeconds(enemySpawnInterval);
         }
@@ -156,7 +177,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
             return validPortals[Random.Range(0, validPortals.Count)];
         }
 
-        Debug.LogWarning($"[PORTAL OVERRIDE] {enemy.name} için kural dýþý portal seçimi yapýlýyor.");
+        Debug.LogWarning($"[PORTAL OVERRIDE] {enemy.name} iï¿½in kural dï¿½ï¿½ï¿½ portal seï¿½imi yapï¿½lï¿½yor.");
         return portals[Random.Range(0, portals.Count)];
     }
 
