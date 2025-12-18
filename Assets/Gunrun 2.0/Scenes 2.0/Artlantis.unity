@@ -40488,13 +40488,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 704817682}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.9541359, z: 0, w: 0.29937395}
   m_LocalPosition: {x: -17.18, y: 0, z: 9.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 145.16, z: 0}
 --- !u!1001 &708314056
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -73379,12 +73379,12 @@ MonoBehaviour:
     type: 3}
   portalPrefabC: {fileID: 5558067654107143860, guid: db426e1459566c342b66ce92c641b12b,
     type: 3}
-  portalAPosition: {x: 20, y: 0, z: 11}
-  portalBPosition: {x: 70, y: 0, z: 1}
-  portalCPosition: {x: -17, y: 0, z: 9}
-  portalARotation: {x: 0, y: 90, z: 0}
-  portalBRotation: {x: 0, y: 90, z: 0}
-  portalCRotation: {x: 0, y: 0, z: 0}
+  portalAPosition: {x: 19, y: -3.45, z: 12}
+  portalBPosition: {x: 57, y: -4.36, z: -2.37}
+  portalCPosition: {x: -17, y: -4.42, z: 9}
+  portalARotation: {x: 0, y: -45, z: 0}
+  portalBRotation: {x: 0, y: 165, z: 0}
+  portalCRotation: {x: 0, y: 60, z: 0}
   tur1Enemy: {fileID: 6120139387429281895, guid: 9cb1967aa60b62c46931c474ef6781e8,
     type: 3}
   tur2Enemy: {fileID: 5333744322337909881, guid: a5bbdc8d2f824ad4680afbb477631197,
