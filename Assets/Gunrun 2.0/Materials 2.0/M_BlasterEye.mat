@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_BlasterEye
+  m_Shader: {fileID: 4800000, guid: 36df43997049d4345a9752246c5cf2a1, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CausticsTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _IrisNormal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _IrisTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1.9, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ScleraNormal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ScleraTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BlinkFrequency: 0.791
+    - _Brightness: 1.4
+    - _CartoonColorBoost: 2
+    - _CartoonHighlightIntensity: 3
+    - _CartoonHighlightSize: 0.25
+    - _CartoonShineSpots: 2
+    - _CartoonSoftness: 0.8
+    - _CartoonishLevel: 0.7
+    - _CausticsSpeed: 3
+    - _CausticsStrength: 0.516
+    - _CircuitLines: 0.5
+    - _ColoredReflectionIntensity: 4
+    - _ColoredReflectionSize: 0.0854
+    - _ColoredReflectionSoftness: 20
+    - _CorneaBulge: 0.03
+    - _CornealReflection: 0.8
+    - _CyberpunkScanlines: 0.8
+    - _DataStream: 0.6
+    - _DigitalGlitch: 0.3
+    - _FresnelPower: 1.93
+    - _Glossiness: 0
+    - _HexPattern: 0.4
+    - _HighlightSharpness: 4
+    - _HighlightSize: 0.4
+    - _HologramFlicker: 0.4
+    - _HolographicEffect: 0.4
+    - _IOR: 1.33
+    - _IrisContrast: 1.2
+    - _IrisDepth: 0.02
+    - _IrisPattern: 1.3
+    - _IrisRadius: 0.436
+    - _LaserGrid: 0.5
+    - _LimbusWidth: 0.02
+    - _Metallic: 0.1
+    - _MicroMovement: 0.00509
+    - _NeonGlow: 1.2
+    - _PrimaryReflection: 1.8
+    - _PulseSpeed: 0.83
+    - _PupilAsymmetry: 0.0484
+    - _PupilContrast: 3
+    - _PupilDepthEffect: 0.02
+    - _PupilFresnelPower: 2
+    - _PupilGlintSharpness: 100
+    - _PupilGlow: 0
+    - _PupilHighlightSize: 0.3
+    - _PupilIrregularity: 0.01
+    - _PupilLightReaction: 1
+    - _PupilReflectionStrength: 0.3
+    - _PupilRimReflection: 0.5
+    - _PupilRingEffect: 0.3
+    - _PupilShimmer: 0.15
+    - _PupilSize: 0.2828
+    - _PupilSparkleIntensity: 2
+    - _PupilSparkleSize: 0.01
+    - _QuantumEffect: 0.3
+    - _Reflection: 2
+    - _ReflectionStrength: 2.5
+    - _RefractiveIndex: 1.609
+    - _RimIntensity: 1.2
+    - _ScatteringMask: 0.8
+    - _SecondaryReflection: 0.8
+    - _ShineBoost: 2.2
+    - _Smoothness: 1
+    - _SpecularIntensity: 3
+    - _SpecularPower: 256
+    - _SquishyStrength: 1
+    - _SubsurfaceStrength: 0
+    - _SwayDirectionNE: 0.7
+    - _SwayDirectionSW: 0.189
+    - _SwayRandomness: 0.3
+    - _SwaySpeed: 1.67
+    - _SwayStrength: 0.02
+    - _TranslucencyPower: 2
+    - _VeinStrength: 0.119
+    - _Wetness: 0
+    m_Colors:
+    - _ColoredReflectionOffset: {r: -0.06, g: 0.08, b: 0, a: 0}
+    - _IrisColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LimbusColor: {r: 1, g: 1, b: 1, a: 1}
+    - _NeonColor: {r: 0, g: 1, b: 1, a: 1}
+    - _PupilColor: {r: 0, g: 0, b: 0, a: 1}
+    - _PupilGlowColor: {r: 0.09999997, g: 0.29999998, b: 0.8, a: 1}
+    - _PupilOffset: {r: -0.18, g: 0.03, b: 0, a: 0}
+    - _PupilReflectionColor: {r: 0.72365606, g: 0.8068237, b: 0.8867924, a: 1}
+    - _PupilSparkleOffset: {r: 0.15, g: 0.15, b: 0, a: 0}
+    - _ScleraColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SubsurfaceColor: {r: 0.990566, g: 0.7347477, b: 0.6494749, a: 1}
+    - _VeinColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 38fe4d670e9998549b36fc437f7ecf3d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - Canik: {fileID: 919132149155446097, guid: 0e0a0d1a1d79da1468c0cfc01600086f, type: 3}
+  - Silencer: {fileID: 919132149155446097, guid: bf3d72beea163b341bd709319e6ebebb,
+      type: 3}
+  - Shotgun: {fileID: 1890912710195496026, guid: bd21630900acd964e9771c85db7d3e62,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

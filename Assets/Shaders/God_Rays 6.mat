@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: God_Rays 6
+  m_Shader: {fileID: -6465566751694194690, guid: e6c56da91cceead4bb283efd2511ccf6,
+    type: 3}
+  m_Parent: {fileID: 2100000, guid: f14df66aa7c7f2f4da54d50f407d199c, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_d632c954c6894c34be16e31ec023fdb8:
+        m_Texture: {fileID: 2800000, guid: e7bfcfa32c6aeac4bb0c2ec95ab803c3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - Vector1_5d6dbf24073a4e0f871f008180b543e8: 0.01
+    - Vector1_6713efb42cb74e56bf6bdea126a40923: 1287.56
+    - Vector1_6f7efe07092b4e6587e60c69fb1f859e: 4.22
+    m_Colors:
+    - Color_7fa6576076544e4abc9c35b1a662f7b4: {r: 0.5800107, g: 0.769609, b: 0.9245283,
+        a: 0}
+  m_BuildTextureStacks: []
+--- !u!114 &8578051200807525188
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7

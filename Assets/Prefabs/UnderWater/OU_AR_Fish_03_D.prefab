@@ -1,0 +1,766 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &466347788264175821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 124656439274948815}
+  m_Layer: 0
+  m_Name: moorish1:Tail.91
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &124656439274948815
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466347788264175821}
+  m_LocalRotation: {x: 0.13176838, y: 0.69396865, z: 0.13162489, w: 0.69549954}
+  m_LocalPosition: {x: 0.0000063800812, y: 0.888721, z: -0.0000009191036}
+  m_LocalScale: {x: 1, y: 1, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4624908547104640850}
+  m_Father: {fileID: 527187594590991424}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0.034525752, y: 89.88029, z: 21.46768}
+--- !u!1 &764780172822474848
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8544309188080154214}
+  m_Layer: 0
+  m_Name: moorish1:R_lower_fin.100
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8544309188080154214
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764780172822474848}
+  m_LocalRotation: {x: -0.4936062, y: 0.5006767, z: 0.5446341, w: 0.4572193}
+  m_LocalPosition: {x: -0.60783017, y: 1.5542593, z: 0.13660161}
+  m_LocalScale: {x: 1.0000002, y: 1.0000001, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6631528182286061447}
+  m_Father: {fileID: 3792715892412084099}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: -85.374954, y: -81.90712, z: 177.32718}
+--- !u!1 &1402965781362539955
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1743884117291050761}
+  - component: {fileID: 2285924394040115439}
+  m_Layer: 0
+  m_Name: OU_AR_Fish_03_D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1743884117291050761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402965781362539955}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.075, y: 0.075, z: 0.075}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 646223800427364300}
+  - {fileID: 6471055318295605194}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &2285924394040115439
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402965781362539955}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: eea7c3ae27404064da8bf4190d2c390c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &1543177059732400520
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4624908547104640850}
+  m_Layer: 0
+  m_Name: moorish1:Spine_End.92
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4624908547104640850
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543177059732400520}
+  m_LocalRotation: {x: 0.00000015739212, y: -0.00000008659861, z: 0.7071068, w: 0.7071067}
+  m_LocalPosition: {x: -0.0000016403197, y: 0.9713275, z: 0.0000075531}
+  m_LocalScale: {x: 1, y: 1, z: 0.9999999}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 124656439274948815}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.000019770194, y: 0.0000057362913, z: 90.00001}
+--- !u!1 &1820881432405661968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3589670042036648028}
+  m_Layer: 0
+  m_Name: moorish1:L_lower_fin.96
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3589670042036648028
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820881432405661968}
+  m_LocalRotation: {x: 0.5017959, y: -0.49246824, z: 0.53702027, w: 0.46613854}
+  m_LocalPosition: {x: -0.60783404, y: 1.554259, z: -0.13660376}
+  m_LocalScale: {x: 0.99999994, y: 1.0000001, z: 1.0000001}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4154509015531559311}
+  m_Father: {fileID: 3792715892412084099}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 85.374916, y: 81.90702, z: 175.43726}
+--- !u!1 &2648568214237114469
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4154509015531559311}
+  m_Layer: 0
+  m_Name: moorish1:L_lower_fin_End.97
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4154509015531559311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2648568214237114469}
+  m_LocalRotation: {x: -0.00000021781308, y: 0.0000000027939677, z: -0.0000010561198, w: 1}
+  m_LocalPosition: {x: 0.00006361485, y: 1.1487863, z: 0.0000011062622}
+  m_LocalScale: {x: 1, y: 0.99999994, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3589670042036648028}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -0.00002495954, y: 0.00000032019145, z: -0.00012102241}
+--- !u!1 &3497519987998044359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5075570402685478514}
+  m_Layer: 0
+  m_Name: moorish1:L_Upper_fin_End.95
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5075570402685478514
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3497519987998044359}
+  m_LocalRotation: {x: 0.0018993019, y: 0.16545701, z: 0.011295923, w: 0.9861505}
+  m_LocalPosition: {x: -0.000023956298, y: 0.9877704, z: 0.000004653931}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 832930315727842115}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.0004592635, y: 19.048834, z: 1.3126158}
+--- !u!1 &3631922016332662388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8163834039931601765}
+  m_Layer: 0
+  m_Name: moorish1:Spine_03_a.93
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8163834039931601765
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3631922016332662388}
+  m_LocalRotation: {x: 0.04739782, y: -0.0011707621, z: 0.00022444098, w: 0.9988754}
+  m_LocalPosition: {x: 3.0700982, y: 2.1403291, z: -0.002557497}
+  m_LocalScale: {x: 0.9999999, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 527187594590991424}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 5.433452, y: -0.133389, z: 0.019418502}
+--- !u!1 &3703012262144687561
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1687299628984826270}
+  m_Layer: 0
+  m_Name: moorish1:R_Upper_fin_End.99
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1687299628984826270
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703012262144687561}
+  m_LocalRotation: {x: -0.001899381, y: -0.165404, z: 0.011295962, w: 0.9861594}
+  m_LocalPosition: {x: -0.000024795532, y: 0.98776275, z: -0.000009231567}
+  m_LocalScale: {x: 0.9999999, y: 0.9999999, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2715556063425230336}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -0.0005380241, y: -19.042675, z: 1.3126216}
+--- !u!1 &4268590121117899621
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2275801576445140636}
+  m_Layer: 0
+  m_Name: moorish1:head.86
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2275801576445140636
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4268590121117899621}
+  m_LocalRotation: {x: -0.16215672, y: -0.66657037, z: -0.098878235, w: 0.72084135}
+  m_LocalPosition: {x: -3.375956, y: 0.6672325, z: 7.0580573}
+  m_LocalScale: {x: 0.99999994, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6632365468176864169}
+  m_Father: {fileID: 2795680137563964101}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -21.444334, y: -86.379364, z: 4.536991}
+--- !u!1 &4391544490536226172
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4308419638988618913}
+  m_Layer: 0
+  m_Name: moorish1:Spine_02.89
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4308419638988618913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4391544490536226172}
+  m_LocalRotation: {x: 0.51886547, y: -0.4803943, z: 0.48039448, w: 0.51886517}
+  m_LocalPosition: {x: -1.2211444, y: -0.00000869751, z: -0.00000049114226}
+  m_LocalScale: {x: 0.99999994, y: 0.99999976, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 527187594590991424}
+  m_Father: {fileID: 3792715892412084099}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 90, y: -85.59047, z: 0}
+--- !u!1 &4782426654896425476
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6632365468176864169}
+  m_Layer: 0
+  m_Name: moorish1:head_End.87
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6632365468176864169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4782426654896425476}
+  m_LocalRotation: {x: 0.0000000083964435, y: 0.0000000123477095, z: -0.7071068, w: 0.7071067}
+  m_LocalPosition: {x: -0.00000019073485, y: 1.5735916, z: -0.00000022888183}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2275801576445140636}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.0000016808668, y: 0.00000032016484, z: -90.00001}
+--- !u!1 &5070863528355473949
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 646223800427364300}
+  - component: {fileID: 6960413849873793633}
+  m_Layer: 0
+  m_Name: OU_AR_Fish_03_D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &646223800427364300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5070863528355473949}
+  m_LocalRotation: {x: -6.123234e-17, y: 1, z: 6.123234e-17, w: -3.7493994e-33}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1743884117291050761}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &6960413849873793633
+SkinnedMeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5070863528355473949}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 3
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: ca8a16e944b1b4c459842f816ec200c9, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: -6267360708739901852, guid: 7bf0e10c1125b234eb87e1eada7cfab8, type: 3}
+  m_Bones:
+  - {fileID: 6786218920154288120}
+  - {fileID: 2795680137563964101}
+  - {fileID: 2275801576445140636}
+  - {fileID: 6632365468176864169}
+  - {fileID: 3792715892412084099}
+  - {fileID: 4308419638988618913}
+  - {fileID: 527187594590991424}
+  - {fileID: 124656439274948815}
+  - {fileID: 4624908547104640850}
+  - {fileID: 8163834039931601765}
+  - {fileID: 832930315727842115}
+  - {fileID: 5075570402685478514}
+  - {fileID: 3589670042036648028}
+  - {fileID: 4154509015531559311}
+  - {fileID: 2715556063425230336}
+  - {fileID: 1687299628984826270}
+  - {fileID: 8544309188080154214}
+  - {fileID: 6631528182286061447}
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 6786218920154288120}
+  m_AABB:
+    m_Center: {x: -1.2626127, y: 17.553549, z: 6.949641}
+    m_Extent: {x: 3.8874927, y: 1.5258408, z: 3.6100426}
+  m_DirtyAABB: 0
+--- !u!1 &5097572555565991225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3792715892412084099}
+  m_Layer: 0
+  m_Name: moorish1:Spine_01.88
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3792715892412084099
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5097572555565991225}
+  m_LocalRotation: {x: 0.81795776, y: 0.57388014, z: -0.039065674, w: -0.008973902}
+  m_LocalPosition: {x: -3.4018092, y: 0.6009297, z: 7.061991}
+  m_LocalScale: {x: 0.99999994, y: 0.9999997, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3589670042036648028}
+  - {fileID: 832930315727842115}
+  - {fileID: 8544309188080154214}
+  - {fileID: 2715556063425230336}
+  - {fileID: 4308419638988618913}
+  m_Father: {fileID: 2795680137563964101}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 1.7281581, y: -175.74232, z: 109.95715}
+--- !u!1 &5220135220721148846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6631528182286061447}
+  m_Layer: 0
+  m_Name: moorish1:R_lower_fin_End.101
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6631528182286061447
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5220135220721148846}
+  m_LocalRotation: {x: 0.00000020407606, y: 0.00000001816079, z: -0.0000008177012, w: 1}
+  m_LocalPosition: {x: -0.0000051784514, y: 1.1487906, z: -0.00000030517577}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8544309188080154214}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.000023385393, y: 0.000002081054, z: -0.00009370165}
+--- !u!1 &5507007264415904854
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6471055318295605194}
+  m_Layer: 0
+  m_Name: skeletal.003
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6471055318295605194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507007264415904854}
+  m_LocalRotation: {x: -0.7071067, y: -0.000000030908616, z: 0.000000030908623, w: 0.7071068}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6786218920154288120}
+  m_Father: {fileID: 1743884117291050761}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6317837157974847805
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2715556063425230336}
+  m_Layer: 0
+  m_Name: moorish1:R_Upper_fin.98
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2715556063425230336
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6317837157974847805}
+  m_LocalRotation: {x: -0.23375641, y: -0.66984737, z: -0.4772394, w: 0.5185605}
+  m_LocalPosition: {x: -0.055686444, y: 0.52865696, z: 0.3457846}
+  m_LocalScale: {x: 0.9999993, y: 0.99999917, z: 0.99999976}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1687299628984826270}
+  m_Father: {fileID: 3792715892412084099}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: -61.858902, y: -90.81092, z: -22.671339}
+--- !u!1 &6856040012733574107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6786218920154288120}
+  m_Layer: 0
+  m_Name: root.4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6786218920154288120
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6856040012733574107}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071067}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2795680137563964101}
+  m_Father: {fileID: 6471055318295605194}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90.00001}
+--- !u!1 &8135616268980535452
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 527187594590991424}
+  m_Layer: 0
+  m_Name: moorish1:Spine_03.90
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &527187594590991424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8135616268980535452}
+  m_LocalRotation: {x: -0.06958684, y: -0.7036743, z: -0.06958682, w: 0.7036745}
+  m_LocalPosition: {x: -0.00000064611436, y: 1.0670238, z: 0.000007991791}
+  m_LocalScale: {x: 1, y: 1, z: 1.0000001}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8163834039931601765}
+  - {fileID: 124656439274948815}
+  m_Father: {fileID: 4308419638988618913}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -11.295311, y: -89.99998, z: 0.00000043531864}
+--- !u!1 &8266452053169052768
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 832930315727842115}
+  m_Layer: 0
+  m_Name: moorish1:L_Upper_fin.94
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &832930315727842115
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8266452053169052768}
+  m_LocalRotation: {x: 0.12724937, y: 0.7003608, z: -0.54205394, w: 0.44663182}
+  m_LocalPosition: {x: -0.05568019, y: 0.528652, z: -0.3457841}
+  m_LocalScale: {x: 0.9999999, y: 0.9999999, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5075570402685478514}
+  m_Father: {fileID: 3792715892412084099}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 60.8014, y: 91.573425, z: -38.841396}
+--- !u!1 &8886697978770029087
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2795680137563964101}
+  m_Layer: 0
+  m_Name: moorish1:Root.85
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2795680137563964101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8886697978770029087}
+  m_LocalRotation: {x: 0.50000006, y: -0.49999994, z: -0.5, w: -0.5}
+  m_LocalPosition: {x: -2.416391, y: 10.154563, z: 2.0196636}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2275801576445140636}
+  - {fileID: 3792715892412084099}
+  m_Father: {fileID: 6786218920154288120}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -90, y: 89.99999, z: 0}

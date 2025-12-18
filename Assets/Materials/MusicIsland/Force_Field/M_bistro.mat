@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_bistro
+  m_Shader: {fileID: -6465566751694194690, guid: bbc8bb6fcb96f9c4c8f79e21020027b5,
+    type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_d43ac517ee2f4d088e8819f95fb4ef72:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - Vector1_1c10198d025e4d4b8aed8ef16cfa7369: 1.09
+    - Vector1_1d43e5bc8b2242489725cebe830e4269: 5
+    - Vector1_4675d76a51044e90941ec38485b529df: 0
+    - Vector1_5ea825e849c6407fa3ceaae26470ced2: 1.28
+    - Vector1_63a86140cbce4e38aa88e3a0bff00e09: 0
+    - Vector1_6b292b0446eb46c38f19228ecbdca242: 5
+    - Vector1_809b9b151f694d1785231dedc0f7d74a: 0
+    - Vector1_8abb54964b8f4ab4b2e422a3ef5a3849: 0.02
+    - Vector1_b64785160c4844f9979b8a67428c922c: 5
+    - Vector1_d15172d94f264dc38d567624e4e440eb: 1
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    m_Colors:
+    - Color_31e6ffbfe0b0497487d6bad0df396a68: {r: 1.4427408, g: 3.0943396, b: 1.1871364,
+        a: 0}
+    - Color_3ff39617341d4e9d8d650bb7a8ac8d22: {r: 0, g: 0, b: 0, a: 0}
+    - Color_53b0a6e0a2c64cdfa0b73dc415292b16: {r: 1, g: 1, b: 1, a: 0}
+    - Vector2_135d91ad60a340fea275b8471b37da19: {r: 0, g: 0, b: 0, a: 0}
+    - Vector2_814c7c53703a4f80ac0b1cec4bcb3b22: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
+--- !u!114 &6620967594595974433
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7

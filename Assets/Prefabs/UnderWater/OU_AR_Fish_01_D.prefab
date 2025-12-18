@@ -1,0 +1,733 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &245864335239467148
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5540405780861493521}
+  m_Layer: 0
+  m_Name: Clown1:Spine_01.8
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5540405780861493521
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245864335239467148}
+  m_LocalRotation: {x: -0.5102618, y: 0.46199402, z: 0.545979, w: -0.4775996}
+  m_LocalPosition: {x: -4.092755, y: 8.938348, z: -7.906137}
+  m_LocalScale: {x: 1.0000001, y: 1.0000002, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5137163759320541342}
+  - {fileID: 6875911778127406225}
+  - {fileID: 4023156416504680337}
+  - {fileID: 1746863693399469698}
+  - {fileID: 5082851939029648128}
+  m_Father: {fileID: 7720666821695655898}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: -0.9784568, y: -86.99652, z: -96.71538}
+--- !u!1 &757099165104111247
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9073379250087187497}
+  m_Layer: 0
+  m_Name: Clown1:Spine_03.10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9073379250087187497
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757099165104111247}
+  m_LocalRotation: {x: 6.0262845e-10, y: 4.821024e-10, z: -0.25892794, w: 0.96589667}
+  m_LocalPosition: {x: 0.000001335144, y: 1.2267834, z: 0.000009384155}
+  m_LocalScale: {x: 1, y: 0.9999999, z: 1.0000001}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2604379907946591299}
+  m_Father: {fileID: 5082851939029648128}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.00000008100553, y: 0.000000035480266, z: -30.012915}
+--- !u!1 &1623960195440037221
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5808023883510312375}
+  m_Layer: 0
+  m_Name: Clown1:head.6
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5808023883510312375
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623960195440037221}
+  m_LocalRotation: {x: -0.52508426, y: -0.45854387, z: 0.52727175, w: 0.48580715}
+  m_LocalPosition: {x: -4.080764, y: 9.036559, z: -8.03093}
+  m_LocalScale: {x: 1.0000001, y: 1.0000001, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6116220321052179481}
+  m_Father: {fileID: 7720666821695655898}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -1.5256773, y: -88.39218, z: 96.17098}
+--- !u!1 &1776187492655698939
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9097266133444219511}
+  m_Layer: 0
+  m_Name: Clown1:R_Upper_fin_End.16
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9097266133444219511
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776187492655698939}
+  m_LocalRotation: {x: 0.1887151, y: -0.10828755, z: 0.48577547, w: 0.84657115}
+  m_LocalPosition: {x: 0.0000049591063, y: 1.3812737, z: 0.0000010681152}
+  m_LocalScale: {x: 1, y: 1.0000001, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1746863693399469698}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 25.133465, y: 0.0000056583717, z: 59.69573}
+--- !u!1 &1917149218923864493
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6116220321052179481}
+  m_Layer: 0
+  m_Name: Clown1:head_End.7
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6116220321052179481
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917149218923864493}
+  m_LocalRotation: {x: -0.0000001277576, y: 0.00000012586428, z: -0.70710695, w: 0.7071066}
+  m_LocalPosition: {x: -0.00000039100647, y: 1.2583152, z: 0.00000028610228}
+  m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.9999999}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5808023883510312375}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -0.00000015340756, y: 0.000020550591, z: -90.00002}
+--- !u!1 &3103574374481098671
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7720666821695655898}
+  m_Layer: 0
+  m_Name: Clown1:Root.5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7720666821695655898
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103574374481098671}
+  m_LocalRotation: {x: 0.50000006, y: -0.49999994, z: -0.5, w: -0.5}
+  m_LocalPosition: {x: -1.7425967, y: 0.0029440308, z: 2.0466158}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5808023883510312375}
+  - {fileID: 5540405780861493521}
+  m_Father: {fileID: 4994436723651420606}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -90, y: 89.99999, z: 0}
+--- !u!1 &3208931127535517440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5082851939029648128}
+  m_Layer: 0
+  m_Name: Clown1:Spine_02.9
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5082851939029648128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3208931127535517440}
+  m_LocalRotation: {x: -0.00000010628906, y: -0.000000018126816, z: -0.14771596, w: 0.9890298}
+  m_LocalPosition: {x: 0.0000004863739, y: 1.4039788, z: 0.00000875473}
+  m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 9073379250087187497}
+  m_Father: {fileID: 5540405780861493521}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: -0.000012353046, y: -0.00000025523804, z: -16.98917}
+--- !u!1 &3278309532317126636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2753165614485493078}
+  - component: {fileID: 2431817317991527072}
+  m_Layer: 0
+  m_Name: OU_AR_Fish_01_D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2753165614485493078
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3278309532317126636}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.075, y: 0.075, z: 0.075}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 8357408881486587914}
+  - {fileID: 3228962574238508880}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &2431817317991527072
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3278309532317126636}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e1849845c5c59fc47979e1d2c246b803, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &3643665256133973827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5137163759320541342}
+  m_Layer: 0
+  m_Name: Clown1:L_lower_fin1.17
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5137163759320541342
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3643665256133973827}
+  m_LocalRotation: {x: -0.2614248, y: -0.5311896, z: 0.33899656, w: 0.73114705}
+  m_LocalPosition: {x: -0.16138771, y: 0.5960097, z: -1.254558}
+  m_LocalScale: {x: 0.9999998, y: 0.9999998, z: 0.9999999}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1046478700315725666}
+  m_Father: {fileID: 5540405780861493521}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -1.2684629, y: -72.59869, z: 50.681393}
+--- !u!1 &4512345372936161533
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4023156416504680337}
+  m_Layer: 0
+  m_Name: Clown1:R_lower_fin1.19
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4023156416504680337
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512345372936161533}
+  m_LocalRotation: {x: -0.36135715, y: -0.73711705, z: 0.22520226, w: 0.52475077}
+  m_LocalPosition: {x: 0.16138546, y: 0.59600943, z: -1.2545568}
+  m_LocalScale: {x: 0.9999999, y: 0.9999999, z: 0.9999999}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7138020932806465804}
+  m_Father: {fileID: 5540405780861493521}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: -2.707892, y: -110.37909, z: 50.34804}
+--- !u!1 &5222378639414550485
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2604379907946591299}
+  m_Layer: 0
+  m_Name: Clown1:Spine_04.11
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2604379907946591299
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5222378639414550485}
+  m_LocalRotation: {x: 0.00000012288338, y: 0.00000002782663, z: -0.26090643, w: 0.9653641}
+  m_LocalPosition: {x: -0.0000004959106, y: 1.1010259, z: 0.00000787735}
+  m_LocalScale: {x: 1.0000001, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8157412244030560988}
+  m_Father: {fileID: 9073379250087187497}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.0000144256255, y: -0.0000005956736, z: -30.247704}
+--- !u!1 &5386081247852444354
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3223614897815926576}
+  m_Layer: 0
+  m_Name: Clown1:L_Upper_fin_End.14
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3223614897815926576
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5386081247852444354}
+  m_LocalRotation: {x: -0.18871507, y: 0.108287446, z: 0.4857755, w: 0.8465711}
+  m_LocalPosition: {x: 0.000004997253, y: 1.3812702, z: -0.000009002685}
+  m_LocalScale: {x: 1, y: 0.99999994, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6875911778127406225}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -25.133463, y: -0.000016975115, z: 59.695732}
+--- !u!1 &6675378669874736653
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1046478700315725666}
+  m_Layer: 0
+  m_Name: Clown1:L_lower_fin_End.18
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1046478700315725666
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6675378669874736653}
+  m_LocalRotation: {x: 0.0000011583797, y: -0.111821815, z: 0.000000099577555, w: 0.9937283}
+  m_LocalPosition: {x: -0.0000009155273, y: 0.95381373, z: 0.0000015258788}
+  m_LocalScale: {x: 0.99999994, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5137163759320541342}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.00013318399, y: -12.840691, z: -0.000003504106}
+--- !u!1 &7055655208083423260
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1746863693399469698}
+  m_Layer: 0
+  m_Name: Clown1:R_Upper_fin.15
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1746863693399469698
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7055655208083423260}
+  m_LocalRotation: {x: 0.15482254, y: 0.9607512, z: 0.21821542, w: 0.07327491}
+  m_LocalPosition: {x: 0.6181966, y: 0.34284735, z: -0.19911896}
+  m_LocalScale: {x: 1, y: 0.99999964, z: 0.9999999}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 9097266133444219511}
+  m_Father: {fileID: 5540405780861493521}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: -23.36656, y: 166.8805, z: 21.03306}
+--- !u!1 &7073577012751700611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7138020932806465804}
+  m_Layer: 0
+  m_Name: Clown1:R_lower_fin_End.20
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7138020932806465804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7073577012751700611}
+  m_LocalRotation: {x: -0.0000008416061, y: 0.11182107, z: -0.00000009559442, w: 0.9937284}
+  m_LocalPosition: {x: -0.0023153685, y: 0.9561487, z: -0.004883194}
+  m_LocalScale: {x: 0.9999999, y: 0.99999994, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4023156416504680337}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -0.00009461119, y: 12.840605, z: -0.000021669739}
+--- !u!1 &7892711589087132621
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4994436723651420606}
+  m_Layer: 0
+  m_Name: root.4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4994436723651420606
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7892711589087132621}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071067}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7720666821695655898}
+  m_Father: {fileID: 3228962574238508880}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90.00001}
+--- !u!1 &7995941169656947824
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6875911778127406225}
+  m_Layer: 0
+  m_Name: Clown1:L_Upper_fin.13
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6875911778127406225
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7995941169656947824}
+  m_LocalRotation: {x: 0.21528405, y: 0.08029069, z: 0.1303746, w: 0.9644733}
+  m_LocalPosition: {x: -0.6181973, y: 0.3428484, z: -0.19911571}
+  m_LocalScale: {x: 1.0000001, y: 0.9999999, z: 0.9999999}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3223614897815926576}
+  m_Father: {fileID: 5540405780861493521}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 23.224548, y: 13.274603, z: 18.136408}
+--- !u!1 &7999040054141548456
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8357408881486587914}
+  - component: {fileID: 8957947690951204666}
+  m_Layer: 0
+  m_Name: OU_AR_Fish_01_D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8357408881486587914
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7999040054141548456}
+  m_LocalRotation: {x: -6.123234e-17, y: 1, z: 6.123234e-17, w: -3.7493994e-33}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2753165614485493078}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &8957947690951204666
+SkinnedMeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7999040054141548456}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 3
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9c502a9e37e855044abd34b42a338d6d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: 7078616387703785646, guid: b58118aa9235e9148a41bf90ed3ed1ed, type: 3}
+  m_Bones:
+  - {fileID: 4994436723651420606}
+  - {fileID: 7720666821695655898}
+  - {fileID: 5808023883510312375}
+  - {fileID: 6116220321052179481}
+  - {fileID: 5540405780861493521}
+  - {fileID: 5082851939029648128}
+  - {fileID: 9073379250087187497}
+  - {fileID: 2604379907946591299}
+  - {fileID: 8157412244030560988}
+  - {fileID: 6875911778127406225}
+  - {fileID: 3223614897815926576}
+  - {fileID: 1746863693399469698}
+  - {fileID: 9097266133444219511}
+  - {fileID: 5137163759320541342}
+  - {fileID: 1046478700315725666}
+  - {fileID: 4023156416504680337}
+  - {fileID: 7138020932806465804}
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 4994436723651420606}
+  m_AABB:
+    m_Center: {x: -9.625916, y: -6.2719297, z: 5.844091}
+    m_Extent: {x: 2.489318, y: 3.5433817, z: 2.546905}
+  m_DirtyAABB: 0
+--- !u!1 &8080494946341143684
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3228962574238508880}
+  m_Layer: 0
+  m_Name: skeletal.001
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3228962574238508880
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8080494946341143684}
+  m_LocalRotation: {x: -0.7071067, y: -0.000000030908616, z: 0.000000030908623, w: 0.7071068}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4994436723651420606}
+  m_Father: {fileID: 2753165614485493078}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8617618368238853914
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8157412244030560988}
+  m_Layer: 0
+  m_Name: Clown1:Spine_End.12
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8157412244030560988
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8617618368238853914}
+  m_LocalRotation: {x: -0.0000000723164, y: -0.00000005235428, z: 0.7071067, w: 0.7071069}
+  m_LocalPosition: {x: 0.00000030517577, y: 1.1167583, z: 0.000007133484}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2604379907946591299}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -0.0000016175015, y: -0.000010101873, z: 89.99998}
