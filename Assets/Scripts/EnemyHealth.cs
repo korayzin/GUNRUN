@@ -147,10 +147,15 @@ public class EnemyHealth : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) 
+        // VR sistemi için farklı tag'ler kontrol et
+        if (other.CompareTag("Player") || other.CompareTag("MainCamera") || other.name.Contains("OVRCameraRig") || other.transform.root.name.Contains("OVRCameraRig"))
         {
-            Debug.Log("Düşman oyuncuya çarptı! " + other.name + " vuruldu!");
+            Debug.Log($"🚨 Düşman oyuncuya çarptı! Çarpılan obje: {other.name}, Tag: {other.tag}, Parent: {other.transform.root.name}");
             GameManager.Instance.GameOver(other);
+        }
+        else
+        {
+            Debug.Log($"ℹ️ Düşman farklı objeye çarptı: {other.name} (Tag: {other.tag})");
         }
     }
 }

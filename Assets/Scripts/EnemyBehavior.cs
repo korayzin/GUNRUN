@@ -15,6 +15,7 @@ public class EnemyBehavior : MonoBehaviour
 
     [SerializeField] private List<Collider> colliders;
 
+
     private void OnEnable()
     {
         EnemyHealth.OnEnemyKilled += OnEnemyKilled; 
@@ -32,13 +33,13 @@ public class EnemyBehavior : MonoBehaviour
         if (killCount == 3)
         {
             speed = speedIncrease1;
-            Debug.Log("Hýz arttý: 3. düþmaný öldürdün.");
+            Debug.Log("Hï¿½z arttï¿½: 3. dï¿½ï¿½manï¿½ ï¿½ldï¿½rdï¿½n.");
         }
        
         else if (killCount == 6)
         {
             speed = speedIncrease2;
-            Debug.Log("Hýz arttý: 6. düþmaný öldürdün.");
+            Debug.Log("Hï¿½z arttï¿½: 6. dï¿½ï¿½manï¿½ ï¿½ldï¿½rdï¿½n.");
         }
     }
 
@@ -57,9 +58,29 @@ public class EnemyBehavior : MonoBehaviour
 
     private void Update()
     {
-        Vector3 targetPosition = Camera.main.transform.position;
-        agent.SetDestination(targetPosition);
+        if (agent == null || !agent.enabled)
+        {
+            return;
+        }
 
+        // Oyuncunun pozisyonunu hedef al
+        Vector3 targetPosition = Camera.main.transform.position;
+
+        // NavMesh Ã¼zerinde geÃ§erli bir hedef pozisyonu hesapla
+        UnityEngine.AI.NavMeshHit hit;
+        if (UnityEngine.AI.NavMesh.SamplePosition(targetPosition, out hit, 10f, UnityEngine.AI.NavMesh.AllAreas))
+        {
+            targetPosition = hit.position;
+        }
+
+        // Hedefe git
+        agent.SetDestination(targetPosition);
         agent.speed = speed;
+
+        // Debug bilgisi (sadece arada)
+        if (Time.frameCount % 300 == 0)
+        {
+            Debug.Log($"Enemy hareket ediyor: Pozisyon={transform.position}, Hedef={targetPosition}, Mesafe={agent.remainingDistance}, Durum={agent.pathStatus}");
+        }
     }
 }

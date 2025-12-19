@@ -113,6 +113,9 @@ public class AdvancedPortalSpawner : MonoBehaviour
             GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
             enemy.tag = "Enemy";
 
+            // Enemy'ye gerekli componentleri ekle (eğer yoksa)
+            SetupEnemyComponents(enemy, spawnPos);
+
             if (!consecutivePortalCounts.ContainsKey(portal))
                 consecutivePortalCounts[portal] = 0;
 
@@ -153,6 +156,121 @@ public class AdvancedPortalSpawner : MonoBehaviour
         return pool[Random.Range(0, pool.Count)];
     }
 
+    private void SetupEnemyComponents(GameObject enemy, Vector3 spawnPos)
+    {
+        Debug.Log($"[SETUP] 🔧 Component setup başlıyor: {enemy.name}");
+
+        // 1. NavMeshAgent ekle/kontrol et
+        UnityEngine.AI.NavMeshAgent agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent == null)
+        {
+            agent = enemy.AddComponent<UnityEngine.AI.NavMeshAgent>();
+            agent.radius = 0.04f;
+            agent.height = 0f;
+            agent.speed = 3.5f;
+            agent.acceleration = 8f;
+            agent.angularSpeed = 120f;
+            agent.stoppingDistance = 2f;
+            agent.autoBraking = true;
+            agent.autoRepath = true;
+            Debug.Log($"[SETUP] ✅ NavMeshAgent eklendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height}, Speed: {agent.speed})");
+        }
+        else
+        {
+            // Var olan agent'in ayarlarını da güncelle
+            agent.radius = 0.04f;
+            agent.height = 0f;
+            Debug.Log($"[SETUP] ℹ️ NavMeshAgent ayarları güncellendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height})");
+        }
+
+        // NavMeshAgent'ı doğru pozisyona warp et
+        agent.enabled = true;
+        agent.Warp(spawnPos);
+
+        // 2. EnemyBehavior script'i ekle/kontrol et
+        EnemyBehavior enemyBehavior = enemy.GetComponent<EnemyBehavior>();
+        if (enemyBehavior == null)
+        {
+            enemyBehavior = enemy.AddComponent<EnemyBehavior>();
+            enemyBehavior.speed = 3.5f;
+            enemyBehavior.agent = agent; // Agent referansını set et
+            Debug.Log($"[SETUP] ✅ EnemyBehavior eklendi: {enemy.name}");
+        }
+        else
+        {
+            enemyBehavior.agent = agent; // Var olan script'e agent referansı ver
+            Debug.Log($"[SETUP] ℹ️ EnemyBehavior zaten var: {enemy.name}");
+        }
+
+        // 3. EnemyHealth script'i ekle/kontrol et
+        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+        if (enemyHealth == null)
+        {
+            enemyHealth = enemy.AddComponent<EnemyHealth>();
+            enemyHealth.totalHealth = 100f;
+            enemyHealth.headshotMultiplier = 2f;
+            enemyHealth.bodyMultiplier = 1f;
+            enemyHealth.legsMultiplier = 0.7f;
+            enemyHealth.scoreValue = 50;
+            Debug.Log($"[SETUP] ✅ EnemyHealth eklendi: {enemy.name}");
+        }
+        else
+        {
+            Debug.Log($"[SETUP] ℹ️ EnemyHealth zaten var: {enemy.name}");
+        }
+
+        // 4. Rigidbody ekle/kontrol et (kinematic olarak)
+        Rigidbody rb = enemy.GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = enemy.AddComponent<Rigidbody>();
+            rb.useGravity = false;
+            rb.isKinematic = true;
+            Debug.Log($"[SETUP] ✅ Rigidbody eklendi: {enemy.name}");
+        }
+
+        // 5. Collider kontrolü - Sadece trigger ayarı yap (kullanıcı manuel ekleyecek)
+        Collider col = enemy.GetComponent<Collider>();
+        if (col != null)
+        {
+            // Var olan collider'ı trigger yap
+            col.isTrigger = true;
+            Debug.Log($"[SETUP] ℹ️ Collider trigger yapıldı: {enemy.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"[SETUP] ⚠️ {enemy.name}'de collider bulunamadı! Prefab'a collider ekleyin!");
+        }
+
+        // 6. Animasyon başlat ve loop yap
+        Animator animator = enemy.GetComponent<Animator>();
+        if (animator != null)
+        {
+            if (animator.runtimeAnimatorController != null)
+            {
+                animator.updateMode = AnimatorUpdateMode.Normal;
+                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                animator.enabled = true;
+
+                // State adını kullanarak animasyonu başlat
+                string stateName = "mixamo_com";
+                animator.Play(stateName, 0, 0f);
+                
+                Debug.Log($"[SETUP] ✅ Animasyon başlatıldı: {enemy.name} - State: {stateName}, Controller: {animator.runtimeAnimatorController.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"[SETUP] ⚠️ AnimatorController atanmamış: {enemy.name}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[SETUP] ⚠️ Animator component bulunamadı: {enemy.name}");
+        }
+
+        Debug.Log($"[SETUP] 🎉 Enemy tamamen hazır: {enemy.name} at {spawnPos}");
+    }
+
     string GetPreferredPortalForEnemy(GameObject enemy)
     {
         List<string> validPortals = new();
@@ -181,11 +299,25 @@ public class AdvancedPortalSpawner : MonoBehaviour
         return portals[Random.Range(0, portals.Count)];
     }
 
-    Vector3 GetRandomSpawnPoint(string portal)
+    public Vector3 GetRandomSpawnPoint(string portal)
     {
         Vector3[] points = portalSpawnPoints[portal];
-        return points[Random.Range(0, points.Length)];
+        Vector3 spawnPoint = points[Random.Range(0, points.Length)];
+
+        // Spawn noktasının NavMesh üzerinde olup olmadığını kontrol et
+        UnityEngine.AI.NavMeshHit hit;
+        if (UnityEngine.AI.NavMesh.SamplePosition(spawnPoint, out hit, 5f, UnityEngine.AI.NavMesh.AllAreas))
+        {
+            Debug.Log($"[SPAWN] {portal} portal için NavMesh üzerinde spawn noktası: {hit.position}");
+            return hit.position;
+        }
+        else
+        {
+            Debug.LogWarning($"[SPAWN] {portal} portal spawn noktası NavMesh dışında! Orijinal pozisyon kullanılacak: {spawnPoint}");
+            return spawnPoint;
+        }
     }
+
 
     public void StopSpawning()
     {
