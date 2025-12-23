@@ -136,11 +136,17 @@ public class ArtlantisTestRunner : MonoBehaviour
 
             // Weapon prefab kontrolleri
             int weaponCount = 0;
-            if (wm.weaponA != null) weaponCount++;
-            if (wm.weaponB != null) weaponCount++;
-            if (wm.weaponC != null) weaponCount++;
+            if (wm.firstWeapon != null) weaponCount++;
+            if (wm.secondWeapon != null) weaponCount++;
+            if (wm.thirdWeapon != null) weaponCount++;
+            if (wm.fourthWeapon != null) weaponCount++;
+            if (wm.fifthWeapon != null) weaponCount++;
+            if (wm.sixthWeapon != null) weaponCount++;
+            if (wm.seventhWeapon != null) weaponCount++;
+            if (wm.eighthWeapon != null) weaponCount++;
+            if (wm.ninthWeapon != null) weaponCount++;
 
-            Debug.Log($"🔫 Weapon Prefab'leri: {weaponCount}/3 bağlı");
+            Debug.Log($"🔫 Weapon Prefab'leri: {weaponCount}/9 bağlı");
         }
         else
         {

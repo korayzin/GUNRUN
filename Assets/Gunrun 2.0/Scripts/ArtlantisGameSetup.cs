@@ -29,9 +29,9 @@ public class ArtlantisGameSetup : MonoBehaviour
     public GameObject tur3Enemy;
 
     [Header("Weapon Prefabs")]
-    public GameObject weaponA;
-    public GameObject weaponB;
-    public GameObject weaponC;
+    public GameObject firstWeapon;
+    public GameObject secondWeapon;
+    public GameObject thirdWeapon;
 
     void Start()
     {
@@ -75,14 +75,14 @@ public class ArtlantisGameSetup : MonoBehaviour
         // 4. WeaponManager kurulumu
         if (weaponManager != null)
         {
-            weaponManager.weaponA = weaponA;
-            weaponManager.weaponB = weaponB;
-            weaponManager.weaponC = weaponC;
+            weaponManager.firstWeapon = firstWeapon;
+            weaponManager.secondWeapon = secondWeapon;
+            weaponManager.thirdWeapon = thirdWeapon;
 
             // VFX referansları (varsa ekle)
-            // weaponManager.vfxA = vfxA;
-            // weaponManager.vfxB = vfxB;
-            // weaponManager.vfxC = vfxC;
+            // weaponManager.vfxFirst = vfxFirst;
+            // weaponManager.vfxSecond = vfxSecond;
+            // weaponManager.vfxThird = vfxThird;
 
             Debug.Log("WeaponManager kuruldu");
         }

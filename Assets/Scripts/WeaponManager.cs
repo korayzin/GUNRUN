@@ -5,31 +5,51 @@ using UnityEngine.UI;
 public class WeaponManager : MonoBehaviour
 {
     [Header("Weapons")]
-    public GameObject weaponA;
-    public GameObject weaponB;
-    public GameObject weaponC;
-    public GameObject weaponD;
+    public GameObject firstWeapon;
+    public GameObject secondWeapon;
+    public GameObject thirdWeapon;
+    public GameObject fourthWeapon;
+    public GameObject fifthWeapon;
+    public GameObject sixthWeapon;
+    public GameObject seventhWeapon;
+    public GameObject eighthWeapon;
+    public GameObject ninthWeapon;
 
     [Header("Weapon UI Images")]
-    public Image weaponAImage;
-    public Image weaponBImage;
-    public Image weaponCImage;
-    public Image weaponDImage;
+    public Image firstWeaponImage;
+    public Image secondWeaponImage;
+    public Image thirdWeaponImage;
+    public Image fourthWeaponImage;
+    public Image fifthWeaponImage;
+    public Image sixthWeaponImage;
+    public Image seventhWeaponImage;
+    public Image eighthWeaponImage;
+    public Image ninthWeaponImage;
 
     [Header("Weapon VFX")]
-    public GameObject vfxA;
-    public GameObject vfxB;
-    public GameObject vfxC;
-    public GameObject vfxD;
+    public GameObject vfxFirst;
+    public GameObject vfxSecond;
+    public GameObject vfxThird;
+    public GameObject vfxFourth;
+    public GameObject vfxFifth;
+    public GameObject vfxSixth;
+    public GameObject vfxSeventh;
+    public GameObject vfxEighth;
+    public GameObject vfxNinth;
 
     private int currentWeapon = 0;
     private int enemyKillCount = 0;
     private bool isSwitchingWeapon = false;
 
     [Header("Weapon Switch Settings")]
-    public int killsToWeaponB = 10;
-    public int killsToWeaponC = 22;
-    public int killsToWeaponD = 36;
+    public int killsToSecond = 10;
+    public int killsToThird = 22;
+    public int killsToFourth = 36;
+    public int killsToFifth = 52;
+    public int killsToSixth = 70;
+    public int killsToSeventh = 90;
+    public int killsToEighth = 112;
+    public int killsToNinth = 136;
     public float vfxDelay = 0.5f;
 
     [Header("Weapon Scale Settings")]
@@ -48,10 +68,15 @@ public class WeaponManager : MonoBehaviour
 
     private void InitializeWeapons()
     {
-        if (weaponA != null) weaponA.SetActive(true);
-        if (weaponB != null) weaponB.SetActive(false);
-        if (weaponC != null) weaponC.SetActive(false);
-        if (weaponD != null) weaponD.SetActive(false);
+        if (firstWeapon != null) firstWeapon.SetActive(true);
+        if (secondWeapon != null) secondWeapon.SetActive(false);
+        if (thirdWeapon != null) thirdWeapon.SetActive(false);
+        if (fourthWeapon != null) fourthWeapon.SetActive(false);
+        if (fifthWeapon != null) fifthWeapon.SetActive(false);
+        if (sixthWeapon != null) sixthWeapon.SetActive(false);
+        if (seventhWeapon != null) seventhWeapon.SetActive(false);
+        if (eighthWeapon != null) eighthWeapon.SetActive(false);
+        if (ninthWeapon != null) ninthWeapon.SetActive(false);
 
         currentWeapon = 0;
         enemyKillCount = 0;
@@ -115,52 +140,126 @@ public class WeaponManager : MonoBehaviour
             return;
         }
 
-        if (currentWeapon == 0 && enemyKillCount >= killsToWeaponB)
+        // First -> Second
+        if (currentWeapon == 0 && enemyKillCount >= killsToSecond)
         {
             isSwitchingWeapon = true;
-            // Tüm baretta silahlarını kapat (hem sol hem sağ el)
             DisableAllBarettaWeapons();
-            // WeaponA'yı da kapat
-            if (weaponA != null)
+            if (firstWeapon != null)
             {
-                weaponA.SetActive(false);
-                GunFire gunFireA = weaponA.GetComponent<GunFire>();
-                if (gunFireA != null) gunFireA.enabled = false;
+                firstWeapon.SetActive(false);
+                GunFire gunFire = firstWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
             }
-            StartCoroutine(SwitchWeaponWithVFX(weaponA, weaponB, vfxA, vfxB));
+            StartCoroutine(SwitchWeaponWithVFX(firstWeapon, secondWeapon, vfxFirst, vfxSecond));
             currentWeapon = 1;
-            HandleBarettaSwitch(weaponB);
-            Debug.Log($"Tüm baretta silahları kapatıldı, WeaponB açıldı ({enemyKillCount} kill).");
+            HandleBarettaSwitch(secondWeapon);
+            Debug.Log($"First weapon kapatıldı, Second weapon açıldı ({enemyKillCount} kill).");
         }
-        else if (currentWeapon == 1 && enemyKillCount >= killsToWeaponC)
+        // Second -> Third
+        else if (currentWeapon == 1 && enemyKillCount >= killsToThird)
         {
             isSwitchingWeapon = true;
-            // WeaponB'yi hemen kapat
-            if (weaponB != null)
+            if (secondWeapon != null)
             {
-                weaponB.SetActive(false);
-                GunFire gunFireB = weaponB.GetComponent<GunFire>();
-                if (gunFireB != null) gunFireB.enabled = false;
+                secondWeapon.SetActive(false);
+                GunFire gunFire = secondWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
             }
-            StartCoroutine(SwitchWeaponWithVFX(weaponB, weaponC, vfxB, vfxC));
+            StartCoroutine(SwitchWeaponWithVFX(secondWeapon, thirdWeapon, vfxSecond, vfxThird));
             currentWeapon = 2;
-            HandleBarettaSwitch(weaponC);
-            Debug.Log($"WeaponB kapatıldı, WeaponC açıldı ({enemyKillCount} kill).");
+            HandleBarettaSwitch(thirdWeapon);
+            Debug.Log($"Second weapon kapatıldı, Third weapon açıldı ({enemyKillCount} kill).");
         }
-        else if (currentWeapon == 2 && enemyKillCount >= killsToWeaponD)
+        // Third -> Fourth
+        else if (currentWeapon == 2 && enemyKillCount >= killsToFourth)
         {
-            // isSwitchingWeapon = true;
-            // // WeaponC'yi hemen kapat
-            // if (weaponC != null)
-            // {
-            //     weaponC.SetActive(false);
-            //     GunFire gunFireC = weaponC.GetComponent<GunFire>();
-            //     if (gunFireC != null) gunFireC.enabled = false;
-            // }
-            // StartCoroutine(SwitchWeaponWithVFX(weaponC, weaponD, vfxC, vfxD));
-            // currentWeapon = 3;
-            // HandleBarettaSwitch(weaponD);
-            // Debug.Log($"WeaponC kapatıldı, WeaponD açıldı ({enemyKillCount} kill).");
+            isSwitchingWeapon = true;
+            if (thirdWeapon != null)
+            {
+                thirdWeapon.SetActive(false);
+                GunFire gunFire = thirdWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
+            }
+            StartCoroutine(SwitchWeaponWithVFX(thirdWeapon, fourthWeapon, vfxThird, vfxFourth));
+            currentWeapon = 3;
+            HandleBarettaSwitch(fourthWeapon);
+            Debug.Log($"Third weapon kapatıldı, Fourth weapon açıldı ({enemyKillCount} kill).");
+        }
+        // Fourth -> Fifth
+        else if (currentWeapon == 3 && enemyKillCount >= killsToFifth)
+        {
+            isSwitchingWeapon = true;
+            if (fourthWeapon != null)
+            {
+                fourthWeapon.SetActive(false);
+                GunFire gunFire = fourthWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
+            }
+            StartCoroutine(SwitchWeaponWithVFX(fourthWeapon, fifthWeapon, vfxFourth, vfxFifth));
+            currentWeapon = 4;
+            HandleBarettaSwitch(fifthWeapon);
+            Debug.Log($"Fourth weapon kapatıldı, Fifth weapon açıldı ({enemyKillCount} kill).");
+        }
+        // Fifth -> Sixth
+        else if (currentWeapon == 4 && enemyKillCount >= killsToSixth)
+        {
+            isSwitchingWeapon = true;
+            if (fifthWeapon != null)
+            {
+                fifthWeapon.SetActive(false);
+                GunFire gunFire = fifthWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
+            }
+            StartCoroutine(SwitchWeaponWithVFX(fifthWeapon, sixthWeapon, vfxFifth, vfxSixth));
+            currentWeapon = 5;
+            HandleBarettaSwitch(sixthWeapon);
+            Debug.Log($"Fifth weapon kapatıldı, Sixth weapon açıldı ({enemyKillCount} kill).");
+        }
+        // Sixth -> Seventh
+        else if (currentWeapon == 5 && enemyKillCount >= killsToSeventh)
+        {
+            isSwitchingWeapon = true;
+            if (sixthWeapon != null)
+            {
+                sixthWeapon.SetActive(false);
+                GunFire gunFire = sixthWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
+            }
+            StartCoroutine(SwitchWeaponWithVFX(sixthWeapon, seventhWeapon, vfxSixth, vfxSeventh));
+            currentWeapon = 6;
+            HandleBarettaSwitch(seventhWeapon);
+            Debug.Log($"Sixth weapon kapatıldı, Seventh weapon açıldı ({enemyKillCount} kill).");
+        }
+        // Seventh -> Eighth
+        else if (currentWeapon == 6 && enemyKillCount >= killsToEighth)
+        {
+            isSwitchingWeapon = true;
+            if (seventhWeapon != null)
+            {
+                seventhWeapon.SetActive(false);
+                GunFire gunFire = seventhWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
+            }
+            StartCoroutine(SwitchWeaponWithVFX(seventhWeapon, eighthWeapon, vfxSeventh, vfxEighth));
+            currentWeapon = 7;
+            HandleBarettaSwitch(eighthWeapon);
+            Debug.Log($"Seventh weapon kapatıldı, Eighth weapon açıldı ({enemyKillCount} kill).");
+        }
+        // Eighth -> Ninth
+        else if (currentWeapon == 7 && enemyKillCount >= killsToNinth)
+        {
+            isSwitchingWeapon = true;
+            if (eighthWeapon != null)
+            {
+                eighthWeapon.SetActive(false);
+                GunFire gunFire = eighthWeapon.GetComponent<GunFire>();
+                if (gunFire != null) gunFire.enabled = false;
+            }
+            StartCoroutine(SwitchWeaponWithVFX(eighthWeapon, ninthWeapon, vfxEighth, vfxNinth));
+            currentWeapon = 8;
+            HandleBarettaSwitch(ninthWeapon);
+            Debug.Log($"Eighth weapon kapatıldı, Ninth weapon açıldı ({enemyKillCount} kill).");
         }
 
         UpdateWeaponUI();
@@ -254,10 +353,15 @@ public class WeaponManager : MonoBehaviour
 
     private void UpdateWeaponUI()
     {
-        SetWeaponUIImageAlphaAndScale(weaponAImage, currentWeapon == 0);
-        SetWeaponUIImageAlphaAndScale(weaponBImage, currentWeapon == 1);
-        SetWeaponUIImageAlphaAndScale(weaponCImage, currentWeapon == 2);
-        SetWeaponUIImageAlphaAndScale(weaponDImage, currentWeapon == 3);
+        SetWeaponUIImageAlphaAndScale(firstWeaponImage, currentWeapon == 0);
+        SetWeaponUIImageAlphaAndScale(secondWeaponImage, currentWeapon == 1);
+        SetWeaponUIImageAlphaAndScale(thirdWeaponImage, currentWeapon == 2);
+        SetWeaponUIImageAlphaAndScale(fourthWeaponImage, currentWeapon == 3);
+        SetWeaponUIImageAlphaAndScale(fifthWeaponImage, currentWeapon == 4);
+        SetWeaponUIImageAlphaAndScale(sixthWeaponImage, currentWeapon == 5);
+        SetWeaponUIImageAlphaAndScale(seventhWeaponImage, currentWeapon == 6);
+        SetWeaponUIImageAlphaAndScale(eighthWeaponImage, currentWeapon == 7);
+        SetWeaponUIImageAlphaAndScale(ninthWeaponImage, currentWeapon == 8);
     }
 
     private void SetWeaponUIImageAlphaAndScale(Image image, bool isActive)
