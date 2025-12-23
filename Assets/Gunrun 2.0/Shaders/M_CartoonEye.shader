@@ -63,6 +63,9 @@ Shader "Custom/M_CartoonEye"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _STEREO_INSTANCING_ON
+            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -83,6 +86,7 @@ Shader "Custom/M_CartoonEye"
                 float3 normalWS : TEXCOORD2;
                 float3 viewDirWS : TEXCOORD3;
                 float fogCoord : TEXCOORD4;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
             TEXTURE2D(_MainTexture);
@@ -167,6 +171,7 @@ Shader "Custom/M_CartoonEye"
             Varyings vert(Attributes input)
             {
                 Varyings output = (Varyings)0;
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
                 float time = _Time.y;
                 float3 positionOS = input.positionOS.xyz;
@@ -193,6 +198,8 @@ Shader "Custom/M_CartoonEye"
             
             half4 frag(Varyings input) : SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                
                 float time = _Time.y;
                 
                 // Apply bouncy movement to UV

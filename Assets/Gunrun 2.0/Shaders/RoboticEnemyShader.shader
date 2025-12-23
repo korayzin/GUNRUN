@@ -42,6 +42,9 @@ Shader "Custom/RoboticEnemyShader"
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 3.0
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _STEREO_INSTANCING_ON
+            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             
             // URP gerekli include'ları
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -64,6 +67,7 @@ Shader "Custom/RoboticEnemyShader"
                 float3 tangentWS : TEXCOORD3;
                 float3 bitangentWS : TEXCOORD4;
                 float3 viewDirWS : TEXCOORD5;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
             // Texture tanımları
@@ -93,6 +97,7 @@ Shader "Custom/RoboticEnemyShader"
             Varyings vert(Attributes input)
             {
                 Varyings output;
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
                 // URP vertex transformation
                 VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionOS.xyz);
@@ -111,6 +116,8 @@ Shader "Custom/RoboticEnemyShader"
             
             half4 frag(Varyings input) : SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                
                 // Texture sampling
                 half4 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
                 half4 metallicMap = SAMPLE_TEXTURE2D(_MetallicMap, sampler_MetallicMap, input.uv);
@@ -191,6 +198,9 @@ Shader "Custom/RoboticEnemyShader"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
             #pragma target 3.0
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _STEREO_INSTANCING_ON
+            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             
@@ -198,11 +208,13 @@ Shader "Custom/RoboticEnemyShader"
             {
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
             float3 _LightDirection;
@@ -233,12 +245,15 @@ Shader "Custom/RoboticEnemyShader"
             Varyings ShadowPassVertex(Attributes input)
             {
                 Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 output.positionCS = GetShadowPositionHClip(input);
                 return output;
             }
             
             half4 ShadowPassFragment(Varyings input) : SV_TARGET
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 return 0;
             }
             ENDHLSL

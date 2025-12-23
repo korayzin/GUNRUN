@@ -36,12 +36,11 @@ public class VRGun : MonoBehaviour
 
     private void Shoot()
     {
-        // Increment shoot count and check for weapon switch
+        // Increment shoot count
         shootCount++;
-        if (weaponManager != null)
-        {
-            weaponManager.CheckWeaponSwitch(shootCount);
-        }
+        
+        // Weapon switch is now handled by WeaponManager based on kill count
+        // No need to call CheckWeaponSwitch here as it's triggered by EnemyHealth.OnEnemyKilled event
 
         // Play shooting audio
         if (audioSource && shootingClip)

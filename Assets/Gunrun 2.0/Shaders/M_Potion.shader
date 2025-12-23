@@ -76,6 +76,9 @@ Shader "Custom/M_Potion"
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _STEREO_INSTANCING_ON
+            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -99,6 +102,7 @@ Shader "Custom/M_Potion"
                 float4 shadowCoord : TEXCOORD4;
                 float fogCoord : TEXCOORD5;
                 float3 positionOS : TEXCOORD6;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
             TEXTURE2D(_MainTex);
@@ -304,6 +308,7 @@ Shader "Custom/M_Potion"
             Varyings vert(Attributes input)
             {
                 Varyings output;
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
                 VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
                 VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
@@ -322,6 +327,8 @@ Shader "Custom/M_Potion"
             
             half4 frag(Varyings input) : SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                
                 float time = _Time.y;
                 
                 // Get sphere-optimized UV coordinates

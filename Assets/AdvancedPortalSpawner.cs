@@ -46,11 +46,12 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     void Start()
     {
+        // Portal pozisyonlarını spawn noktaları olarak kullan
         portalSpawnPoints = new Dictionary<string, Vector3[]>
         {
-            { "A", spawnPointsA },
-            { "B", spawnPointsB },
-            { "C", spawnPointsC }
+            { "A", new Vector3[] { portalAPosition } },
+            { "B", new Vector3[] { portalBPosition } },
+            { "C", new Vector3[] { portalCPosition } }
         };
 
         portalPrefabs = new Dictionary<string, GameObject>
@@ -301,8 +302,23 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     public Vector3 GetRandomSpawnPoint(string portal)
     {
-        Vector3[] points = portalSpawnPoints[portal];
-        Vector3 spawnPoint = points[Random.Range(0, points.Length)];
+        // Portal pozisyonunu direkt kullan
+        Vector3 spawnPoint;
+        switch (portal)
+        {
+            case "A":
+                spawnPoint = portalAPosition;
+                break;
+            case "B":
+                spawnPoint = portalBPosition;
+                break;
+            case "C":
+                spawnPoint = portalCPosition;
+                break;
+            default:
+                spawnPoint = portalAPosition;
+                break;
+        }
 
         // Spawn noktasının NavMesh üzerinde olup olmadığını kontrol et
         UnityEngine.AI.NavMeshHit hit;

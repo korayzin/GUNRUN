@@ -28,6 +28,9 @@ Shader "Custom/M_Screen"
             #pragma target 4.5
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _STEREO_INSTANCING_ON
+            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
@@ -38,6 +41,7 @@ Shader "Custom/M_Screen"
             struct Varyings {
                 float4 positionHCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             CBUFFER_START(UnityPerMaterial)
                 float4 _Tint;
@@ -107,11 +111,14 @@ Shader "Custom/M_Screen"
             }
             Varyings vert(Attributes input) {
                 Varyings o;
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
                 o.uv = input.uv;
                 return o;
             }
             half4 frag(Varyings i) : SV_Target {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                
                 float t = _Time.y;
                 float2 uv = i.uv;
                 // Sample BaseMap and apply tint

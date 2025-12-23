@@ -109,6 +109,9 @@ Shader "Custom/M_RealEye_Advanced"
             #pragma multi_compile_fog
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _STEREO_INSTANCING_ON
+            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -133,6 +136,7 @@ Shader "Custom/M_RealEye_Advanced"
                 float3 bitangentWS : TEXCOORD5;
                 float4 shadowCoord : TEXCOORD6;
                 float fogCoord : TEXCOORD7;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
             TEXTURE2D(_IrisTexture);
@@ -293,6 +297,7 @@ Shader "Custom/M_RealEye_Advanced"
             Varyings vert(Attributes input)
             {
                 Varyings output = (Varyings)0;
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
                 // Cornea bulge effect
                 float2 center = float2(0.5, 0.5);
@@ -342,6 +347,8 @@ Shader "Custom/M_RealEye_Advanced"
             
             half4 frag(Varyings input) : SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                
                 float time = _Time.y;
                 
                 // Apply squishy movement

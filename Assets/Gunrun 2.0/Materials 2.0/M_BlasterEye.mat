@@ -45,6 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Cull: 0
     - _BlinkFrequency: 0.791
     - _Brightness: 1.4
     - _CartoonColorBoost: 2

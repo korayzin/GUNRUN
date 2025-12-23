@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +24,7 @@ public class WeaponManager : MonoBehaviour
 
     private int currentWeapon = 0;
     private int enemyKillCount = 0;
+    private bool isSwitchingWeapon = false;
 
     [Header("Weapon Switch Settings")]
     public int killsToWeaponB = 10;
@@ -41,7 +42,20 @@ public class WeaponManager : MonoBehaviour
 
     private void Start()
     {
+        InitializeWeapons();
         UpdateWeaponUI();
+    }
+
+    private void InitializeWeapons()
+    {
+        if (weaponA != null) weaponA.SetActive(true);
+        if (weaponB != null) weaponB.SetActive(false);
+        if (weaponC != null) weaponC.SetActive(false);
+        if (weaponD != null) weaponD.SetActive(false);
+
+        currentWeapon = 0;
+        enemyKillCount = 0;
+        isSwitchingWeapon = false;
     }
 
     private void OnEnable()
@@ -56,14 +70,14 @@ public class WeaponManager : MonoBehaviour
 
     private void OnEnemyKilled()
     {
-        int currentScore = GameManager.Instance.score;
-
-        if (currentScore < killsToWeaponB)
+        if (isSwitchingWeapon)
         {
-            return; 
+            return;
         }
 
-        CheckWeaponSwitch(currentScore);
+        enemyKillCount++;
+
+        CheckWeaponSwitch();
     }
 
 
@@ -80,27 +94,73 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    public void CheckWeaponSwitch(int score)
+    private void DisableAllBarettaWeapons()
     {
-        if (currentWeapon == 0 && score >= killsToWeaponB)
+        GunFire[] allGuns = FindObjectsOfType<GunFire>();
+        foreach (GunFire gun in allGuns)
         {
+            if (gun.isBaretta)
+            {
+                gun.gameObject.SetActive(false);
+                gun.enabled = false;
+                Debug.Log($"{gun.gameObject.name} baretta olduğu için kapatıldı (sol el: {gun.isLeftHanded}).");
+            }
+        }
+    }
+
+    public void CheckWeaponSwitch()
+    {
+        if (isSwitchingWeapon)
+        {
+            return;
+        }
+
+        if (currentWeapon == 0 && enemyKillCount >= killsToWeaponB)
+        {
+            isSwitchingWeapon = true;
+            // Tüm baretta silahlarını kapat (hem sol hem sağ el)
+            DisableAllBarettaWeapons();
+            // WeaponA'yı da kapat
+            if (weaponA != null)
+            {
+                weaponA.SetActive(false);
+                GunFire gunFireA = weaponA.GetComponent<GunFire>();
+                if (gunFireA != null) gunFireA.enabled = false;
+            }
             StartCoroutine(SwitchWeaponWithVFX(weaponA, weaponB, vfxA, vfxB));
             currentWeapon = 1;
             HandleBarettaSwitch(weaponB);
-            DisableLeftHandWeapons();
-            Debug.Log("USP açıldı, sol el silahı kapatıldı.");
+            Debug.Log($"Tüm baretta silahları kapatıldı, WeaponB açıldı ({enemyKillCount} kill).");
         }
-        else if (currentWeapon == 1 && score >= killsToWeaponC)
+        else if (currentWeapon == 1 && enemyKillCount >= killsToWeaponC)
         {
+            isSwitchingWeapon = true;
+            // WeaponB'yi hemen kapat
+            if (weaponB != null)
+            {
+                weaponB.SetActive(false);
+                GunFire gunFireB = weaponB.GetComponent<GunFire>();
+                if (gunFireB != null) gunFireB.enabled = false;
+            }
             StartCoroutine(SwitchWeaponWithVFX(weaponB, weaponC, vfxB, vfxC));
             currentWeapon = 2;
             HandleBarettaSwitch(weaponC);
+            Debug.Log($"WeaponB kapatıldı, WeaponC açıldı ({enemyKillCount} kill).");
         }
-        else if (currentWeapon == 2 && score >= killsToWeaponD)
+        else if (currentWeapon == 2 && enemyKillCount >= killsToWeaponD)
         {
+            // isSwitchingWeapon = true;
+            // // WeaponC'yi hemen kapat
+            // if (weaponC != null)
+            // {
+            //     weaponC.SetActive(false);
+            //     GunFire gunFireC = weaponC.GetComponent<GunFire>();
+            //     if (gunFireC != null) gunFireC.enabled = false;
+            // }
             // StartCoroutine(SwitchWeaponWithVFX(weaponC, weaponD, vfxC, vfxD));
             // currentWeapon = 3;
             // HandleBarettaSwitch(weaponD);
+            // Debug.Log($"WeaponC kapatıldı, WeaponD açıldı ({enemyKillCount} kill).");
         }
 
         UpdateWeaponUI();
@@ -150,6 +210,7 @@ public class WeaponManager : MonoBehaviour
 
     private IEnumerator SwitchWeaponWithVFX(GameObject currentWeaponObj, GameObject nextWeaponObj, GameObject currentWeaponVFX, GameObject nextWeaponVFX)
     {
+        // Önceki silah zaten CheckWeaponSwitch'te kapatıldı, burada sadece VFX'i kapat
         if (currentWeaponVFX != null)
         {
             if (currentWeaponVFX.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
@@ -159,14 +220,6 @@ public class WeaponManager : MonoBehaviour
             currentWeaponVFX.SetActive(false);
         }
 
-        GunFire currentGunFire = currentWeaponObj.GetComponent<GunFire>();
-        if (currentGunFire != null)
-        {
-            currentGunFire.enabled = false;
-            Debug.Log($"{currentWeaponObj.name} silahı kapatıldı.");
-        }
-
-        currentWeaponObj.SetActive(false);
         yield return new WaitForSeconds(vfxDelay); 
 
         if (nextWeaponVFX != null)
@@ -195,6 +248,7 @@ public class WeaponManager : MonoBehaviour
         }
 
         UpdateWeaponUI();
+        isSwitchingWeapon = false;
     }
 
 

@@ -34,9 +34,18 @@ public class PortalSpawner : MonoBehaviour
 
     IEnumerator SpawnPortals()
     {
-        SpawnPortalWithRotation(portalPrefabA, new Vector3(5.2f, -4.3f, -87.1f), Quaternion.Euler(0, 90, 0));
-        SpawnPortalWithRotation(portalPrefabB, new Vector3(5.2f, -4.5f, 105f), Quaternion.Euler(0, 90, 0));
-        SpawnPortal(portalPrefabC, new Vector3(-116.2f, -4.6f, 1.8f));
+        Vector3 portalAPos = new Vector3(5.2f, -4.3f, -87.1f);
+        Vector3 portalBPos = new Vector3(5.2f, -4.5f, 105f);
+        Vector3 portalCPos = new Vector3(-116.2f, -4.6f, 1.8f);
+
+        SpawnPortalWithRotation(portalPrefabA, portalAPos, Quaternion.Euler(0, 90, 0));
+        SpawnPortalWithRotation(portalPrefabB, portalBPos, Quaternion.Euler(0, 90, 0));
+        SpawnPortal(portalPrefabC, portalCPos);
+
+        // Portal pozisyonlarını spawn noktaları olarak ayarla
+        spawnPointsA = new Vector3[] { portalAPos };
+        spawnPointsB = new Vector3[] { portalBPos };
+        spawnPointsC = new Vector3[] { portalCPos };
 
         yield return new WaitForSeconds(delayBeforeFirstWave);
 
@@ -78,7 +87,8 @@ public class PortalSpawner : MonoBehaviour
     {
         if (!isSpawning || enemyType == null) yield break;
 
-        Vector3 spawnPos = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        // Portal pozisyonunu direkt kullan (dizi tek elemanlı olacak)
+        Vector3 spawnPos = spawnPoints[0];
         GameObject enemy = Instantiate(enemyType, spawnPos, Quaternion.identity);
 
         EnemyBehavior enemyBehavior = enemy.GetComponent<EnemyBehavior>();
