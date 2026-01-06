@@ -111,13 +111,13 @@ public class ArtlantisTestRunner : MonoBehaviour
 
             Debug.Log($"👹 Enemy Prefab'leri: {enemyCount}/3 bağlı");
 
-            // Spawn points kontrolü
-            int spawnPointCount = 0;
-            if (ps.spawnPointsA != null && ps.spawnPointsA.Length > 0) spawnPointCount++;
-            if (ps.spawnPointsB != null && ps.spawnPointsB.Length > 0) spawnPointCount++;
-            if (ps.spawnPointsC != null && ps.spawnPointsC.Length > 0) spawnPointCount++;
+            // Portal location kontrolü
+            int portalLocationCount = 0;
+            if (ps.portalLocationA != null) portalLocationCount++;
+            if (ps.portalLocationB != null) portalLocationCount++;
+            if (ps.portalLocationC != null) portalLocationCount++;
 
-            Debug.Log($"📍 Spawn Points: {spawnPointCount}/3 ayarlanmış");
+            Debug.Log($"📍 Portal Locations: {portalLocationCount}/3 ayarlanmış");
         }
         else
         {
