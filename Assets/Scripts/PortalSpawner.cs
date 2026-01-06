@@ -18,6 +18,11 @@ public class PortalSpawner : MonoBehaviour
     public float delayBeforeFirstWave = 10f;
     public float postWaveSpawnDelay = 15f;
 
+    [Header("Portal Spawn Locations")]
+    public GameObject portalLocationA;
+    public GameObject portalLocationB;
+    public GameObject portalLocationC;
+
     [Header("Portal Spawn Points")]
     public Vector3[] spawnPointsA;
     public Vector3[] spawnPointsB;
@@ -34,13 +39,19 @@ public class PortalSpawner : MonoBehaviour
 
     IEnumerator SpawnPortals()
     {
-        Vector3 portalAPos = new Vector3(5.2f, -4.3f, -87.1f);
-        Vector3 portalBPos = new Vector3(5.2f, -4.5f, 105f);
-        Vector3 portalCPos = new Vector3(-116.2f, -4.6f, 1.8f);
+        // GameObject referanslarından pozisyon ve rotation değerlerini al
+        Vector3 portalAPos = portalLocationA != null ? portalLocationA.transform.position : new Vector3(5.2f, -4.3f, -87.1f);
+        Quaternion portalARot = portalLocationA != null ? portalLocationA.transform.rotation : Quaternion.Euler(0, 90, 0);
 
-        SpawnPortalWithRotation(portalPrefabA, portalAPos, Quaternion.Euler(0, 90, 0));
-        SpawnPortalWithRotation(portalPrefabB, portalBPos, Quaternion.Euler(0, 90, 0));
-        SpawnPortal(portalPrefabC, portalCPos);
+        Vector3 portalBPos = portalLocationB != null ? portalLocationB.transform.position : new Vector3(5.2f, -4.5f, 105f);
+        Quaternion portalBRot = portalLocationB != null ? portalLocationB.transform.rotation : Quaternion.Euler(0, 90, 0);
+
+        Vector3 portalCPos = portalLocationC != null ? portalLocationC.transform.position : new Vector3(-116.2f, -4.6f, 1.8f);
+        Quaternion portalCRot = portalLocationC != null ? portalLocationC.transform.rotation : Quaternion.identity;
+
+        SpawnPortalWithRotation(portalPrefabA, portalAPos, portalARot);
+        SpawnPortalWithRotation(portalPrefabB, portalBPos, portalBRot);
+        SpawnPortalWithRotation(portalPrefabC, portalCPos, portalCRot);
 
         // Portal pozisyonlarını spawn noktaları olarak ayarla
         spawnPointsA = new Vector3[] { portalAPos };

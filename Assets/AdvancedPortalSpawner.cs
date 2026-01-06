@@ -9,15 +9,17 @@ public class AdvancedPortalSpawner : MonoBehaviour
     [Header("Portal Prefabs")]
     public GameObject portalPrefabA, portalPrefabB, portalPrefabC;
 
-    [Header("Portal Positions")]
-    public Vector3 portalAPosition = new Vector3(5.2f, -4.3f, -87.1f);
-    public Vector3 portalBPosition = new Vector3(5.2f, -4.5f, 105f);
-    public Vector3 portalCPosition = new Vector3(-116.2f, -4.6f, 1.8f);
+    [Header("Portal Spawn Locations")]
+    public GameObject portalLocationA;
+    public GameObject portalLocationB;
+    public GameObject portalLocationC;
 
-    [Header("Portal Rotations")]
-    public Vector3 portalARotation = new Vector3(0, 90, 0);
-    public Vector3 portalBRotation = new Vector3(0, 90, 0);
-    public Vector3 portalCRotation = Vector3.zero;
+    private Vector3 portalAPosition;
+    private Vector3 portalBPosition;
+    private Vector3 portalCPosition;
+    private Quaternion portalARotation;
+    private Quaternion portalBRotation;
+    private Quaternion portalCRotation;
 
     [Header("Enemy Prefabs")]
     public GameObject tur1Enemy;
@@ -32,11 +34,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public int stage2ScoreThreshold = 200;
     public int stage3ScoreThreshold = 500;
 
-    [Header("Spawn Points")]
-    public Vector3[] spawnPointsA, spawnPointsB, spawnPointsC;
-
     private List<string> portals = new List<string> { "A", "B", "C" };
-    private Dictionary<string, Vector3[]> portalSpawnPoints;
     private Dictionary<string, GameObject> portalPrefabs;
     private Dictionary<string, int> consecutivePortalCounts = new();
     private Dictionary<string, GameObject> lastEnemyPerPortal = new();
@@ -46,13 +44,15 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     void Start()
     {
-        // Portal pozisyonlarını spawn noktaları olarak kullan
-        portalSpawnPoints = new Dictionary<string, Vector3[]>
-        {
-            { "A", new Vector3[] { portalAPosition } },
-            { "B", new Vector3[] { portalBPosition } },
-            { "C", new Vector3[] { portalCPosition } }
-        };
+        // GameObject referanslarından pozisyon ve rotation değerlerini al
+        portalAPosition = portalLocationA != null ? portalLocationA.transform.position : new Vector3(5.2f, -4.3f, -87.1f);
+        portalARotation = portalLocationA != null ? portalLocationA.transform.rotation : Quaternion.Euler(0, 90, 0);
+
+        portalBPosition = portalLocationB != null ? portalLocationB.transform.position : new Vector3(5.2f, -4.5f, 105f);
+        portalBRotation = portalLocationB != null ? portalLocationB.transform.rotation : Quaternion.Euler(0, 90, 0);
+
+        portalCPosition = portalLocationC != null ? portalLocationC.transform.position : new Vector3(-116.2f, -4.6f, 1.8f);
+        portalCRotation = portalLocationC != null ? portalLocationC.transform.rotation : Quaternion.identity;
 
         portalPrefabs = new Dictionary<string, GameObject>
         {
@@ -87,17 +87,17 @@ public class AdvancedPortalSpawner : MonoBehaviour
     {
         if (portalPrefabA != null)
         {
-            Instantiate(portalPrefabA, portalAPosition, Quaternion.Euler(portalARotation));
+            Instantiate(portalPrefabA, portalAPosition, portalARotation);
         }
         
         if (portalPrefabB != null)
         {
-            Instantiate(portalPrefabB, portalBPosition, Quaternion.Euler(portalBRotation));
+            Instantiate(portalPrefabB, portalBPosition, portalBRotation);
         }
         
         if (portalPrefabC != null)
         {
-            Instantiate(portalPrefabC, portalCPosition, Quaternion.Euler(portalCRotation));
+            Instantiate(portalPrefabC, portalCPosition, portalCRotation);
         }
     }
 
@@ -109,7 +109,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         {
             GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
             string portal = GetPreferredPortalForEnemy(enemyPrefab);
-            Vector3 spawnPos = GetRandomSpawnPoint(portal);
+            Vector3 spawnPos = GetPortalPosition(portal);
 
             GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
             enemy.tag = "Enemy";
@@ -300,40 +300,20 @@ public class AdvancedPortalSpawner : MonoBehaviour
         return portals[Random.Range(0, portals.Count)];
     }
 
-    public Vector3 GetRandomSpawnPoint(string portal)
+    public Vector3 GetPortalPosition(string portal)
     {
-        // Portal pozisyonunu direkt kullan
-        Vector3 spawnPoint;
         switch (portal)
         {
             case "A":
-                spawnPoint = portalAPosition;
-                break;
+                return portalAPosition;
             case "B":
-                spawnPoint = portalBPosition;
-                break;
+                return portalBPosition;
             case "C":
-                spawnPoint = portalCPosition;
-                break;
+                return portalCPosition;
             default:
-                spawnPoint = portalAPosition;
-                break;
-        }
-
-        // Spawn noktasının NavMesh üzerinde olup olmadığını kontrol et
-        UnityEngine.AI.NavMeshHit hit;
-        if (UnityEngine.AI.NavMesh.SamplePosition(spawnPoint, out hit, 5f, UnityEngine.AI.NavMesh.AllAreas))
-        {
-            Debug.Log($"[SPAWN] {portal} portal için NavMesh üzerinde spawn noktası: {hit.position}");
-            return hit.position;
-        }
-        else
-        {
-            Debug.LogWarning($"[SPAWN] {portal} portal spawn noktası NavMesh dışında! Orijinal pozisyon kullanılacak: {spawnPoint}");
-            return spawnPoint;
+                return portalAPosition;
         }
     }
-
 
     public void StopSpawning()
     {

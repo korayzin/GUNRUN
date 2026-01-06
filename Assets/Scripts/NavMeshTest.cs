@@ -107,7 +107,11 @@ public class NavMeshTest : MonoBehaviour
         if (spawner != null)
         {
             Debug.Log($"🏠 PortalSpawner bulundu: {spawner.gameObject.name}");
-            Debug.Log($"📍 Spawn noktaları: A({spawner.spawnPointsA?.Length ?? 0}), B({spawner.spawnPointsB?.Length ?? 0}), C({spawner.spawnPointsC?.Length ?? 0})");
+            int portalLocationCount = 0;
+            if (spawner.portalLocationA != null) portalLocationCount++;
+            if (spawner.portalLocationB != null) portalLocationCount++;
+            if (spawner.portalLocationC != null) portalLocationCount++;
+            Debug.Log($"📍 Portal Locations: {portalLocationCount}/3 ayarlanmış");
         }
         else
         {
@@ -172,7 +176,7 @@ public class NavMeshTest : MonoBehaviour
         if (spawner != null)
         {
             // Portal A'dan spawn testi
-            Vector3 spawnPos = spawner.GetRandomSpawnPoint("A");
+            Vector3 spawnPos = spawner.GetPortalPosition("A");
             Debug.Log($"Portal A spawn noktası: {spawnPos}");
 
             // NavMesh üzerinde mi kontrol et
