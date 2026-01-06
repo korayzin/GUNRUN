@@ -33,13 +33,13 @@ public class EnemyBehavior : MonoBehaviour
         if (killCount == 3)
         {
             speed = speedIncrease1;
-            // Debug.Log("H�z artt�: 3. d��man� �ld�rd�n.");
+            Debug.Log("H�z artt�: 3. d��man� �ld�rd�n.");
         }
        
         else if (killCount == 6)
         {
             speed = speedIncrease2;
-            // Debug.Log("H�z artt�: 6. d��man� �ld�rd�n.");
+            Debug.Log("H�z artt�: 6. d��man� �ld�rd�n.");
         }
     }
 
@@ -78,9 +78,9 @@ public class EnemyBehavior : MonoBehaviour
         agent.speed = speed;
 
         // Debug bilgisi (sadece arada)
-        // if (Time.frameCount % 300 == 0)
-        // {
-        //     Debug.Log($"Enemy hareket ediyor: Pozisyon={transform.position}, Hedef={targetPosition}, Mesafe={agent.remainingDistance}, Durum={agent.pathStatus}");
-        // }
+        if (Time.frameCount % 300 == 0)
+        {
+            Debug.Log($"Enemy hareket ediyor: Pozisyon={transform.position}, Hedef={targetPosition}, Mesafe={agent.remainingDistance}, Durum={agent.pathStatus}");
+        }
     }
 }

@@ -73,12 +73,12 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
         if (currentStage == 1 && score >= stage2ScoreThreshold)
         {
-            // Debug.LogError("[STAGE] Stage 2'ye ge�ildi!");
+            Debug.LogError("[STAGE] Stage 2'ye ge�ildi!");
             currentStage = 2;
         }
         else if (currentStage == 2 && score >= stage3ScoreThreshold)
         {
-            // Debug.LogError("[STAGE] Stage 3'e ge�ildi!");
+            Debug.LogError("[STAGE] Stage 3'e ge�ildi!");
             currentStage = 3;
         }
     }
@@ -126,7 +126,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
             lastEnemyPerPortal[portal] = enemyPrefab;
 
-            // Debug.LogError($"[SPAWN] {enemyPrefab.name} t�r� {portal} portal�ndan spawn oldu. Pozisyon: {spawnPos}");
+            Debug.LogError($"[SPAWN] {enemyPrefab.name} t�r� {portal} portal�ndan spawn oldu. Pozisyon: {spawnPos}");
 
             yield return new WaitForSeconds(enemySpawnInterval);
         }
@@ -159,7 +159,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     private void SetupEnemyComponents(GameObject enemy, Vector3 spawnPos)
     {
-        // Debug.Log($"[SETUP] 🔧 Component setup başlıyor: {enemy.name}");
+        Debug.Log($"[SETUP] 🔧 Component setup başlıyor: {enemy.name}");
 
         // 1. NavMeshAgent ekle/kontrol et
         UnityEngine.AI.NavMeshAgent agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
@@ -174,14 +174,14 @@ public class AdvancedPortalSpawner : MonoBehaviour
             agent.stoppingDistance = 2f;
             agent.autoBraking = true;
             agent.autoRepath = true;
-            // Debug.Log($"[SETUP] ✅ NavMeshAgent eklendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height}, Speed: {agent.speed})");
+            Debug.Log($"[SETUP] ✅ NavMeshAgent eklendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height}, Speed: {agent.speed})");
         }
         else
         {
             // Var olan agent'in ayarlarını da güncelle
             agent.radius = 0.04f;
             agent.height = 0f;
-            // Debug.Log($"[SETUP] ℹ️ NavMeshAgent ayarları güncellendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height})");
+            Debug.Log($"[SETUP] ℹ️ NavMeshAgent ayarları güncellendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height})");
         }
 
         // NavMeshAgent'ı doğru pozisyona warp et
@@ -195,12 +195,12 @@ public class AdvancedPortalSpawner : MonoBehaviour
             enemyBehavior = enemy.AddComponent<EnemyBehavior>();
             enemyBehavior.speed = 3.5f;
             enemyBehavior.agent = agent; // Agent referansını set et
-            // Debug.Log($"[SETUP] ✅ EnemyBehavior eklendi: {enemy.name}");
+            Debug.Log($"[SETUP] ✅ EnemyBehavior eklendi: {enemy.name}");
         }
         else
         {
             enemyBehavior.agent = agent; // Var olan script'e agent referansı ver
-            // Debug.Log($"[SETUP] ℹ️ EnemyBehavior zaten var: {enemy.name}");
+            Debug.Log($"[SETUP] ℹ️ EnemyBehavior zaten var: {enemy.name}");
         }
 
         // 3. EnemyHealth script'i ekle/kontrol et
@@ -213,11 +213,11 @@ public class AdvancedPortalSpawner : MonoBehaviour
             enemyHealth.bodyMultiplier = 1f;
             enemyHealth.legsMultiplier = 0.7f;
             enemyHealth.scoreValue = 50;
-            // Debug.Log($"[SETUP] ✅ EnemyHealth eklendi: {enemy.name}");
+            Debug.Log($"[SETUP] ✅ EnemyHealth eklendi: {enemy.name}");
         }
         else
         {
-            // Debug.Log($"[SETUP] ℹ️ EnemyHealth zaten var: {enemy.name}");
+            Debug.Log($"[SETUP] ℹ️ EnemyHealth zaten var: {enemy.name}");
         }
 
         // 4. Rigidbody ekle/kontrol et (kinematic olarak)
@@ -227,7 +227,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
             rb = enemy.AddComponent<Rigidbody>();
             rb.useGravity = false;
             rb.isKinematic = true;
-            // Debug.Log($"[SETUP] ✅ Rigidbody eklendi: {enemy.name}");
+            Debug.Log($"[SETUP] ✅ Rigidbody eklendi: {enemy.name}");
         }
 
         // 5. Collider kontrolü - Sadece trigger ayarı yap (kullanıcı manuel ekleyecek)
@@ -236,11 +236,11 @@ public class AdvancedPortalSpawner : MonoBehaviour
         {
             // Var olan collider'ı trigger yap
             col.isTrigger = true;
-            // Debug.Log($"[SETUP] ℹ️ Collider trigger yapıldı: {enemy.name}");
+            Debug.Log($"[SETUP] ℹ️ Collider trigger yapıldı: {enemy.name}");
         }
         else
         {
-            // Debug.LogWarning($"[SETUP] ⚠️ {enemy.name}'de collider bulunamadı! Prefab'a collider ekleyin!");
+            Debug.LogWarning($"[SETUP] ⚠️ {enemy.name}'de collider bulunamadı! Prefab'a collider ekleyin!");
         }
 
         // 6. Animasyon başlat ve loop yap
@@ -257,19 +257,19 @@ public class AdvancedPortalSpawner : MonoBehaviour
                 string stateName = "mixamo_com";
                 animator.Play(stateName, 0, 0f);
                 
-                // Debug.Log($"[SETUP] ✅ Animasyon başlatıldı: {enemy.name} - State: {stateName}, Controller: {animator.runtimeAnimatorController.name}");
+                Debug.Log($"[SETUP] ✅ Animasyon başlatıldı: {enemy.name} - State: {stateName}, Controller: {animator.runtimeAnimatorController.name}");
             }
             else
             {
-                // Debug.LogWarning($"[SETUP] ⚠️ AnimatorController atanmamış: {enemy.name}");
+                Debug.LogWarning($"[SETUP] ⚠️ AnimatorController atanmamış: {enemy.name}");
             }
         }
         else
         {
-            // Debug.LogWarning($"[SETUP] ⚠️ Animator component bulunamadı: {enemy.name}");
+            Debug.LogWarning($"[SETUP] ⚠️ Animator component bulunamadı: {enemy.name}");
         }
 
-        // Debug.Log($"[SETUP] 🎉 Enemy tamamen hazır: {enemy.name} at {spawnPos}");
+        Debug.Log($"[SETUP] 🎉 Enemy tamamen hazır: {enemy.name} at {spawnPos}");
     }
 
     string GetPreferredPortalForEnemy(GameObject enemy)
@@ -296,7 +296,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
             return validPortals[Random.Range(0, validPortals.Count)];
         }
 
-        // Debug.LogWarning($"[PORTAL OVERRIDE] {enemy.name} i�in kural d��� portal se�imi yap�l�yor.");
+        Debug.LogWarning($"[PORTAL OVERRIDE] {enemy.name} i�in kural d��� portal se�imi yap�l�yor.");
         return portals[Random.Range(0, portals.Count)];
     }
 

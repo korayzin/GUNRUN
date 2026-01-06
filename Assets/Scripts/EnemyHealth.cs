@@ -42,7 +42,7 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(float damage, Collider hitCollider)
     {
-        // Debug.Log(hitCollider.name + " tarafından vuruldu! Hasar: " + damage);
+        Debug.Log(hitCollider.name + " tarafından vuruldu! Hasar: " + damage);
 
         float adjustedDamage = 0f;
 
@@ -150,12 +150,12 @@ public class EnemyHealth : MonoBehaviour
         // VR sistemi için farklı tag'ler kontrol et
         if (other.CompareTag("Player") || other.CompareTag("MainCamera") || other.name.Contains("OVRCameraRig") || other.transform.root.name.Contains("OVRCameraRig"))
         {
-            // Debug.Log($"🚨 Düşman oyuncuya çarptı! Çarpılan obje: {other.name}, Tag: {other.tag}, Parent: {other.transform.root.name}");
+            Debug.Log($"🚨 Düşman oyuncuya çarptı! Çarpılan obje: {other.name}, Tag: {other.tag}, Parent: {other.transform.root.name}");
             GameManager.Instance.GameOver(other);
         }
         else
         {
-            // Debug.Log($"ℹ️ Düşman farklı objeye çarptı: {other.name} (Tag: {other.tag})");
+            Debug.Log($"ℹ️ Düşman farklı objeye çarptı: {other.name} (Tag: {other.tag})");
         }
     }
 }
