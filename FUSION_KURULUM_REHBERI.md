@@ -50,87 +50,212 @@ Bu rehber, hiç online sistem kurmamış biri için hazırlanmıştır. Her adı
 
 ## 📋 ADIM 3: Unity'de Photon Fusion Paketini Kurma
 
-### 3.1 Unity Package Manager'ı Aç
-1. Unity Editor'ü aç (projen açık olmalı)
-2. Üst menüden: **Window** → **Package Manager**
-3. Package Manager penceresi açılacak
+**⚠️ ÖNEMLİ:** Photon Fusion'u kurmanın 3 farklı yolu var. En kolayı **YÖNTEM 1** (Asset Store). Eğer o çalışmazsa diğerlerini dene.
 
-### 3.2 Photon Fusion Paketini Bul
-1. Package Manager penceresinin sol üst köşesinde **"+"** işareti var
+---
+
+### 🎯 YÖNTEM 1: Unity Asset Store'dan Kurma (ÖNERİLEN - EN KOLAY)
+
+#### 3.1.1 Asset Store'a Git
+1. Unity Editor'de üst menüden: **Window** → **Asset Store**
+2. Asset Store penceresi açılacak (tarayıcı gibi görünecek)
+
+#### 3.1.2 Photon Fusion'u Bul
+1. Asset Store'un üst kısmındaki **arama kutusuna** şunu yaz: **"Photon Fusion"**
+2. Enter'a bas veya arama ikonuna tıkla
+3. **"Photon Fusion"** paketini bul (Photon tarafından yayınlanmış olmalı)
+
+#### 3.1.3 Paketi Hesabına Ekle
+1. Photon Fusion sayfasında **"Add to My Assets"** veya **"Add to Cart"** butonuna tıkla
+2. Eğer Unity hesabına giriş yapmanı isterse, giriş yap
+3. Paket hesabına eklenecek (ücretsiz)
+
+#### 3.1.4 Package Manager'dan Kur
+1. Unity Editor'de: **Window** → **Package Manager**
+2. Package Manager'ın sol üst köşesinde **"Packages: In Project"** yazıyor
+3. Yanındaki **dropdown'a tıkla** (aşağı ok)
+4. **"My Assets"** seçeneğini seç
+5. Listede **"Photon Fusion"** görünecek
+6. **"Photon Fusion"** paketini seç
+7. Sağ altta **"Install"** butonuna tıkla
+8. Unity paketi kurmaya başlayacak (1-3 dakika sürebilir)
+
+**✅ YÖNTEM 1 TAMAMLANDI: Fusion Asset Store'dan kuruldu!**
+
+---
+
+### 🔧 YÖNTEM 2: GitHub'dan Git URL ile Kurma
+
+#### 3.2.1 Package Manager'ı Aç
+1. Unity Editor'de: **Window** → **Package Manager**
+2. Package Manager penceresi açılacak
+
+#### 3.2.2 Git URL Ekle
+1. Package Manager'ın sol üst köşesinde **"+"** işareti var
 2. **"+"** butonuna tıkla
 3. Açılan menüden **"Add package from git URL..."** seç
 4. Bir input kutusu çıkacak
 
-### 3.3 Fusion Paket URL'ini Gir
-1. Input kutusuna şunu yapıştır:
+#### 3.2.3 Doğru URL'yi Gir
+1. Input kutusuna şunu yapıştır (DİKKAT: .git ile bitiyor):
    ```
-   https://registry.npmjs.com/com.photonengine.fusion/-/com.photonengine.fusion-2.0.0.tgz
+   https://github.com/PhotonEngine/Fusion.git?path=/com.photonengine.fusion
    ```
 2. **"Add"** butonuna tıkla
-3. Unity paketi indirmeye başlayacak (internet hızına göre 1-5 dakika sürebilir)
+3. Unity paketi indirmeye başlayacak (internet hızına göre 2-5 dakika sürebilir)
 4. İndirme bitince, Package Manager'da Fusion görünecek
 
-**ALTERNATIF YOL (Eğer yukarıdaki çalışmazsa):**
-1. Package Manager'da sol üstte **"Packages: In Project"** yazıyor, yanındaki dropdown'a tıkla
-2. **"My Registries"** veya **"Unity Registry"** seç
-3. Arama kutusuna **"Photon Fusion"** yaz
-4. **"Photon Fusion"** paketini bul ve **"Install"** butonuna tıkla
+**✅ YÖNTEM 2 TAMAMLANDI: Fusion GitHub'dan kuruldu!**
+
+---
+
+### 📦 YÖNTEM 3: Manuel İndirme ve Kurma (Son Çare)
+
+#### 3.3.1 Fusion'u İndir
+1. Tarayıcıda şu adrese git: `https://github.com/PhotonEngine/Fusion/releases`
+2. En son sürümü bul (örn: v2.0.0 veya daha yeni)
+3. **"Source code (zip)"** veya **"Fusion.unitypackage"** dosyasını indir
+
+#### 3.3.2 Unity'ye Yükle
+**Eğer .unitypackage indirdiysen:**
+1. Unity Editor'de: **Assets** → **Import Package** → **Custom Package...**
+2. İndirdiğin `.unitypackage` dosyasını seç
+3. **"Import"** butonuna tıkla
+4. Tüm dosyaları import et
+
+**Eğer .zip indirdiysen:**
+1. Zip dosyasını aç
+2. Unity Editor'de Package Manager'ı aç: **Window** → **Package Manager**
+3. **"+"** → **"Add package from disk..."**
+4. Açılan zip klasöründe `com.photonengine.fusion` klasörüne git
+5. `package.json` dosyasını seç
+6. Unity paketi kuracak
+
+**✅ YÖNTEM 3 TAMAMLANDI: Fusion manuel olarak kuruldu!**
+
+---
+
+### ✅ Kurulum Kontrolü
+
+Hangi yöntemi kullanırsan kullan, şunu kontrol et:
+
+1. Package Manager'da **"In Project"** seçiliyken
+2. Listede **"Photon Fusion"** görünüyor mu?
+3. Eğer görünüyorsa → ✅ **BAŞARILI!**
+4. Eğer görmüyorsan → Yöntemleri tekrar dene
 
 **✅ ADIM 3 TAMAMLANDI: Fusion paketi Unity'de kuruldu!**
 
 ---
 
-## 📋 ADIM 4: FusionLauncher Prefab'ını Sahneye Ekleme
+## 📋 ADIM 4: NetworkRunner Oluşturma (Fusion Hub ile)
 
-### 4.1 FusionLauncher'ı Bul
-1. Unity Editor'de, sol üstteki **Project** penceresinde (Assets klasörü görünüyor)
-2. Üstteki arama kutusuna **"FusionLauncher"** yaz
-3. Bir prefab bulacaksın (mavi küp ikonu)
-
-### 4.2 Sahneye Ekle
-1. **FusionLauncher** prefab'ını **sürükle-bırak** ile Hierarchy penceresine bırak
-   - Hierarchy penceresi: Sol altta, Scene görünümünün yanında
-2. Veya Hierarchy'de sağ tık → **Create Empty** → İsmini **"FusionLauncher"** yap
-3. Sonra Project'ten FusionLauncher prefab'ını bu GameObject'e sürükle
-
-### 4.3 FusionLauncher Ayarlarını Kontrol Et
-1. Hierarchy'de **FusionLauncher**'ı seç
-2. Sağ tarafta **Inspector** penceresinde ayarları gör
-3. **"Game Mode"** ayarını kontrol et:
-   - **"Auto Host Or Client"** seçili olmalı (başlangıç için)
-   - Veya **"Host"** (sunucu olmak için)
-   - Veya **"Client"** (katılmak için)
-
-**✅ ADIM 4 TAMAMLANDI: FusionLauncher sahneye eklendi!**
+**⚠️ ÖNEMLİ:** Fusion'ın yeni versiyonlarında FusionLauncher yok! Bunun yerine **Fusion Hub** kullanıyoruz veya manuel **NetworkRunner** oluşturuyoruz.
 
 ---
 
-## 📋 ADIM 5: NetworkProjectConfig Yapılandırma
+### 🎯 YÖNTEM 1: Network Runner Controls ile (ÖNERİLEN)
 
-### 5.1 NetworkProjectConfig Dosyasını Bul
-1. Project penceresinde arama kutusuna **"NetworkProjectConfig"** yaz
-2. Bir asset dosyası bulacaksın (beyaz sayfa ikonu)
+#### 4.1.1 Network Runner Controls'u Aç
+1. Unity Editor'de üst menüden: **Window** → **Fusion** → **Network Runner Controls**
+2. Network Runner Controls penceresi açılacak (küçük bir pencere)
 
-### 5.2 NetworkProjectConfig'i Aç
-1. **NetworkProjectConfig** asset'ine **çift tıkla**
+#### 4.1.2 NetworkRunner Oluştur
+1. Network Runner Controls penceresinde **"Create Runner"** veya benzer bir buton gör
+2. Bu butona tıkla
+3. Unity otomatik olarak sahneye bir **NetworkRunner** GameObject'i ekleyecek
+
+**NOT:** Eğer Network Runner Controls'da buton görmüyorsan → **YÖNTEM 2'ye geç** (Manuel oluşturma)
+
+**✅ YÖNTEM 1 TAMAMLANDI: NetworkRunner Network Runner Controls ile oluşturuldu!**
+
+---
+
+### 🔧 YÖNTEM 2: Manuel NetworkRunner Oluşturma
+
+Eğer Fusion Hub çalışmazsa veya göremiyorsan:
+
+#### 4.2.1 Boş GameObject Oluştur
+1. Hierarchy penceresinde (sol altta) **sağ tıkla**
+2. **Create Empty** seçeneğine tıkla
+3. Yeni GameObject oluşacak, ismini **"NetworkRunner"** yap (Inspector'da üstteki isim kutusundan)
+
+#### 4.2.2 NetworkRunner Component Ekle
+1. Hierarchy'de **NetworkRunner** GameObject'ini seç
+2. Inspector penceresinde (sağ tarafta) en altta **"Add Component"** butonuna tıkla
+3. Arama kutusuna **"Network Runner"** yaz
+4. **"Network Runner"** component'ini bul ve tıkla
+5. Component eklenecek
+
+#### 4.2.3 NetworkRunner Ayarlarını Yap
+1. Inspector'da **Network Runner** component'ini gör
+2. **"Game Mode"** dropdown'ından seç:
+   - **"Host"** → Sunucu olmak için
+   - **"Client"** → Katılmak için
+   - **"Shared"** → Shared mode için
+3. **"Start On Awake"** checkbox'ını işaretle (otomatik başlatmak için)
+
+**✅ YÖNTEM 2 TAMAMLANDI: NetworkRunner manuel olarak oluşturuldu!**
+
+---
+
+### ✅ Kontrol Et
+
+Hangi yöntemi kullanırsan kullan:
+
+1. Hierarchy'de **NetworkRunner** adında bir GameObject var mı?
+2. Inspector'da **Network Runner** component'i var mı?
+3. Eğer varsa → ✅ **BAŞARILI!**
+
+**✅ ADIM 4 TAMAMLANDI: NetworkRunner sahneye eklendi!**
+
+---
+
+## 📋 ADIM 5: PhotonAppSettings'e App ID Ekleme
+
+**⚠️ ÖNEMLİ:** App ID, NetworkProjectConfig'de değil, **PhotonAppSettings** dosyasında! Bu dosyayı bulmalısın.
+
+### 5.1 PhotonAppSettings Dosyasını Bul
+1. Unity Editor'de Project penceresinde (sol üstte) arama kutusuna **"PhotonAppSettings"** yaz
+2. **"PhotonAppSettings.asset"** dosyasını bul
+3. Dosya genelde şu klasörde: `Assets/Photon/Fusion/Resources/`
+
+### 5.2 PhotonAppSettings'i Aç
+1. **PhotonAppSettings.asset** dosyasına **çift tıkla**
 2. Inspector'da ayarlar açılacak
+3. Inspector'da **"Photon App Settings"** veya **"App Settings"** bölümünü gör
 
 ### 5.3 App ID'yi Gir
-1. Inspector'da **"Photon App Settings"** bölümünü bul
-2. **"App Id Fusion"** veya **"App ID"** yazan input kutusunu bul
+1. Inspector'da **"App Id Fusion"** yazan input kutusunu bul
+2. Bu kutu muhtemelen **boş** görünecek
 3. **ADIM 2'de kopyaladığın App ID'yi buraya yapıştır** (Ctrl+V)
-4. Eğer **"App Id Realtime"** diye bir kutu varsa, aynı ID'yi oraya da yapıştır
+   - App ID uzun bir kod olmalı (örn: `a1b2c3d4-e5f6-7890-abcd-ef1234567890`)
 
-### 5.4 Diğer Ayarları Kontrol Et
-1. **"Region"** ayarını kontrol et (Dashboard'da seçtiğin region ile aynı olmalı)
-2. **"Fixed Update Rate"** genelde **30** veya **60** olur (değiştirme şimdilik)
-3. **"Network Tick Rate"** genelde **30** olur (değiştirme şimdilik)
+### 5.4 Region'ı Ayarla (Önemli!)
+1. Inspector'da **"Fixed Region"** veya **"Region"** yazan input kutusunu bul
+2. Photon Dashboard'da seçtiğin region'ı buraya yaz:
+   - **"eu"** → Europe
+   - **"us"** → US
+   - **"asia"** → Asia
+   - **"sa"** → South America
+   - Boş bırakırsan otomatik en iyi region'ı seçer
 
 ### 5.5 Kaydet
-1. Üst menüden: **File** → **Save** (veya Ctrl+S)
-2. Veya sadece Inspector'u kapat (otomatik kaydedilir)
+1. Inspector'u kapat (otomatik kaydedilir)
+2. Veya üst menüden: **File** → **Save** (Ctrl+S)
 
-**✅ ADIM 5 TAMAMLANDI: App ID yapılandırıldı!**
+**✅ ADIM 5 TAMAMLANDI: App ID PhotonAppSettings'e eklendi!**
+
+---
+
+### 🔍 Eğer PhotonAppSettings Bulamazsan:
+
+1. Project penceresinde **"PhotonAppSettings"** araması sonuç vermiyorsa:
+2. Şu klasöre git: `Assets/Photon/Fusion/Resources/`
+3. Orada **"PhotonAppSettings.asset"** dosyasını bul
+4. Çift tıkla ve App ID'yi gir
+
+**NOT:** NetworkProjectConfig'i de açık tutabilirsin, ama App ID'yi **PhotonAppSettings**'e girmen gerekiyor!
 
 ---
 
