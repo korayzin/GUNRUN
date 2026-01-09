@@ -1,0 +1,212 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║            🐛 RESTART EKRANI LEADERBOARD DEBUG 🐛                      ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+Restart ekranında sadece kendi max skorunu mu görüyorsun?
+Diğer oyuncuların skorları Firebase'den gelmiyor mu?
+
+İşte debug rehberi!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 SORUN TESPİTİ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Sistem güncellendi! Şimdi daha fazla debug log var.
+
+Play mode'da oyunu bitir ve Console'u kontrol et:
+
+✅ BAŞARILI AKIŞ:
+────────────────────────────────────────────────────────────────────
+
+🎮 GAME OVER! Çarpılan obje: ...
+⏸️ Oyun durduruldu (Time.timeScale = 0)
+✅ Firebase'e max score kaydedildi: XXX
+✅ Restart canvas gösterildi - Final Score: XXX
+🎯 Game Over'da leaderboard açma çağrısı yapılıyor...
+⏳ Leaderboard açma delay başlıyor...
+✅ Leaderboard açma delay bitti
+✅ LeaderboardUI bulundu: LeaderboardPanel
+🎯 ShowLeaderboard() çağrıldı
+✅ Leaderboard panel aktif edildi: LeaderboardPanel
+⏳ LoadLeaderboard delay başlıyor...
+⏳ LoadLeaderboardDelayed - 0.5 saniye bekleniyor...
+✅ Delay bitti, şimdi LoadLeaderboard() çağrılıyor...
+📊📊📊 LoadLeaderboard() ÇAĞRILDI! 📊📊📊
+📊 leaderboardContent: Content
+📊 leaderboardPanel: LeaderboardPanel
+✅ FirebaseLeaderboardManager Instance bulundu!
+✅ Loading text ayarlandı
+🧹 Eski leaderboard entry'leri temizlendi
+📡 Firebase'den leaderboard çekiliyor... (maxEntries: 50)
+📡 Kendi max score çekiliyor...
+📊 LoadLeaderboard() fonksiyonu tamamlandı (callback'ler beklemede)
+✅ CALLBACK! Kendi max score: XXX
+✅ MyScoreText güncellendi: MyScoreText
+📊 CALLBACK! Firebase'den veri geldi: 10 oyuncu bulundu  ◄── ÖNEMLİ!
+✅ 10 oyuncu verisi başarıyla alındı!
+   #1: Ali456 - 5000
+   #2: Ayşe123 - 4500
+   #3: Mehmet789 - 4000
+📊 10 oyuncu leaderboard'da gösteriliyor:
+   1. Ali456 - 5000 puan
+   2. Ayşe123 - 4500 puan
+   ...
+✅ Leaderboard başarıyla gösterildi! Toplam 10 oyuncu
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ HATA SENARYOLARI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HATA 1: LeaderboardUI bulunamadı
+────────────────────────────────────────────────────────────────────
+
+Console'da:
+⚠️ LeaderboardUI bulunamadı! Scene'de LeaderboardUI script'i ...
+
+ÇÖZÜM:
+1. Hierarchy'de InGame içinde LeaderboardPanel var mı?
+2. LeaderboardPanel'de LeaderboardUI component'i var mı?
+3. LeaderboardPanel inactive mi? (Olmalı)
+4. Yoksa: Leaderboard → ⚡ TEK TIKLA OTOMATIK KURULUM ⚡
+
+
+HATA 2: FirebaseLeaderboardManager Instance yok
+────────────────────────────────────────────────────────────────────
+
+Console'da:
+❌ FirebaseLeaderboardManager Instance bulunamadı!
+
+ÇÖZÜM:
+1. Hierarchy'de FirebaseManager GameObject'i var mı?
+2. FirebaseLeaderboardManager component'i var mı?
+3. Yoksa: Leaderboard → ⚡ TEK TIKLA OTOMATIK KURULUM ⚡
+
+
+HATA 3: leaderboardContent NULL
+────────────────────────────────────────────────────────────────────
+
+Console'da:
+📊 leaderboardContent: NULL
+❌ LEADERBOARD CONTENT YOK!
+
+ÇÖZÜM:
+1. LeaderboardPanel seç
+2. Inspector → LeaderboardUI component
+3. "Leaderboard Content" alanı boş mu?
+4. ScrollView/Viewport/Content'i sürükle
+5. Yoksa: Leaderboard → ⚡ TEK TIKLA OTOMATIK KURULUM ⚡
+
+
+HATA 4: Firebase'den veri gelmiyor
+────────────────────────────────────────────────────────────────────
+
+Console'da:
+📊 CALLBACK! Firebase'den veri geldi: 0 oyuncu bulundu
+veya
+⚠️ Entries NULL geldi!
+
+ÇÖZÜM:
+1. Internet bağlantısı var mı?
+2. Firebase Database URL doğru mu?
+3. Firebase'de veri var mı? Kontrol et:
+   https://gunrundata-default-rtdb.europe-west1.firebasedatabase.app/leaderboard.json
+4. Test oyuncuları ekle:
+   FindObjectOfType<LeaderboardUI>().AddTestPlayers();
+
+
+HATA 5: Callback hiç gelmedi
+────────────────────────────────────────────────────────────────────
+
+Console'da:
+📊 LoadLeaderboard() fonksiyonu tamamlandı (callback'ler beklemede)
+... sonra hiçbir şey yok
+
+ÇÖZÜM:
+1. Internet bağlantısını kontrol et
+2. Firebase URL'i kontrol et
+3. Unity Console'da Network hatası var mı?
+4. Firewall/Antivirus Unity'yi engelliyor mu?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 MANUEL TEST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Play mode'dayken Console'da çalıştır:
+
+1. Test oyuncuları ekle:
+   FindObjectOfType<LeaderboardUI>().AddTestPlayers();
+
+2. 3 saniye bekle, sonra:
+   FindObjectOfType<LeaderboardUI>().LoadLeaderboard();
+
+3. Firebase'i manuel kontrol et (tarayıcıda):
+   https://gunrundata-default-rtdb.europe-west1.firebasedatabase.app/leaderboard.json
+
+4. Leaderboard'u açmayı test et:
+   FindObjectOfType<LeaderboardUI>().ShowLeaderboard();
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 HIZLI ÇÖZÜM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Her şeyi sıfırdan kur:
+
+1. Unity Editor'de: Leaderboard → 🧹 Eski Leaderboard'ları Temizle
+
+2. Unity Editor'de: Leaderboard → ⚡ TEK TIKLA OTOMATIK KURULUM ⚡
+
+3. Unity'yi yeniden başlat
+
+4. Play mode'a geç
+
+5. Oyunu bitir ve Console'u kontrol et
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 CONSOLE LOG KONTROL LİSTESİ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Oyun bittiğinde Console'da şunları görmeli sin:
+
+☐ 🎮 GAME OVER!
+☐ ✅ Firebase'e max score kaydedildi
+☐ ✅ Restart canvas gösterildi
+☐ 🎯 Game Over'da leaderboard açma çağrısı
+☐ ✅ LeaderboardUI bulundu
+☐ 🎯 ShowLeaderboard() çağrıldı
+☐ ✅ Leaderboard panel aktif edildi
+☐ 📊📊📊 LoadLeaderboard() ÇAĞRILDI!
+☐ 📊 leaderboardContent: Content (NOT NULL!)
+☐ ✅ FirebaseLeaderboardManager Instance bulundu!
+☐ 📡 Firebase'den leaderboard çekiliyor...
+☐ 📊 CALLBACK! Firebase'den veri geldi: X oyuncu
+☐ ✅ X oyuncu verisi başarıyla alındı!
+☐ 📊 X oyuncu leaderboard'da gösteriliyor:
+☐ ✅ Leaderboard başarıyla gösterildi!
+
+Tümü ✅ ise: SİSTEM ÇALIŞIYOR! 🎉
+Eksik var ise: Yukarıdaki ÇÖZÜM bölümlerine bak!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 İPUÇLARI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Console'u her zaman açık tut - log'lar çok önemli!
+✅ "Collapse" modunu kapat - tüm log'ları gör
+✅ Filter'ı "All" yap - warning ve error'ları da gör
+✅ Log'ları dikkatlice oku - sorun nereden geliyor?
+✅ Callback'ler asenkron - biraz zaman alabilir (1-3 saniye)
+✅ Internet bağlantısı gerekli - offline çalışmaz!
+✅ Firebase Rules açık olmalı - read/write: true
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Artık çok detaylı log'lar var!
+Play mode'a geç, oyunu bitir ve Console'u kontrol et! 🔍
+
+Sorun devam ederse Console log'larını paylaş! 📋

@@ -1,0 +1,257 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║            🎯 CONTEXT MENU KULLANIMI - GÖRSELLEŞTİRİLMİŞ 🎯           ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1️⃣  YENİ PANEL OLUŞTUR (EN KOLAYI!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    HIERARCHY                          CONTEXT MENU
+    ═════════════                      ══════════════════════════════════
+    
+    📦 Canvas                          ┌─────────────────────────────────┐
+       📦 ...                          │ Copy                            │
+       📦 ...                          │ Paste                           │
+                                       │ ───────────────────────────────│
+     [Sağ Tık]  ────────────────────> │ GameObject                   ▶  │
+                                       │ ───────────────────────────────│
+                                       │ └─ Leaderboard            ▶     │
+                                       │    ┌──────────────────────────┐│
+                                       │    │ 🚀 Otomatik Kurulum    ◄─┼┼─ BUNA TIKLA!
+                                       │    │   (Yeni Panel Oluştur) ││
+                                       │    │                        ││
+                                       │    │ ⚡ Mevcut Objeye       ││
+                                       │    │   LeaderboardUI Ekle   ││
+                                       │    │                        ││
+                                       │    │ 🔧 Firebase Manager    ││
+                                       │    │   Oluştur              ││
+                                       │    │                        ││
+                                       │    │ 🧪 Test Butonu Ekle    ││
+                                       │    │                        ││
+                                       │    │ 📚 Kurulum Rehberini   ││
+                                       │    │   Aç                   ││
+                                       │    └──────────────────────────┘│
+                                       └─────────────────────────────────┘
+
+    SONUÇ:
+    ══════════════════════════════════════════════════════════════════════
+    
+    📦 Canvas
+       📦 LeaderboardPanel  ✅ OLUŞTURULDU!
+          ├─ 📝 Title
+          ├─ 📝 MyScoreText
+          ├─ 📜 ScrollView
+          │  └─ 📦 Viewport
+          │     └─ 📦 Content
+          └─ 📝 LoadingText
+    
+    📦 FirebaseManager  ✅ OLUŞTURULDU!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2️⃣  MEVCUT OBJEYE EKLE (LeaderboardRow İçin)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    HIERARCHY                          CONTEXT MENU
+    ═════════════                      ══════════════════════════════════
+    
+    📦 Canvas                          
+       📦 LeaderboardRow ◄── SEÇ       ┌─────────────────────────────────┐
+          📦 Score                     │ GameObject                   ▶  │
+             📦 Scroll View            │ ───────────────────────────────│
+                                       │ └─ Leaderboard            ▶     │
+     [Sağ Tık]  ────────────────────> │    ┌──────────────────────────┐│
+                                       │    │ 🚀 Otomatik Kurulum    ││
+                                       │    │   (Yeni Panel Oluştur) ││
+                                       │    │                        ││
+                                       │    │ ⚡ Mevcut Objeye       ◄┼┼─ BUNA TIKLA!
+                                       │    │   LeaderboardUI Ekle   ││
+                                       │    └──────────────────────────┘│
+                                       └─────────────────────────────────┘
+
+    SONUÇ:
+    ══════════════════════════════════════════════════════════════════════
+    
+    📦 LeaderboardRow  [LeaderboardUI]  ✅ SCRIPT EKLENDİ!
+       📦 Score
+          ├─ 📝 RankText
+          ├─ 📝 ScoreText
+          └─ 📜 Scroll View
+             └─ 📦 Viewport
+                └─ 📦 Content  ✅ OTOMATIK ATANDI!
+                   [VerticalLayoutGroup]  ✅ EKLENDİ!
+                   [ContentSizeFitter]    ✅ EKLENDİ!
+    
+    📦 FirebaseManager  ✅ OLUŞTURULDU!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3️⃣  TEST BUTONLARI EKLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    HIERARCHY                          CONTEXT MENU
+    ═════════════                      ══════════════════════════════════
+    
+    📦 LeaderboardPanel ◄── SEÇ        ┌─────────────────────────────────┐
+       📦 Title                        │ GameObject                   ▶  │
+       📦 MyScoreText                  │ └─ Leaderboard            ▶     │
+       📦 ScrollView                   │    ┌──────────────────────────┐│
+                                       │    │ 🧪 Test Butonu Ekle    ◄─┼┼─ BUNA TIKLA!
+     [Sağ Tık]  ────────────────────> │    └──────────────────────────┘│
+                                       └─────────────────────────────────┘
+
+    SONUÇ:
+    ══════════════════════════════════════════════════════════════════════
+    
+    📦 LeaderboardPanel
+       ├─ 📝 Title
+       ├─ 📝 MyScoreText
+       ├─ 📜 ScrollView
+       └─ 📦 TestButtons  ✅ OLUŞTURULDU!
+          ├─ 🔘 ➕ Test Oyuncuları Ekle
+          ├─ 🔘 🗑️ Test Oyuncuları Sil
+          └─ 🔘 🔄 Yenile
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4️⃣  ÜST MENÜDEN ERİŞİM (Alternatif)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    UNITY EDITOR ÜST MENÜ
+    ══════════════════════════════════════════════════════════════════════
+    
+    File  Edit  Assets  [GameObject]  Component  Window  Help
+                          │
+                          ▼
+                    ┌─────────────────────────────────────────┐
+                    │ Create Empty                            │
+                    │ Create Empty Child                      │
+                    │ ──────────────────────────────────────  │
+                    │ 3D Object                            ▶  │
+                    │ 2D Object                            ▶  │
+                    │ Effects                              ▶  │
+                    │ Light                                ▶  │
+                    │ Audio                                ▶  │
+                    │ Video                                ▶  │
+                    │ UI                                   ▶  │
+                    │ ──────────────────────────────────────  │
+                    │ Leaderboard                          ▶  │ ◄─ BURADAN!
+                    │ ┌──────────────────────────────────────┐│
+                    │ │ 🚀 Otomatik Kurulum (Yeni Panel)   ││
+                    │ │ ⚡ Mevcut Objeye LeaderboardUI Ekle ││
+                    │ │ 🔧 Firebase Manager Oluştur        ││
+                    │ │ 🧪 Test Butonu Ekle                ││
+                    │ │ 📚 Kurulum Rehberini Aç            ││
+                    │ └──────────────────────────────────────┘│
+                    └─────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5️⃣  POPUP MESAJLAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    Otomatik Kurulum Tamamlandıktan Sonra:
+    
+    ┌───────────────────────────────────────────────────────────────┐
+    │  Unity                                               [X]      │
+    ├───────────────────────────────────────────────────────────────┤
+    │                                                               │
+    │  🎉 Kurulum Başarılı!                                         │
+    │                                                               │
+    │  Leaderboard sistemi kuruldu!                                │
+    │                                                               │
+    │  ✅ LeaderboardPanel oluşturuldu                              │
+    │  ✅ ScrollView ve Content hazır                               │
+    │  ✅ LeaderboardUI script eklendi                              │
+    │  ✅ FirebaseManager eklendi                                   │
+    │                                                               │
+    │  Play mode'a geçip test edebilirsin!                         │
+    │                                                               │
+    │  Test için:                                                   │
+    │  leaderboardUI.AddTestPlayers();                             │
+    │  leaderboardUI.LoadLeaderboard();                            │
+    │                                                               │
+    │                                    ┌────────┐                │
+    │                                    │ Tamam  │                │
+    │                                    └────────┘                │
+    └───────────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6️⃣  CONSOLE LOGLARI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    CONSOLE (Window → General → Console)
+    ══════════════════════════════════════════════════════════════════════
+    
+    🚀 Leaderboard otomatik kurulum başlıyor...
+    ✅ Canvas oluşturuldu
+    📊 LeaderboardPanel oluşturuluyor...
+    📜 ScrollView oluşturuluyor...
+    ✅ ScrollView oluşturuldu
+    ✅ LeaderboardPanel oluşturuldu ve yapılandırıldı
+    ✅ FirebaseManager oluşturuldu
+    ✅✅✅ LEADERBOARD KURULUMU TAMAMLANDI! ✅✅✅
+    📊 LeaderboardPanel seçili - Inspector'ı kontrol et
+    🎮 Play mode'a geçip test edebilirsin!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7️⃣  INSPECTOR GÖRÜNÜMÜ (Otomatik Atanan Referanslar)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    INSPECTOR - LeaderboardPanel seçili
+    ══════════════════════════════════════════════════════════════════════
+    
+    ┌──────────────────────────────────────────────────────────────────┐
+    │ ● LeaderboardPanel                                          [v]  │
+    ├──────────────────────────────────────────────────────────────────┤
+    │ Tag: Untagged                     Layer: UI                      │
+    │                                                                  │
+    │ Transform                                                        │
+    │ .................................................................................................................................. │
+    │                                                                  │
+    │ Rect Transform                                                   │
+    │ .................................................................................................................................. │
+    │                                                                  │
+    │ Canvas Renderer                                                  │
+    │ .................................................................................................................................. │
+    │                                                                  │
+    │ Image (Script)                                                   │
+    │ .................................................................................................................................. │
+    │                                                                  │
+    │ Leaderboard UI (Script)                                 ✅ EKLE  │
+    │ ┌────────────────────────────────────────────────────────────┐  │
+    │ │ Script              [LeaderboardUI               ]        │  │
+    │ │                                                            │  │
+    │ │ UI References                                              │  │
+    │ │ Leaderboard Panel   [LeaderboardPanel (GameObject)]  ✅   │  │
+    │ │ Leaderboard Content [Content (Transform)]            ✅   │  │
+    │ │ Leaderboard Entry P [None (Game Object)]                  │  │
+    │ │ Loading Text        [LoadingText (TextMeshProUGUI)]  ✅   │  │
+    │ │ My Score Text       [MyScoreText (TextMeshProUGUI)]  ✅   │  │
+    │ │ Refresh Button      [None (Button)]                       │  │
+    │ │                                                            │  │
+    │ │ Settings                                                   │  │
+    │ │ Max Entries         [50                              ]    │  │
+    │ │                                                            │  │
+    │ │ Debug Buttons (Optional)                                   │  │
+    │ │ Add Test Players B  [None (Button)]                       │  │
+    │ │ Clear Test Players  [None (Button)]                       │  │
+    │ └────────────────────────────────────────────────────────────┘  │
+    │                                                                  │
+    │ [ Add Component ]                                                │
+    └──────────────────────────────────────────────────────────────────┘
+    
+    ✅ = Otomatik atandı!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 HIZLI BAŞLANGIÇ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Sağ tık → GameObject → Leaderboard → 🚀 Otomatik Kurulum
+2. Popup'ta "Tamam"
+3. Play mode
+4. Console: FindObjectOfType<LeaderboardUI>().AddTestPlayers();
+5. 2 saniye bekle
+6. Console: FindObjectOfType<LeaderboardUI>().LoadLeaderboard();
+7. BAŞARI! 🎉
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Artık tek tıkla kurulum yapabilirsin! 🚀

@@ -5053,7 +5053,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 1
@@ -37900,7 +37900,7 @@ Transform:
   m_GameObject: {fileID: 661289636}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.22, z: 0}
+  m_LocalPosition: {x: -0, y: -0.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40560,7 +40560,7 @@ GameObject:
   - component: {fileID: 725689021}
   - component: {fileID: 725689020}
   - component: {fileID: 725689019}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: OU_AR_UpperElevationFloor (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41991,7 +41991,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 324142346}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.38999993}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
@@ -43216,8 +43216,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 900, y: -122.96}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: 1149.9, y: -122.96}
+  m_SizeDelta: {x: 699.8, y: 493}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &787481006
 MonoBehaviour:
@@ -49037,6 +49037,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: FirstGun
       objectReference: {fileID: 0}
+    - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -53588,7 +53593,11 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 787481005}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1521497564415902225, guid: 394491732ef96924d9e83d85bd0200f5,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1362285724}
   m_SourcePrefab: {fileID: 100100000, guid: 394491732ef96924d9e83d85bd0200f5, type: 3}
 --- !u!224 &1043209588 stripped
 RectTransform:
@@ -57500,7 +57509,7 @@ GameObject:
   - component: {fileID: 1201695882}
   - component: {fileID: 1201695881}
   - component: {fileID: 1201695880}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: OU_AR_Stairs_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61882,6 +61891,33 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &1362285723 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1521497564415902225, guid: 394491732ef96924d9e83d85bd0200f5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1043209587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1362285724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362285723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9b68d97015983f49a42f0516683597d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leaderboardPanel: {fileID: 1362285723}
+  leaderboardContent: {fileID: 1734172134}
+  leaderboardEntryPrefab: {fileID: 0}
+  loadingText: {fileID: 0}
+  myScoreText: {fileID: 1958883249}
+  refreshButton: {fileID: 0}
+  maxEntries: 50
+  addTestPlayersButton: {fileID: 0}
+  clearTestPlayersButton: {fileID: 0}
 --- !u!1001 &1363231859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -64081,59 +64117,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1427788659}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1428181261
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1428181263}
-  - component: {fileID: 1428181262}
-  m_Layer: 0
-  m_Name: LeaderboardManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1428181262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1428181261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9b68d97015983f49a42f0516683597d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leaderboardPanel: {fileID: 1521497564415902225, guid: 394491732ef96924d9e83d85bd0200f5,
-    type: 3}
-  leaderboardContent: {fileID: 787481005}
-  leaderboardEntryPrefab: {fileID: 1521497564415902225, guid: 394491732ef96924d9e83d85bd0200f5,
-    type: 3}
-  loadingText: {fileID: 0}
-  myScoreText: {fileID: 1958883249}
-  refreshButton: {fileID: 0}
-  maxEntries: 50
---- !u!4 &1428181263
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1428181261}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.031065, y: -5.564392, z: 10.8415985}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1438059068
 GameObject:
   m_ObjectHideFlags: 0
@@ -64688,7 +64671,7 @@ GameObject:
   - component: {fileID: 1466292946}
   - component: {fileID: 1466292945}
   - component: {fileID: 1466292944}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: OU_AR_Stairs_Left (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68807,8 +68790,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 766784232}
   m_HandleRect: {fileID: 766784231}
   m_Direction: 2
-  m_Value: 1.0000005
-  m_Size: 0.6100001
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -70097,7 +70080,7 @@ GameObject:
   - component: {fileID: 1591832294}
   - component: {fileID: 1591832293}
   - component: {fileID: 1591832292}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: OU_AR_Stairs_Left (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71731,7 +71714,7 @@ GameObject:
   - component: {fileID: 1613422149}
   - component: {fileID: 1613422148}
   - component: {fileID: 1613422147}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: OU_AR_Stairs_Left (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82553,6 +82536,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1734172134}
+  - component: {fileID: 1734172136}
+  - component: {fileID: 1734172135}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -82577,8 +82562,48 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1734172135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734172133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
+--- !u!114 &1734172136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734172133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
+  m_ChildAlignment: 0
+  m_Spacing: 5
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1735005748
 GameObject:
   m_ObjectHideFlags: 0
@@ -84852,7 +84877,7 @@ MonoBehaviour:
   timerText: {fileID: 1587404790}
   timeAndScorePanel: {fileID: 953788455}
   backgroundMusic: {fileID: 0}
-  gameDuration: 53.3
+  gameDuration: 400
   score: 0
 --- !u!4 &1834682428
 Transform:
@@ -96055,4 +96080,3 @@ SceneRoots:
   - {fileID: 1337488465}
   - {fileID: 1166169232}
   - {fileID: 1686065798}
-  - {fileID: 1428181263}

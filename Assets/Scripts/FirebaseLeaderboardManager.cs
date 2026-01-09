@@ -161,8 +161,10 @@ public class FirebaseLeaderboardManager : MonoBehaviour
     
     private IEnumerator GetLeaderboardCoroutine(Action<List<LeaderboardEntry>> onComplete, int limit)
     {
-        string url = $"{firebaseDatabaseUrl}/leaderboard.json?orderBy=\"maxScore\"&limitToLast={limit}";
-        Debug.Log($"📊 Firebase'den leaderboard çekiliyor: {url}");
+        // Firebase'den TÜM oyuncuları çek (sıralama client-side yapılacak)
+        string url = $"{firebaseDatabaseUrl}/leaderboard.json";
+        Debug.Log($"📊 Firebase'den TÜM oyuncuların leaderboard verisi çekiliyor...");
+        Debug.Log($"📊 URL: {url}");
         
         using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Get(url))
         {
@@ -171,42 +173,60 @@ public class FirebaseLeaderboardManager : MonoBehaviour
             if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
                 string json = request.downloadHandler.text;
+                
                 if (json != null && json.Length > 0)
                 {
-                    string preview = json.Length > 100 ? json.Substring(0, 100) : json;
-                    Debug.Log($"📊 Firebase'den JSON alındı: {preview}...");
+                    string preview = json.Length > 200 ? json.Substring(0, 200) + "..." : json;
+                    Debug.Log($"📊 Firebase'den JSON alındı (uzunluk: {json.Length}): {preview}");
                 }
                 else
                 {
                     Debug.Log("📊 Firebase'den boş JSON alındı");
                 }
                 
-                if (!string.IsNullOrEmpty(json) && json != "null")
+                if (!string.IsNullOrEmpty(json) && json != "null" && json != "{}")
                 {
                     // Firebase dictionary formatını parse et
                     List<LeaderboardEntry> entries = ParseLeaderboardJson(json);
-                    Debug.Log($"📊 Parse edildi: {entries.Count} entry bulundu");
+                    Debug.Log($"📊 Parse edildi: {entries.Count} toplam oyuncu bulundu");
+                    
+                    if (entries.Count == 0)
+                    {
+                        Debug.LogWarning("⚠️ JSON parse edildi ama hiç entry bulunamadı!");
+                        Debug.LogWarning($"⚠️ JSON içeriği: {json}");
+                    }
                     
                     // Max score'a göre sırala (yüksekten düşüğe)
-                    entries = entries.OrderByDescending(e => e.maxScore).ToList();
+                    entries = entries.OrderByDescending(e => e.maxScore).ThenBy(e => e.timestamp).ToList();
                     
-                    // İlk 5 entry'yi logla
-                    for (int i = 0; i < Mathf.Min(5, entries.Count); i++)
+                    // Limit uygula
+                    if (entries.Count > limit)
                     {
-                        Debug.Log($"   {i + 1}. {entries[i].playerName} - {entries[i].maxScore}");
+                        entries = entries.Take(limit).ToList();
                     }
+                    
+                    Debug.Log($"📊 === LEADERBOARD ({entries.Count} oyuncu) ===");
+                    // Tüm entry'leri logla
+                    for (int i = 0; i < entries.Count; i++)
+                    {
+                        Debug.Log($"   {i + 1}. {entries[i].playerName} - {entries[i].maxScore} puan (ID: {entries[i].playerId})");
+                    }
+                    Debug.Log($"📊 ============================");
                     
                     onComplete?.Invoke(entries);
                 }
                 else
                 {
-                    Debug.LogWarning("⚠️ Firebase'den boş JSON geldi");
+                    Debug.LogWarning("⚠️ Firebase'den boş veya geçersiz JSON geldi!");
+                    Debug.LogWarning($"⚠️ JSON değeri: '{json}'");
                     onComplete?.Invoke(new List<LeaderboardEntry>());
                 }
             }
             else
             {
                 Debug.LogError($"❌ Firebase Get Leaderboard Error: {request.error}");
+                Debug.LogError($"❌ Response Code: {request.responseCode}");
+                Debug.LogError($"❌ URL: {url}");
                 onComplete?.Invoke(new List<LeaderboardEntry>());
             }
         }
@@ -224,6 +244,7 @@ public class FirebaseLeaderboardManager : MonoBehaviour
             
             if (string.IsNullOrEmpty(json) || json == "null" || json == "{}")
             {
+                Debug.LogWarning("⚠️ Boş veya geçersiz JSON");
                 return entries;
             }
             
@@ -231,76 +252,130 @@ public class FirebaseLeaderboardManager : MonoBehaviour
             json = json.Trim();
             if (!json.StartsWith("{") || !json.EndsWith("}"))
             {
-                Debug.LogWarning("Invalid JSON format");
+                Debug.LogWarning($"⚠️ Invalid JSON format: başlangıç='{json[0]}', bitiş='{json[json.Length - 1]}'");
                 return entries;
             }
             
             json = json.Substring(1, json.Length - 2); // { } kaldır
             
-            // Her player entry'sini bul
-            int depth = 0;
-            int startIndex = 0;
-            string currentKey = "";
-            
-            for (int i = 0; i < json.Length; i++)
+            if (string.IsNullOrEmpty(json.Trim()))
             {
-                char c = json[i];
-                
-                if (c == '"' && (i == 0 || json[i - 1] != '\\'))
+                Debug.LogWarning("⚠️ JSON içeriği boş");
+                return entries;
+            }
+            
+            Debug.Log($"📊 İçerik parse ediliyor: {(json.Length > 100 ? json.Substring(0, 100) + "..." : json)}");
+            
+            // Daha güvenilir parsing: Player ID key'lerini bul
+            // Format: "playerId": {"maxScore":..., "playerName":..., ...}
+            
+            int i = 0;
+            while (i < json.Length)
+            {
+                // Player ID key'ini bul: "playerId":
+                if (json[i] == '"' && i + 1 < json.Length)
                 {
-                    // Key başlangıcı
-                    if (depth == 0)
+                    int keyStart = i + 1;
+                    int keyEnd = json.IndexOf('"', keyStart);
+                    
+                    if (keyEnd > keyStart)
                     {
-                        int keyStart = i + 1;
-                        int keyEnd = json.IndexOf('"', keyStart);
-                        if (keyEnd > 0)
+                        string potentialKey = json.Substring(keyStart, keyEnd - keyStart);
+                        
+                        // Key'den sonra : ve { gelmeli (player ID key'i)
+                        int colonIndex = keyEnd + 1;
+                        while (colonIndex < json.Length && char.IsWhiteSpace(json[colonIndex]))
+                            colonIndex++;
+                        
+                        if (colonIndex < json.Length && json[colonIndex] == ':')
                         {
-                            currentKey = json.Substring(keyStart, keyEnd - keyStart);
-                            i = keyEnd + 1;
-                            // : karakterini atla
-                            while (i < json.Length && (json[i] == ':' || char.IsWhiteSpace(json[i])))
-                                i++;
-                            i--; // for loop'ta i++ olacak
-                            startIndex = i + 1;
-                        }
-                    }
-                }
-                else if (c == '{')
-                {
-                    depth++;
-                }
-                else if (c == '}')
-                {
-                    depth--;
-                    if (depth == 0 && !string.IsNullOrEmpty(currentKey))
-                    {
-                        // Entry tamamlandı
-                        string entryJson = json.Substring(startIndex, i - startIndex + 1);
-                        try
-                        {
-                            LeaderboardEntry entry = JsonUtility.FromJson<LeaderboardEntry>(entryJson);
-                            if (entry != null)
+                            int braceIndex = colonIndex + 1;
+                            while (braceIndex < json.Length && char.IsWhiteSpace(json[braceIndex]))
+                                braceIndex++;
+                            
+                            if (braceIndex < json.Length && json[braceIndex] == '{')
                             {
-                                entry.playerId = currentKey;
-                                entries.Add(entry);
-                                Debug.Log($"   ✅ Entry parse edildi: {entry.playerName} - {entry.maxScore}");
+                                // Bu bir player ID key'i! Entry'yi bul
+                                string playerId = potentialKey;
+                                int entryStart = braceIndex;
+                                
+                                // Matching brace bul
+                                int entryEnd = -1;
+                                int depth = 0;
+                                bool inString = false;
+                                char lastChar = ' ';
+                                
+                                for (int j = entryStart; j < json.Length; j++)
+                                {
+                                    char c = json[j];
+                                    
+                                    if (c == '"' && lastChar != '\\')
+                                    {
+                                        inString = !inString;
+                                    }
+                                    
+                                    if (!inString)
+                                    {
+                                        if (c == '{')
+                                            depth++;
+                                        else if (c == '}')
+                                        {
+                                            depth--;
+                                            if (depth == 0)
+                                            {
+                                                entryEnd = j;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    lastChar = c;
+                                }
+                                
+                                if (entryEnd > entryStart)
+                                {
+                                    string entryJson = json.Substring(entryStart, entryEnd - entryStart + 1);
+                                    Debug.Log($"   🔍 Parse ediliyor - PlayerID: {playerId}");
+                                    
+                                    try
+                                    {
+                                        LeaderboardEntry entry = JsonUtility.FromJson<LeaderboardEntry>(entryJson);
+                                        if (entry != null && entry.maxScore > 0)
+                                        {
+                                            entry.playerId = playerId;
+                                            entries.Add(entry);
+                                            Debug.Log($"   ✅ Entry başarıyla parse edildi: {entry.playerName} - {entry.maxScore} puan");
+                                        }
+                                        else
+                                        {
+                                            Debug.LogWarning($"   ⚠️ Entry parse edildi ama geçersiz: maxScore={entry?.maxScore ?? -1}");
+                                        }
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Debug.LogWarning($"   ❌ Parse hatası ({playerId}): {e.Message}");
+                                        Debug.LogWarning($"   ❌ JSON: {(entryJson.Length > 100 ? entryJson.Substring(0, 100) + "..." : entryJson)}");
+                                    }
+                                    
+                                    // Sonraki entry'ye geç
+                                    i = entryEnd + 1;
+                                    continue;
+                                }
                             }
                         }
-                        catch (Exception e)
-                        {
-                            Debug.LogWarning($"Parse error for {currentKey}: {e.Message}");
-                        }
-                        currentKey = "";
-                        // Sonraki entry için hazırla
-                        while (i + 1 < json.Length && (json[i + 1] == ',' || char.IsWhiteSpace(json[i + 1])))
-                            i++;
                     }
                 }
+                
+                i++;
             }
+            
+            Debug.Log($"📊 Parse tamamlandı: {entries.Count} oyuncu başarıyla yüklendi");
         }
         catch (Exception e)
         {
-            Debug.LogError($"JSON Parse Error: {e.Message}\nJSON: {json}");
+            Debug.LogError($"❌ JSON Parse Error: {e.Message}");
+            Debug.LogError($"❌ Stack Trace: {e.StackTrace}");
+            Debug.LogError($"❌ JSON: {json}");
         }
         
         return entries;
@@ -310,5 +385,108 @@ public class FirebaseLeaderboardManager : MonoBehaviour
     public void GetMyMaxScore(Action<int> onComplete)
     {
         StartCoroutine(GetPlayerMaxScore(onComplete));
+    }
+    
+    // TEST FONKSIYONU: Rastgele test oyuncuları ekle (sadece geliştirme için)
+    public void AddTestPlayers(int count = 10)
+    {
+        StartCoroutine(AddTestPlayersCoroutine(count));
+    }
+    
+    private IEnumerator AddTestPlayersCoroutine(int count)
+    {
+        string[] names = new string[] 
+        { 
+            "Ali", "Ayşe", "Mehmet", "Fatma", "Ahmet", "Zeynep", "Mustafa", "Elif", 
+            "Emir", "Yağmur", "Efe", "Defne", "Can", "Nehir", "Ömer", "Asya",
+            "Burak", "Selin", "Kerem", "Nisa", "Mert", "Ecrin", "Eren", "Ada"
+        };
+        
+        Debug.Log($"🧪 {count} test oyuncusu ekleniyor...");
+        
+        for (int i = 0; i < count; i++)
+        {
+            string testName = names[UnityEngine.Random.Range(0, names.Length)] + UnityEngine.Random.Range(100, 999);
+            int testScore = UnityEngine.Random.Range(100, 10000);
+            string testPlayerId = "test_" + Guid.NewGuid().ToString().Substring(0, 8);
+            
+            LeaderboardEntry entry = new LeaderboardEntry
+            {
+                playerName = testName,
+                maxScore = testScore,
+                timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                playerId = testPlayerId
+            };
+            
+            string json = JsonUtility.ToJson(entry);
+            string url = $"{firebaseDatabaseUrl}/leaderboard/{testPlayerId}.json";
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
+            
+            using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Put(url, bodyRaw))
+            {
+                request.SetRequestHeader("Content-Type", "application/json");
+                yield return request.SendWebRequest();
+                
+                if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+                {
+                    Debug.Log($"   ✅ Test oyuncu eklendi: {testName} - {testScore}");
+                }
+                else
+                {
+                    Debug.LogError($"   ❌ Test oyuncu eklenemedi: {request.error}");
+                }
+            }
+            
+            // Rate limiting için kısa bekleme
+            yield return new WaitForSeconds(0.2f);
+        }
+        
+        Debug.Log($"✅ {count} test oyuncusu başarıyla eklendi!");
+        Debug.Log("📊 Şimdi leaderboard'u yenileyebilirsin!");
+    }
+    
+    // TEST FONKSIYONU: Tüm test oyuncuları sil
+    public void ClearTestPlayers()
+    {
+        StartCoroutine(ClearTestPlayersCoroutine());
+    }
+    
+    private IEnumerator ClearTestPlayersCoroutine()
+    {
+        Debug.Log("🧹 Test oyuncuları temizleniyor...");
+        
+        // Önce tüm listeyi çek
+        yield return StartCoroutine(GetLeaderboardCoroutine((entries) =>
+        {
+            StartCoroutine(DeleteTestEntriesCoroutine(entries));
+        }, 1000));
+    }
+    
+    private IEnumerator DeleteTestEntriesCoroutine(List<LeaderboardEntry> entries)
+    {
+        int deletedCount = 0;
+        
+        foreach (var entry in entries)
+        {
+            if (entry.playerId.StartsWith("test_"))
+            {
+                string url = $"{firebaseDatabaseUrl}/leaderboard/{entry.playerId}.json";
+                
+                using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Delete(url))
+                {
+                    yield return request.SendWebRequest();
+                    
+                    if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+                    {
+                        deletedCount++;
+                        Debug.Log($"   🗑️ Test oyuncu silindi: {entry.playerName}");
+                    }
+                }
+                
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+        
+        Debug.Log($"✅ {deletedCount} test oyuncusu temizlendi!");
     }
 }

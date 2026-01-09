@@ -16,6 +16,10 @@ public class LeaderboardUI : MonoBehaviour
     [Header("Settings")]
     public int maxEntries = 50;
     
+    [Header("Debug Buttons (Optional)")]
+    public Button addTestPlayersButton;
+    public Button clearTestPlayersButton;
+    
     private void Start()
     {
         if (refreshButton != null)
@@ -23,8 +27,51 @@ public class LeaderboardUI : MonoBehaviour
             refreshButton.onClick.AddListener(LoadLeaderboard);
         }
         
+        // Debug butonları
+        if (addTestPlayersButton != null)
+        {
+            addTestPlayersButton.onClick.AddListener(AddTestPlayers);
+        }
+        
+        if (clearTestPlayersButton != null)
+        {
+            clearTestPlayersButton.onClick.AddListener(ClearTestPlayers);
+        }
+        
         // Eksik referansları otomatik bul
         AutoFindReferences();
+    }
+    
+    // TEST FONKSIYONU: Test oyuncuları ekle
+    public void AddTestPlayers()
+    {
+        if (FirebaseLeaderboardManager.Instance != null)
+        {
+            Debug.Log("🧪 10 test oyuncusu ekleniyor...");
+            FirebaseLeaderboardManager.Instance.AddTestPlayers(10);
+            
+            // 3 saniye sonra leaderboard'u yenile
+            StartCoroutine(RefreshAfterDelay(3f));
+        }
+    }
+    
+    // TEST FONKSIYONU: Test oyuncuları temizle
+    public void ClearTestPlayers()
+    {
+        if (FirebaseLeaderboardManager.Instance != null)
+        {
+            Debug.Log("🧹 Test oyuncuları temizleniyor...");
+            FirebaseLeaderboardManager.Instance.ClearTestPlayers();
+            
+            // 2 saniye sonra leaderboard'u yenile
+            StartCoroutine(RefreshAfterDelay(2f));
+        }
+    }
+    
+    private System.Collections.IEnumerator RefreshAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        LoadLeaderboard();
     }
     
     private void AutoFindReferences()
@@ -161,33 +208,41 @@ public class LeaderboardUI : MonoBehaviour
     
     public void ShowLeaderboard()
     {
+        Debug.Log("🎯 ShowLeaderboard() çağrıldı");
+        
         // Önce referansları tekrar kontrol et
         AutoFindReferences();
 
         if (leaderboardPanel != null)
         {
             leaderboardPanel.SetActive(true);
+            Debug.Log($"✅ Leaderboard panel aktif edildi: {leaderboardPanel.name}");
 
             // Canvas kontrolü
             Canvas canvas = leaderboardPanel.GetComponentInParent<Canvas>();
             if (canvas != null && !canvas.enabled)
             {
                 canvas.enabled = true;
+                Debug.Log("✅ Canvas enabled");
             }
 
             // Kısa bir delay sonra load et (UI'ın aktif olması için)
+            Debug.Log("⏳ LoadLeaderboard delay başlıyor...");
             StartCoroutine(LoadLeaderboardDelayed());
         }
         else
         {
             // Hata durumunda basit bir mesaj göster
             Debug.LogError("❌ LEADERBOARD PANEL BULUNAMADI! Unity'de LeaderboardUI kurulumunu kontrol et.");
+            Debug.LogError("❌ AutoFindReferences çalıştırıldı ama panel hala null!");
         }
     }
     
     private System.Collections.IEnumerator LoadLeaderboardDelayed()
     {
-        yield return new WaitForSecondsRealtime(0.2f);
+        Debug.Log("⏳ LoadLeaderboardDelayed - 0.5 saniye bekleniyor...");
+        yield return new WaitForSecondsRealtime(0.5f);
+        Debug.Log("✅ Delay bitti, şimdi LoadLeaderboard() çağrılıyor...");
         LoadLeaderboard();
     }
     
@@ -201,7 +256,9 @@ public class LeaderboardUI : MonoBehaviour
     
     public void LoadLeaderboard()
     {
-        Debug.Log("📊 Leaderboard yükleniyor...");
+        Debug.Log("📊📊📊 LoadLeaderboard() ÇAĞRILDI! 📊📊📊");
+        Debug.Log($"📊 leaderboardContent: {(leaderboardContent != null ? leaderboardContent.name : "NULL")}");
+        Debug.Log($"📊 leaderboardPanel: {(leaderboardPanel != null ? leaderboardPanel.name : "NULL")}");
         
         // Instance kontrolü
         if (FirebaseLeaderboardManager.Instance == null)
@@ -210,50 +267,87 @@ public class LeaderboardUI : MonoBehaviour
             if (loadingText != null)
             {
                 loadingText.text = "Firebase bağlantısı yok!";
+                loadingText.gameObject.SetActive(true);
             }
             return;
         }
         
+        Debug.Log("✅ FirebaseLeaderboardManager Instance bulundu!");
+        
         if (loadingText != null)
         {
-            loadingText.text = "Yükleniyor...";
+            loadingText.text = "Firebase'den oyuncular yükleniyor...";
             loadingText.gameObject.SetActive(true);
+            Debug.Log("✅ Loading text ayarlandı");
         }
         
         // Mevcut entry'leri temizle
         ClearLeaderboard();
+        Debug.Log("🧹 Eski leaderboard entry'leri temizlendi");
         
         // Leaderboard'u çek
+        Debug.Log($"📡 Firebase'den leaderboard çekiliyor... (maxEntries: {maxEntries})");
         FirebaseLeaderboardManager.Instance.GetLeaderboard((entries) =>
         {
-            Debug.Log($"📊 Leaderboard çekildi: {entries?.Count ?? 0} oyuncu bulundu");
+            Debug.Log($"📊 CALLBACK! Firebase'den veri geldi: {entries?.Count ?? 0} oyuncu bulundu");
+            
+            if (entries == null)
+            {
+                Debug.LogWarning("⚠️ Entries NULL geldi!");
+            }
+            else if (entries.Count == 0)
+            {
+                Debug.LogWarning("⚠️ Entries boş liste (Count = 0)!");
+            }
+            else
+            {
+                Debug.Log($"✅ {entries.Count} oyuncu verisi başarıyla alındı!");
+                for (int i = 0; i < Mathf.Min(3, entries.Count); i++)
+                {
+                    Debug.Log($"   #{i+1}: {entries[i].playerName} - {entries[i].maxScore}");
+                }
+            }
+            
             DisplayLeaderboard(entries);
             
             if (loadingText != null)
             {
                 loadingText.gameObject.SetActive(false);
+                Debug.Log("✅ Loading text gizlendi");
             }
         }, maxEntries);
         
         // Kendi max score'unu göster
+        Debug.Log("📡 Kendi max score çekiliyor...");
         FirebaseLeaderboardManager.Instance.GetMyMaxScore((myScore) =>
         {
+            Debug.Log($"✅ CALLBACK! Kendi max score: {myScore}");
+            
             if (myScoreText != null)
             {
                 myScoreText.text = $"🏆 Senin Max Skorun: {myScore}";
                 myScoreText.gameObject.SetActive(true);
+                Debug.Log($"✅ MyScoreText güncellendi: {myScoreText.gameObject.name}");
             }
             else
             {
                 // Otomatik bulmaya çalış
+                Debug.LogWarning("⚠️ myScoreText NULL! Otomatik aranıyor...");
                 FindMyScoreText();
                 if (myScoreText != null)
                 {
                     myScoreText.text = $"🏆 Senin Max Skorun: {myScore}";
                     myScoreText.gameObject.SetActive(true);
+                    Debug.Log($"✅ MyScoreText otomatik bulundu ve güncellendi: {myScoreText.gameObject.name}");
+                }
+                else
+                {
+                    Debug.LogError("❌ myScoreText bulunamadı!");
                 }
             }
         });
+        
+        Debug.Log("📊 LoadLeaderboard() fonksiyonu tamamlandı (callback'ler beklemede)");
     }
     
     private void DisplayLeaderboard(List<LeaderboardEntry> entries)
@@ -272,14 +366,20 @@ public class LeaderboardUI : MonoBehaviour
 
         if (entries == null || entries.Count == 0)
         {
-            // Veri yoksa sadece kendi score'unu göster
+            // Veri yoksa bilgilendirici mesaj göster
             if (loadingText != null)
             {
-                loadingText.text = "📊 Genel leaderboard henüz boş!\nAma senin max score'un kaydedildi.";
+                loadingText.text = "📊 Henüz leaderboard'da başka oyuncu yok!\nOyunu oynayın ve ilk olmaya çalışın! 🏆";
                 loadingText.gameObject.SetActive(true);
             }
+            Debug.LogWarning("⚠️ Firebase'den leaderboard verisi gelmedi veya boş!");
             return;
         }
+
+        Debug.Log($"📊 {entries.Count} oyuncu leaderboard'da gösteriliyor:");
+        
+        // Content Layout Group ayarlarını kontrol et ve ayarla
+        SetupContentLayoutGroup();
 
         // Başlık ekle
         CreateHeaderEntry();
@@ -288,14 +388,48 @@ public class LeaderboardUI : MonoBehaviour
         for (int i = 0; i < entries.Count; i++)
         {
             LeaderboardEntry entry = entries[i];
+            Debug.Log($"   {i + 1}. {entry.playerName} - {entry.maxScore} puan");
             CreateLeaderboardEntry(i + 1, entry);
         }
+        
+        Debug.Log($"✅ Leaderboard başarıyla gösterildi! Toplam {entries.Count} oyuncu");
+    }
+    
+    private void SetupContentLayoutGroup()
+    {
+        if (leaderboardContent == null) return;
+        
+        // Vertical Layout Group ekle veya güncelle
+        UnityEngine.UI.VerticalLayoutGroup layoutGroup = leaderboardContent.GetComponent<UnityEngine.UI.VerticalLayoutGroup>();
+        if (layoutGroup == null)
+        {
+            layoutGroup = leaderboardContent.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
+            Debug.Log("✅ VerticalLayoutGroup eklendi");
+        }
+        
+        layoutGroup.spacing = 5;
+        layoutGroup.childControlWidth = true;
+        layoutGroup.childControlHeight = false;
+        layoutGroup.childForceExpandWidth = true;
+        layoutGroup.childForceExpandHeight = false;
+        layoutGroup.padding = new RectOffset(10, 10, 10, 10);
+        
+        // Content Size Fitter ekle veya güncelle
+        UnityEngine.UI.ContentSizeFitter sizeFitter = leaderboardContent.GetComponent<UnityEngine.UI.ContentSizeFitter>();
+        if (sizeFitter == null)
+        {
+            sizeFitter = leaderboardContent.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>();
+            Debug.Log("✅ ContentSizeFitter eklendi");
+        }
+        
+        sizeFitter.verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+        sizeFitter.horizontalFit = UnityEngine.UI.ContentSizeFitter.FitMode.Unconstrained;
     }
 
     private void CreateHeaderEntry()
     {
         GameObject headerObj = new GameObject("LeaderboardHeader");
-        headerObj.transform.SetParent(leaderboardContent);
+        headerObj.transform.SetParent(leaderboardContent, false);
 
         // RectTransform ayarla
         RectTransform rectTransform = headerObj.AddComponent<RectTransform>();
@@ -304,46 +438,60 @@ public class LeaderboardUI : MonoBehaviour
         rectTransform.anchorMax = new Vector2(1, 1);
         rectTransform.pivot = new Vector2(0.5f, 1);
 
+        // Arka plan ekle
+        UnityEngine.UI.Image background = headerObj.AddComponent<UnityEngine.UI.Image>();
+        background.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+
         // Horizontal Layout Group ekle
         UnityEngine.UI.HorizontalLayoutGroup layoutGroup = headerObj.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
-        layoutGroup.spacing = 10;
+        layoutGroup.spacing = 15;
         layoutGroup.childControlWidth = false;
         layoutGroup.childControlHeight = true;
         layoutGroup.childForceExpandWidth = false;
         layoutGroup.childForceExpandHeight = true;
+        layoutGroup.padding = new RectOffset(10, 10, 10, 10);
+        layoutGroup.childAlignment = TextAnchor.MiddleLeft;
 
         // Rank Header
         GameObject rankObj = new GameObject("RankHeader");
-        rankObj.transform.SetParent(headerObj.transform);
+        rankObj.transform.SetParent(headerObj.transform, false);
         TextMeshProUGUI rankText = rankObj.AddComponent<TextMeshProUGUI>();
-        rankText.text = "Sıra";
-        rankText.fontSize = 20;
+        rankText.text = "SIRA";
+        rankText.fontSize = 18;
         rankText.fontStyle = FontStyles.Bold;
-        rankText.alignment = TextAlignmentOptions.Left;
+        rankText.color = new Color(0.9f, 0.9f, 0.9f);
+        rankText.alignment = TextAlignmentOptions.Center;
         RectTransform rankRect = rankObj.GetComponent<RectTransform>();
-        rankRect.sizeDelta = new Vector2(60, 0);
+        rankRect.sizeDelta = new Vector2(70, 0);
 
         // Name Header
         GameObject nameObj = new GameObject("NameHeader");
-        nameObj.transform.SetParent(headerObj.transform);
+        nameObj.transform.SetParent(headerObj.transform, false);
         TextMeshProUGUI nameText = nameObj.AddComponent<TextMeshProUGUI>();
-        nameText.text = "Oyuncu";
-        nameText.fontSize = 20;
+        nameText.text = "OYUNCU ADI";
+        nameText.fontSize = 18;
         nameText.fontStyle = FontStyles.Bold;
+        nameText.color = new Color(0.9f, 0.9f, 0.9f);
         nameText.alignment = TextAlignmentOptions.Left;
         RectTransform nameRect = nameObj.GetComponent<RectTransform>();
-        nameRect.sizeDelta = new Vector2(150, 0);
+        nameRect.sizeDelta = new Vector2(200, 0);
 
         // Score Header
         GameObject scoreObj = new GameObject("ScoreHeader");
-        scoreObj.transform.SetParent(headerObj.transform);
+        scoreObj.transform.SetParent(headerObj.transform, false);
         TextMeshProUGUI scoreText = scoreObj.AddComponent<TextMeshProUGUI>();
-        scoreText.text = "Max Skor";
-        scoreText.fontSize = 20;
+        scoreText.text = "PUAN";
+        scoreText.fontSize = 18;
         scoreText.fontStyle = FontStyles.Bold;
+        scoreText.color = new Color(0.9f, 0.9f, 0.9f);
         scoreText.alignment = TextAlignmentOptions.Right;
         RectTransform scoreRect = scoreObj.GetComponent<RectTransform>();
         scoreRect.sizeDelta = new Vector2(100, 0);
+
+        // Layout Element ekle
+        UnityEngine.UI.LayoutElement layoutElement = headerObj.AddComponent<UnityEngine.UI.LayoutElement>();
+        layoutElement.minHeight = 50;
+        layoutElement.preferredHeight = 50;
     }
     
     private void CreateLeaderboardEntry(int rank, LeaderboardEntry entry)
@@ -352,12 +500,15 @@ public class LeaderboardUI : MonoBehaviour
         
         if (leaderboardEntryPrefab != null)
         {
-            entryObj = Instantiate(leaderboardEntryPrefab, leaderboardContent);
+            // Prefab varsa kullan
+            entryObj = Instantiate(leaderboardEntryPrefab, leaderboardContent, false);
+            Debug.Log($"✅ Prefab kullanılarak entry oluşturuldu: {rank}. {entry.playerName}");
         }
         else
         {
             // Prefab yoksa otomatik entry oluştur
             entryObj = CreateDefaultEntry(rank, entry);
+            Debug.Log($"⚠️ Otomatik entry oluşturuldu (prefab yok): {rank}. {entry.playerName}");
         }
         
         // Entry component'ini bul veya ekle
@@ -365,6 +516,7 @@ public class LeaderboardUI : MonoBehaviour
         if (entryUI == null)
         {
             entryUI = entryObj.AddComponent<LeaderboardEntryUI>();
+            Debug.Log($"   LeaderboardEntryUI component eklendi");
         }
         
         // Entry'yi set et
@@ -374,53 +526,89 @@ public class LeaderboardUI : MonoBehaviour
     private GameObject CreateDefaultEntry(int rank, LeaderboardEntry entry)
     {
         // Ana GameObject
-        GameObject entryObj = new GameObject($"Entry_{rank}");
-        entryObj.transform.SetParent(leaderboardContent);
+        GameObject entryObj = new GameObject($"Entry_{rank}_{entry.playerName}");
+        entryObj.transform.SetParent(leaderboardContent, false);
 
         // RectTransform ekle (UI için gerekli)
         RectTransform rectTransform = entryObj.AddComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(0, 40); // Yükseklik
+        rectTransform.sizeDelta = new Vector2(0, 45); // Yükseklik
         rectTransform.anchorMin = new Vector2(0, 1);
         rectTransform.anchorMax = new Vector2(1, 1);
         rectTransform.pivot = new Vector2(0.5f, 1);
 
+        // Arka plan rengi ekle (alternatif satırlar için)
+        UnityEngine.UI.Image background = entryObj.AddComponent<UnityEngine.UI.Image>();
+        background.color = (rank % 2 == 0) ? new Color(0.2f, 0.2f, 0.2f, 0.3f) : new Color(0.15f, 0.15f, 0.15f, 0.3f);
+
         // Horizontal Layout Group ekle
         UnityEngine.UI.HorizontalLayoutGroup layoutGroup = entryObj.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
-        layoutGroup.spacing = 10;
+        layoutGroup.spacing = 15;
         layoutGroup.childControlWidth = false;
         layoutGroup.childControlHeight = true;
         layoutGroup.childForceExpandWidth = false;
         layoutGroup.childForceExpandHeight = true;
+        layoutGroup.padding = new RectOffset(10, 10, 5, 5);
+        layoutGroup.childAlignment = TextAnchor.MiddleLeft;
+
+        // Özel renk için ilk 3 sırayı vurgula
+        Color textColor = Color.white;
+        string rankPrefix = "";
+        if (rank == 1)
+        {
+            textColor = new Color(1f, 0.84f, 0f); // Altın
+            rankPrefix = "🥇 ";
+        }
+        else if (rank == 2)
+        {
+            textColor = new Color(0.75f, 0.75f, 0.75f); // Gümüş
+            rankPrefix = "🥈 ";
+        }
+        else if (rank == 3)
+        {
+            textColor = new Color(0.8f, 0.5f, 0.2f); // Bronz
+            rankPrefix = "🥉 ";
+        }
 
         // Rank Text
         GameObject rankObj = new GameObject("RankText");
-        rankObj.transform.SetParent(entryObj.transform);
+        rankObj.transform.SetParent(entryObj.transform, false);
         TextMeshProUGUI rankText = rankObj.AddComponent<TextMeshProUGUI>();
-        rankText.text = $"{rank}.";
-        rankText.fontSize = 18;
-        rankText.alignment = TextAlignmentOptions.Left;
+        rankText.text = $"{rankPrefix}{rank}.";
+        rankText.fontSize = 20;
+        rankText.fontStyle = FontStyles.Bold;
+        rankText.color = textColor;
+        rankText.alignment = TextAlignmentOptions.Center;
         RectTransform rankRect = rankObj.GetComponent<RectTransform>();
-        rankRect.sizeDelta = new Vector2(50, 0);
+        rankRect.sizeDelta = new Vector2(70, 0);
 
         // Name Text
         GameObject nameObj = new GameObject("NameText");
-        nameObj.transform.SetParent(entryObj.transform);
+        nameObj.transform.SetParent(entryObj.transform, false);
         TextMeshProUGUI nameText = nameObj.AddComponent<TextMeshProUGUI>();
         nameText.text = entry.playerName;
         nameText.fontSize = 18;
+        nameText.color = textColor;
         nameText.alignment = TextAlignmentOptions.Left;
+        nameText.fontStyle = FontStyles.Normal;
         RectTransform nameRect = nameObj.GetComponent<RectTransform>();
-        nameRect.sizeDelta = new Vector2(180, 0);
+        nameRect.sizeDelta = new Vector2(200, 0);
 
         // Score Text
         GameObject scoreObj = new GameObject("ScoreText");
-        scoreObj.transform.SetParent(entryObj.transform);
+        scoreObj.transform.SetParent(entryObj.transform, false);
         TextMeshProUGUI scoreText = scoreObj.AddComponent<TextMeshProUGUI>();
-        scoreText.text = entry.maxScore.ToString();
-        scoreText.fontSize = 18;
+        scoreText.text = $"{entry.maxScore:N0}"; // Binlik ayırıcılarla
+        scoreText.fontSize = 20;
+        scoreText.fontStyle = FontStyles.Bold;
+        scoreText.color = textColor;
         scoreText.alignment = TextAlignmentOptions.Right;
         RectTransform scoreRect = scoreObj.GetComponent<RectTransform>();
-        scoreRect.sizeDelta = new Vector2(80, 0);
+        scoreRect.sizeDelta = new Vector2(100, 0);
+
+        // Layout Element ekle (scroll için önemli)
+        UnityEngine.UI.LayoutElement layoutElement = entryObj.AddComponent<UnityEngine.UI.LayoutElement>();
+        layoutElement.minHeight = 45;
+        layoutElement.preferredHeight = 45;
 
         return entryObj;
     }

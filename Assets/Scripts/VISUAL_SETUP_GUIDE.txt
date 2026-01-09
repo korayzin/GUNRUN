@@ -1,0 +1,170 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                    📊 GÖRSEL KURULUM REHBERİ 📊                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+MEVCUT YAPINIZ (Ekran görüntüsünden):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    📦 LeaderboardRow  ← LeaderboardUI script'ini BURAYA ekle!
+    │
+    └─📦 Score
+       │
+       ├─📝 RankText       (kendi sıranı gösterecek)
+       │
+       ├─📝 ScoreText      (kendi max skorunu gösterecek)
+       │
+       └─📜 Scroll View    ← Oyuncular BURAYA listelenecek
+          │
+          └─📦 Viewport
+             │
+             └─📦 Content  ⭐ BU ÇOK ÖNEMLİ! LeaderboardUI'a ata!
+                │
+                └─ (Buraya entry'ler eklenecek)
+                   ├─ 🥇 1. Ali456 - 5000
+                   ├─ 🥈 2. Ayşe123 - 4500
+                   ├─ 🥉 3. Mehmet789 - 4000
+                   ├─ 4. Fatma321 - 3500
+                   └─ ...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+İŞTE BÖYLE OLACAK:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    ┌────────────────────────────────────────────────────┐
+    │  LeaderboardRow                                    │
+    │  ┌──────────────────────────────────────────────┐ │
+    │  │ RankText:    🏆 Senin Sıran: 5               │ │
+    │  │ ScoreText:   💰 Senin Max Skorun: 3200       │ │
+    │  └──────────────────────────────────────────────┘ │
+    │  ┌──────────────────────────────────────────────┐ │
+    │  │ ┌──────────────────────────────────────────┐ │ │
+    │  │ │ SCROLL VIEW (Content içinde entry'ler)  │ │ │
+    │  │ │                                          │ │ │
+    │  │ │ ╔═══════════════════════════════════════╗│ │ │
+    │  │ │ ║ 🥇 1.   Ali456          5000 puan   ║│ │ │
+    │  │ │ ╠═══════════════════════════════════════╣│ │ │
+    │  │ │ ║ 🥈 2.   Ayşe123         4500 puan   ║│ │ │
+    │  │ │ ╠═══════════════════════════════════════╣│ │ │
+    │  │ │ ║ 🥉 3.   Mehmet789       4000 puan   ║│ │ │
+    │  │ │ ╠═══════════════════════════════════════╣│ │ │
+    │  │ │ ║    4.   Fatma321        3500 puan   ║│ │ │
+    │  │ │ ╠═══════════════════════════════════════╣│ │ │
+    │  │ │ ║    5.   Ahmet654        3200 puan   ║│ ◄── Scroll
+    │  │ │ ╠═══════════════════════════════════════╣│ │ │
+    │  │ │ ║    6.   Zeynep987       2800 puan   ║│ │ │
+    │  │ │ ╠═══════════════════════════════════════╣│ │ │
+    │  │ │ ║    7.   Mustafa111      2500 puan   ║│ │ │
+    │  │ │ ╚═══════════════════════════════════════╝│ │ │
+    │  │ └──────────────────────────────────────────┘ │ │
+    │  └──────────────────────────────────────────────┘ │
+    └────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INSPECTOR AYARLARI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. LeaderboardRow seçili iken:
+
+   ┌─────────────────────────────────────────────────────────┐
+   │ ● LeaderboardRow                                        │
+   │ ─────────────────────────────────────────────────────── │
+   │ Transform                                               │
+   │ LeaderboardUI (Script)                        ← EKLE!  │
+   │   Leaderboard Panel      [ LeaderboardRow  ]           │
+   │   Leaderboard Content    [ Content         ] ⭐ ÖNEMLİ!│
+   │   Leaderboard Entry Pre… [                 ]           │
+   │   Loading Text           [                 ]           │
+   │   My Score Text          [ ScoreText       ]           │
+   │   Refresh Button         [                 ]           │
+   │   Max Entries            [ 50              ]           │
+   │   Add Test Players Bu…   [                 ]           │
+   │   Clear Test Players … [                 ]           │
+   └─────────────────────────────────────────────────────────┘
+
+2. Scroll View seçili iken:
+
+   ┌─────────────────────────────────────────────────────────┐
+   │ ● Scroll View                                           │
+   │ ─────────────────────────────────────────────────────── │
+   │ Scroll Rect                                             │
+   │   Content         [ Content                ]            │
+   │   ☑ Vertical                                            │
+   │   ☐ Horizontal                                          │
+   │   Movement Type   [ Elastic           ▼]               │
+   │   Elasticity      [ 0.1                 ]              │
+   │   ☑ Inertia                                             │
+   │   Scroll Sensiti… [ 1                   ]              │
+   └─────────────────────────────────────────────────────────┘
+
+3. Content seçili iken (otomatik eklenecek):
+
+   ┌─────────────────────────────────────────────────────────┐
+   │ ● Content                                               │
+   │ ─────────────────────────────────────────────────────── │
+   │ Vertical Layout Group              ← Script ekleyecek  │
+   │   Padding         [ 10, 10, 10, 10 ]                   │
+   │   Spacing         [ 5               ]                  │
+   │   Child Alignment [ Upper Left  ▼   ]                  │
+   │   Control Child S [ ☑ Width  ☐ Height ]                │
+   │                                                         │
+   │ Content Size Fitter                ← Script ekleyecek  │
+   │   Horizontal Fit  [ Unconstrained ▼ ]                  │
+   │   Vertical Fit    [ Preferred Size ▼]                  │
+   └─────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DRAGamp; DROP REHBERİ:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Content'i nasıl bulup atarsın:
+
+   HIERARCHY                          INSPECTOR
+   ─────────────────────────────────────────────────────────
+   ▼ LeaderboardRow            →  ● LeaderboardRow
+     ▼ Score                       LeaderboardUI (Script)
+       • RankText                    Leaderboard Content
+       • ScoreText                 ┌──────────────────┐
+       ▼ Scroll View               │ None (Transform) │
+         ▼ Viewport                │       ○          │ ← Buraya
+           • Content ──────────────┼───────┘          │   sürükle!
+                                   └──────────────────┘
+
+   ADIMLAR:
+   1. LeaderboardRow'u seç
+   2. Hierarchy'de oklarla aç: LeaderboardRow → Score → Scroll View → Viewport
+   3. "Content" objesini gör
+   4. Content'e tıkla VE SÜRÜKLE
+   5. Inspector'da LeaderboardUI → "Leaderboard Content" alanına BIRAK
+   6. Şimdi "Content (Transform)" yazmalı ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+KONTROL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ LeaderboardRow'da LeaderboardUI script'i var mı?
+✅ Leaderboard Content = Content (Transform) yazıyor mu?
+✅ Scene'de FirebaseManager var mı?
+✅ Scroll View'da Vertical checkbox'u açık mı?
+
+Hepsi ✅ ise → Play mode'a gir ve test et! 🚀
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEST KODU:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Console'da çalıştır (Window → General → Console)
+FindObjectOfType<LeaderboardUI>().AddTestPlayers();
+
+// 3 saniye bekle, sonra:
+FindObjectOfType<LeaderboardUI>().LoadLeaderboard();
+
+// Scroll View içinde oyuncular görünecek!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Başarılar! 🎉

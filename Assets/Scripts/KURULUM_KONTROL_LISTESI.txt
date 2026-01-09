@@ -1,0 +1,177 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║             🏆 LEADERBOARD KURULUM KONTROL LİSTESİ 🏆                  ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+✅ Unity'de YAPILMASI GEREKENLER:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 ADIM 1: LeaderboardUI GameObject'ini Bul
+   Hierarchy'de şu yolu takip et:
+   UI → GameMenu → Canvas → UIMenu → Panels → MainMenuPanel → InGame
+   
+   "Leaderboard" veya "LeaderboardFlow" GameObject'ini seç
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 ADIM 2: LeaderboardUI Component Referansları
+   Inspector'da "LeaderboardUI" component'ini bul ve şunları ata:
+
+   ⚠️ ÖNEMLİ - MUTLAKA ATANMALI:
+   
+   1️⃣ Leaderboard Panel:
+      → Leaderboard GameObject'inin kendisini ata (veya altındaki Panel)
+   
+   2️⃣ Leaderboard Content: ⭐ EN ÖNEMLİ!
+      → ScrollView → Viewport → Content'i buraya sürükle
+      → Bu olmadan liste gösterilmez!
+   
+   3️⃣ Leaderboard Entry Prefab:
+      → Assets/Gunrun 2.0/Prefabs 2.0/LeaderboardRow prefab'ını sürükle
+      → Bu olmadan otomatik entry oluşturulur (yine de çalışır)
+   
+   4️⃣ My Score Text:
+      → "Score (Text Mesh Pro UGUI)" objesini sürükle
+      → Yoksa otomatik bulunmaya çalışılır
+   
+   5️⃣ Refresh Button: (Opsiyonel)
+      → Refresh butonu varsa ata
+   
+   6️⃣ Loading Text: (Opsiyonel)
+      → "Yükleniyor..." text'i varsa ata
+
+   7️⃣ Max Entries: 50 (varsayılan değer)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 ADIM 3: LeaderboardRow Prefab'ını Düzenle
+   
+   1. Assets/Gunrun 2.0/Prefabs 2.0/LeaderboardRow'u aç
+   
+   2. LeaderboardRow GameObject'ine "LeaderboardEntryUI" script'ini ekle
+      → Inspector → Add Component → LeaderboardEntryUI
+   
+   3. LeaderboardEntryUI referansları:
+      - Rank Text → Rank text objesini ata
+      - Name Text → Name/İsim text objesini ata  
+      - Score Text → Score/Puan text objesini ata
+      - Background Image → (Opsiyonel) Arka plan image'ı ata
+   
+   4. Prefab'ı kaydet (Ctrl+S)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 ADIM 4: ScrollView Ayarları Kontrol
+   
+   ScrollView seçili iken Inspector'da:
+   
+   ✅ Scroll Rect Component:
+      - ☑ Vertical = AÇIK
+      - ☐ Horizontal = KAPALI
+      - Movement Type = Elastic
+      - Elasticity = 0.1
+      - Inertia = true
+      - Scroll Sensitivity = 1
+   
+   ✅ Content (ScrollView/Viewport/Content):
+      - VerticalLayoutGroup component'i eklenecek (otomatik)
+      - ContentSizeFitter component'i eklenecek (otomatik)
+      - RectTransform Anchor = Top Stretch
+      - Pivot Y = 1
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 ADIM 5: FirebaseLeaderboardManager Kontrolü
+   
+   Hierarchy'de "FirebaseLeaderboardManager" GameObject'i olmalı
+   
+   ✅ Inspector'da:
+      - Firebase Database Url = 
+        https://gunrundata-default-rtdb.europe-west1.firebasedatabase.app
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 TEST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Play mode'a gir
+2. Console'u aç (Ctrl+Shift+C)
+3. Leaderboard'u aç (otomatik veya butonla)
+4. Console'da şunları görmeli sin:
+
+   ✅ BAŞARILI LOG'LAR:
+   📊 Firebase'den TÜM oyuncuların leaderboard verisi çekiliyor...
+   📊 JSON parse ediliyor...
+   ✅ Entry başarıyla parse edildi: [İsim] - [Puan] puan
+   📊 === LEADERBOARD (X oyuncu) ===
+      1. [İsim] - [Puan] puan
+      2. [İsim] - [Puan] puan
+      ...
+   ✅ Leaderboard başarıyla gösterildi! Toplam X oyuncu
+
+5. Eğer liste boşsa:
+   - Test oyuncuları ekle: leaderboardUI.AddTestPlayers()
+   - Console'da kodu çalıştır veya test butonu ekle
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ SORUN GİDERME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ "LEADERBOARD CONTENT YOK!" hatası:
+   → LeaderboardUI Inspector'da "Leaderboard Content" atandı mı?
+   → ScrollView/Viewport/Content'i sürükle
+
+❌ "FirebaseLeaderboardManager Instance bulunamadı!" hatası:
+   → Scene'de FirebaseLeaderboardManager GameObject'i var mı?
+   → Eğer yoksa: GameObject → Create Empty → Attach script
+
+❌ Liste boş görünüyor:
+   → Console'da Firebase loglarını kontrol et
+   → Internet bağlantısı var mı?
+   → Firebase Database URL doğru mu?
+   → Test oyuncuları ekle
+
+❌ Scroll çalışmıyor:
+   → Content'e VerticalLayoutGroup eklendi mi? (otomatik olmalı)
+   → Content'e ContentSizeFitter eklendi mi? (otomatik olmalı)
+   → ScrollView'da Vertical checkbox'u açık mı?
+
+❌ Prefab kullanılmıyor:
+   → LeaderboardUI'da "Leaderboard Entry Prefab" atandı mı?
+   → Console'da "Prefab kullanılarak entry oluşturuldu" yazıyor mu?
+   → Yoksa "Otomatik entry oluşturuldu" yazıyorsa prefab atanmamış
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 KONTROL LİSTESİ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scene'de kontrol et:
+☐ LeaderboardUI component'i var
+☐ LeaderboardPanel referansı atandı
+☐ LeaderboardContent referansı atandı ⭐ ÖNEMLİ!
+☐ LeaderboardEntryPrefab referansı atandı (opsiyonel)
+☐ FirebaseLeaderboardManager GameObject'i var
+☐ Firebase Database URL doğru
+
+Prefab'da kontrol et:
+☐ LeaderboardRow prefab'ı var
+☐ LeaderboardEntryUI script'i eklendi
+☐ Rank Text referansı atandı
+☐ Name Text referansı atandı
+☐ Score Text referansı atandı
+
+Test:
+☐ Play mode'da leaderboard açılıyor
+☐ Console'da log'lar görünüyor
+☐ Firebase'den veri çekiliyor
+☐ Liste scroll edilebiliyor
+☐ İlk 3 sıra özel renkte (🥇🥈🥉)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Başarılar! 🚀
+
+Daha fazla bilgi için:
+- LEADERBOARD_SETUP.md (Detaylı kurulum)
+- LEADERBOARD_QUICK_START.txt (Hızlı başlangıç)

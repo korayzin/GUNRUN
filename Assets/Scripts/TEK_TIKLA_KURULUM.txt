@@ -1,0 +1,288 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                   ⚡ TEK TIKLA KURULUM! ⚡                              ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+Unity Editor'in ÜST MENÜSÜNE özel buton eklendi!
+Artık SADECE 1 TIKLAMA ile her şey kurulacak! 🚀
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 ÜST MENÜDEN TEK TIKLA!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    Unity Editor'in üst menüsünde:
+    
+    ┌───────────────────────────────────────────────────────────────┐
+    │ File  Edit  Assets  GameObject  Component  Window  Help      │
+    │                                                               │
+    │                      [Leaderboard] ◄─── YENİ MENÜ!          │
+    └───────────────────────────────────────────────────────────────┘
+    
+    "Leaderboard" menüsüne tıkla!
+    
+    ▼
+    
+    ┌───────────────────────────────────────────────────────────────┐
+    │ Leaderboard                                          [X]      │
+    ├───────────────────────────────────────────────────────────────┤
+    │                                                               │
+    │  ⚡ TEK TIKLA OTOMATIK KURULUM ⚡         ◄── BUNA TIKLA!    │
+    │                                                               │
+    │  📊 Mevcut Objeye Ekle (LeaderboardRow için)                 │
+    │                                                               │
+    │  🧪 Test Butonları Ekle                                      │
+    │                                                               │
+    │  ─────────────────────────────────────────                   │
+    │                                                               │
+    │  📚 Dokümantasyon                                  ▶         │
+    │     ├─ 📖 Hızlı Başlangıç                                    │
+    │     ├─ 📋 Otomatik Kurulum Rehberi                           │
+    │     └─ 🎯 3 Adımda Kurulum                                   │
+    │                                                               │
+    └───────────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ SADECE 2 ADIM!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    1️⃣  Leaderboard → ⚡ TEK TIKLA OTOMATIK KURULUM ⚡
+    
+    2️⃣  Popup'ta "EVET! Kur! 🚀" butonuna tıkla
+    
+    BİTTİ! ✅
+    
+    ⏱️ Toplam süre: 5 saniye!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 NE OLUŞTURULUR?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    ONAY POPUP PENCERESI:
+    ┌───────────────────────────────────────────────────────────────┐
+    │  🚀 Otomatik Leaderboard Kurulumu                            │
+    ├───────────────────────────────────────────────────────────────┤
+    │                                                               │
+    │  Leaderboard sistemi otomatik kurulacak!                     │
+    │                                                               │
+    │  Oluşturulacaklar:                                           │
+    │  ✅ Canvas (yoksa)                                            │
+    │  ✅ LeaderboardPanel (Title, ScrollView, vb.)                │
+    │  ✅ LeaderboardUI script (tüm referanslar atanmış)           │
+    │  ✅ FirebaseManager                                           │
+    │  ✅ Test butonları                                            │
+    │                                                               │
+    │  Devam edilsin mi?                                           │
+    │                                                               │
+    │           ┌──────────────┐  ┌─────────┐                     │
+    │           │ EVET! Kur! 🚀│  │  İptal  │                     │
+    │           └──────────────┘  └─────────┘                     │
+    └───────────────────────────────────────────────────────────────┘
+    
+    "EVET! Kur! 🚀" tıkla!
+    
+    ▼
+    
+    KURULUM TAMAMLANDI POPUP'I:
+    ┌───────────────────────────────────────────────────────────────┐
+    │  🎉 Kurulum Başarılı!                                         │
+    ├───────────────────────────────────────────────────────────────┤
+    │                                                               │
+    │  Leaderboard sistemi tamamen kuruldu!                        │
+    │                                                               │
+    │  ✅ LeaderboardPanel oluşturuldu                              │
+    │  ✅ ScrollView ve Content hazır                               │
+    │  ✅ LeaderboardUI script eklendi                              │
+    │  ✅ FirebaseManager eklendi                                   │
+    │  ✅ Test butonları eklendi                                    │
+    │                                                               │
+    │  Şimdi yapman gerekenler:                                    │
+    │  1. Play mode'a geç                                          │
+    │  2. 'Test Oyuncuları Ekle' butonuna tıkla                    │
+    │  3. 2 saniye bekle                                           │
+    │  4. 'Yenile' butonuna tıkla                                  │
+    │  5. Oyuncuları gör! 🎉                                       │
+    │                                                               │
+    │  HER ŞEY HAZIR! Tek yapman gereken Play'e basmak!           │
+    │                                                               │
+    │                      ┌──────────────┐                        │
+    │                      │  Harika! 🚀  │                        │
+    │                      └──────────────┘                        │
+    └───────────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏗️ OLUŞTURULAN YAPILAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    Hierarchy'de:
+    
+    📦 Canvas (veya mevcut Canvas)
+       │
+       └─📦 LeaderboardPanel  [LeaderboardUI] ◄── HER ŞEY HAZIR!
+          │
+          ├─📝 Title
+          │   "🏆 LEADERBOARD 🏆"
+          │
+          ├─📝 MyScoreText
+          │   "🏆 Senin Max Skorun: 0"
+          │
+          ├─📜 ScrollView  [ScrollRect]
+          │  └─📦 Viewport  [Mask]
+          │     └─📦 Content  [VerticalLayoutGroup, ContentSizeFitter]
+          │        └─ (Buraya oyuncular listelenecek)
+          │
+          ├─📝 LoadingText (inactive)
+          │   "Yükleniyor..."
+          │
+          └─📦 TestButtons  [HorizontalLayoutGroup]
+             ├─🔘 ➕ Test Oyuncuları Ekle
+             ├─🔘 🗑️ Test Oyuncuları Sil
+             └─🔘 🔄 Yenile
+    
+    📦 FirebaseManager  [FirebaseLeaderboardManager]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎮 HEMEN TEST ET!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    1. Play mode'a geç (Ctrl+P veya üstteki Play ▶ butonu)
+    
+    2. Game view'da test butonlarını gör:
+    
+       ┌────────────────────────────────────────────────────┐
+       │ 🏆 LEADERBOARD 🏆                                  │
+       │ 🏆 Senin Max Skorun: 0                             │
+       │                                                    │
+       │ ┌────────────────────────────────────────────────┐ │
+       │ │                                                │ │
+       │ │  (ScrollView - henüz boş)                     │ │
+       │ │                                                │ │
+       │ └────────────────────────────────────────────────┘ │
+       │                                                    │
+       │ [➕ Test Oyuncuları Ekle] [🗑️ Sil] [🔄 Yenile]   │
+       └────────────────────────────────────────────────────┘
+    
+    3. "➕ Test Oyuncuları Ekle" butonuna tıkla
+       → Console'da: "🧪 10 test oyuncusu ekleniyor..."
+    
+    4. 2-3 saniye bekle
+    
+    5. "🔄 Yenile" butonuna tıkla
+       → ScrollView dolacak!
+    
+       ┌────────────────────────────────────────────────────┐
+       │ 🏆 LEADERBOARD 🏆                                  │
+       │ 🏆 Senin Max Skorun: 0                             │
+       │                                                    │
+       │ ┌────────────────────────────────────────────────┐ │
+       │ │ 🥇 1.  Ayşe456         5234 puan              │ │
+       │ │ 🥈 2.  Ali789          4892 puan              │ │
+       │ │ 🥉 3.  Mehmet321       4501 puan              │ │
+       │ │    4.  Fatma654        3998 puan              │ │
+       │ │    5.  Ahmet123        3654 puan  ◄ SCROLL    │ │
+       │ │    6.  Zeynep999       3201 puan              │ │
+       │ │    7.  Mustafa111      2876 puan              │ │
+       │ └────────────────────────────────────────────────┘ │
+       │                                                    │
+       │ [➕ Test Oyuncuları Ekle] [🗑️ Sil] [🔄 Yenile]   │
+       └────────────────────────────────────────────────────┘
+    
+    6. BAŞARILI! 🎉🎉🎉
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 DİĞER MENÜ SEÇENEKLERİ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    Leaderboard menüsünde:
+    
+    ┌─────────────────────────────────────────────────────────┐
+    │ 📊 Mevcut Objeye Ekle (LeaderboardRow için)            │
+    ├─────────────────────────────────────────────────────────┤
+    │ • Zaten LeaderboardRow varsa                            │
+    │ • O objeye LeaderboardUI ekler                          │
+    │ • ScrollView otomatik bulur ve atar                     │
+    │                                                         │
+    │ KULLANIM:                                               │
+    │ 1. LeaderboardRow'u seç                                 │
+    │ 2. Leaderboard → 📊 Mevcut Objeye Ekle                 │
+    │ 3. Bitti!                                               │
+    └─────────────────────────────────────────────────────────┘
+    
+    ┌─────────────────────────────────────────────────────────┐
+    │ 🧪 Test Butonları Ekle                                  │
+    ├─────────────────────────────────────────────────────────┤
+    │ • Sadece test butonları ekler                           │
+    │ • Panel zaten varsa kullan                              │
+    │                                                         │
+    │ KULLANIM:                                               │
+    │ 1. LeaderboardPanel'i seç                               │
+    │ 2. Leaderboard → 🧪 Test Butonları Ekle                │
+    │ 3. Bitti!                                               │
+    └─────────────────────────────────────────────────────────┘
+    
+    ┌─────────────────────────────────────────────────────────┐
+    │ 📚 Dokümantasyon                                        │
+    ├─────────────────────────────────────────────────────────┤
+    │ • Tüm rehberleri açar                                   │
+    │ • Hızlı başlangıç, kurulum, vs.                         │
+    │                                                         │
+    │ DOSYALAR:                                               │
+    │ ├─ 📖 Hızlı Başlangıç                                   │
+    │ ├─ 📋 Otomatik Kurulum Rehberi                          │
+    │ └─ 🎯 3 Adımda Kurulum                                  │
+    └─────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 ÖZET: TEK TIKLA KURULUM!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    ╔═══════════════════════════════════════════════════════════╗
+    ║  1. Leaderboard → ⚡ TEK TIKLA OTOMATIK KURULUM ⚡       ║
+    ║  2. "EVET! Kur! 🚀" butonuna tıkla                       ║
+    ║  3. Play mode                                             ║
+    ║  4. "Test Oyuncuları Ekle" tıkla                         ║
+    ║  5. 2 saniye bekle                                        ║
+    ║  6. "Yenile" tıkla                                        ║
+    ║  7. BAŞARILI! 🎉                                          ║
+    ╚═══════════════════════════════════════════════════════════╝
+    
+    ⏱️ Toplam süre: 30 saniye
+    🎮 Manuel ayar: 0
+    ✅ Hazır: %100
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 İPUÇLARI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Unity Editor'in üst menüsünden erişebilirsin - her zaman görünür!
+✅ Test butonları otomatik eklenir - manuel kod yazmana gerek yok!
+✅ Console log'ları takip et - her şey loglanıyor
+✅ Prefab oluştur - diğer sahnelerde kullan
+✅ Git'e commit et - çalışan versiyonu kaydet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔥 EN KOLAY KURULUM!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Manuel kurulum?     ❌ ARTIK GEREK YOK!
+Context menu?       ❌ GEREK YOK!
+Referans atama?     ❌ GEREK YOK!
+Layout component?   ❌ GEREK YOK!
+
+Sadece:
+    Leaderboard → ⚡ TEK TIKLA OTOMATIK KURULUM ⚡
+    
+    ✅ BU KADAR!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Artık Unity'nin üst menüsünden tek tıkla kurulum yapabilirsin! 🚀
+
+HEMEN DENE! ⚡

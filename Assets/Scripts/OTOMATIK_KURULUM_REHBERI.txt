@@ -1,0 +1,242 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║              🤖 OTOMATİK KURULUM REHBERI 🤖                            ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+Unity Editor'e özel otomatik kurulum menüsü eklendi!
+Artık tek tıkla her şey kurulacak! 🚀
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 MENÜ KONUMU:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Unity Editor'de:
+
+   Hierarchy → Sağ Tık → GameObject → Leaderboard → [Seçenekler]
+
+veya
+
+   Üst menüden: GameObject → Leaderboard → [Seçenekler]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 SEÇENEK 1: YENİ PANEL OLUŞTUR (Sıfırdan Başlıyorsan)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GameObject → Leaderboard → 🚀 Otomatik Kurulum (Yeni Panel Oluştur)
+
+   NE YAPAR:
+   ✅ Canvas oluşturur (yoksa)
+   ✅ LeaderboardPanel oluşturur
+   ✅ Title text ekler
+   ✅ MyScoreText ekler
+   ✅ ScrollView oluşturur
+   ✅ Viewport ve Content ekler
+   ✅ VerticalLayoutGroup ekler
+   ✅ ContentSizeFitter ekler
+   ✅ LoadingText ekler
+   ✅ LeaderboardUI script'ini ekler ve yapılandırır
+   ✅ FirebaseManager oluşturur
+   
+   KULLANIM:
+   1. Hierarchy'de herhangi bir yere tıkla (veya Canvas'ı seç)
+   2. Sağ tık → GameObject → Leaderboard → 🚀 Otomatik Kurulum
+   3. Popup pencere çıkacak → "Tamam"a tıkla
+   4. BİTTİ! Play mode'a geçip test et!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ SEÇENEK 2: MEVCUT OBJEYE EKLE (LeaderboardRow gibi)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GameObject → Leaderboard → ⚡ Mevcut Objeye LeaderboardUI Ekle
+
+   NE YAPAR:
+   ✅ Seçili objeye LeaderboardUI script'i ekler
+   ✅ Objeyi kendi Panel'i olarak atar
+   ✅ ScrollView'ı otomatik bulur
+   ✅ Content'i otomatik bulur ve atar
+   ✅ VerticalLayoutGroup ekler
+   ✅ ContentSizeFitter ekler
+   ✅ Text'leri otomatik bulur ve atar
+   ✅ FirebaseManager oluşturur
+   
+   KULLANIM:
+   1. Hierarchy'de LeaderboardRow'u seç (veya başka bir obje)
+   2. Sağ tık → GameObject → Leaderboard → ⚡ Mevcut Objeye LeaderboardUI Ekle
+   3. Popup pencere çıkacak → "Tamam"a tıkla
+   4. BİTTİ! Play mode'a geçip test et!
+   
+   ⚠️ ÖNEMLİ:
+   Seçtiğin objede bir ScrollView olmalı!
+   ScrollView → Viewport → Content yapısı bulunmalı!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 SEÇENEK 3: SADECE FIREBASE MANAGER OLUŞTUR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GameObject → Leaderboard → 🔧 Firebase Manager Oluştur
+
+   NE YAPAR:
+   ✅ Scene'e FirebaseManager GameObject'i ekler
+   ✅ FirebaseLeaderboardManager script'i ekler
+   ✅ Database URL'i otomatik ayarlar
+   
+   NE ZAMAN KULLAN:
+   - Sadece Firebase Manager eksikse
+   - Diğer her şey hazırsa
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 SEÇENEK 4: TEST BUTONLARI EKLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GameObject → Leaderboard → 🧪 Test Butonu Ekle
+
+   NE YAPAR:
+   ✅ "Test Oyuncuları Ekle" butonu oluşturur
+   ✅ "Test Oyuncuları Sil" butonu oluşturur
+   ✅ "Yenile" butonu oluşturur
+   ✅ Butonları LeaderboardUI'a bağlar
+   
+   KULLANIM:
+   1. Hierarchy'de LeaderboardPanel'i seç
+   2. Sağ tık → GameObject → Leaderboard → 🧪 Test Butonu Ekle
+   3. Butonlar oluşturulacak ve bağlanacak
+   4. Play mode'da butonlara tıklayarak test et!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 SEÇENEK 5: KURULUM REHBERİNİ AÇ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GameObject → Leaderboard → 📚 Kurulum Rehberini Aç
+
+   NE YAPAR:
+   ✅ HIZLI_KURULUM_3_ADIM.txt dosyasını açar
+   
+   NE ZAMAN KULLAN:
+   - Manuel kurulum yapmak istersen
+   - Detaylı bilgi almak istersen
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎬 SENARYOLAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 SENARYO 1: Sıfırdan başlıyorum, hiçbir şey yok
+
+   ADIMLAR:
+   1. GameObject → Leaderboard → 🚀 Otomatik Kurulum
+   2. Play mode'a geç
+   3. Console'da: FindObjectOfType<LeaderboardUI>().AddTestPlayers();
+   4. 2 saniye bekle
+   5. Console'da: FindObjectOfType<LeaderboardUI>().LoadLeaderboard();
+   6. BAŞARILI! 🎉
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 SENARYO 2: LeaderboardRow var, ama script yok
+
+   ADIMLAR:
+   1. Hierarchy'de LeaderboardRow'u seç
+   2. Sağ tık → GameObject → Leaderboard → ⚡ Mevcut Objeye LeaderboardUI Ekle
+   3. Play mode'a geç ve test et
+   4. BAŞARILI! 🎉
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📌 SENARYO 3: Her şey tamam, sadece test butonları istiyorum
+
+   ADIMLAR:
+   1. LeaderboardPanel'i seç
+   2. GameObject → Leaderboard → 🧪 Test Butonu Ekle
+   3. Play mode'a geç
+   4. Butonlara tıkla ve test et
+   5. BAŞARILI! 🎉
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 SORUN GİDERME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ Menü görünmüyor:
+   → Editor klasörü var mı? (Assets/Scripts/Editor/)
+   → LeaderboardAutoSetup.cs doğru klasörde mi?
+   → Script'te compile hatası var mı? (Console'u kontrol et)
+   → Unity'yi yeniden başlat
+
+❌ "Compile Error" hatası:
+   → TextMeshPro package yüklü mü?
+   → Window → Package Manager → TextMeshPro'yu yükle
+   → Scripts compile olana kadar bekle
+
+❌ Otomatik kurulum çalıştı ama boş görünüyor:
+   → Console'da log'ları kontrol et
+   → LeaderboardPanel seçili mi kontrol et
+   → Inspector'da referanslar atandı mı kontrol et
+
+❌ Test butonları çalışmıyor:
+   → Play mode'da mı?
+   → FirebaseManager var mı?
+   → Internet bağlantısı var mı?
+   → Console'da hata var mı?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 OLUŞTURULAN YAPILAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Yeni Panel Oluşturulduğunda:
+
+Canvas
+  └── LeaderboardPanel               [LeaderboardUI]
+      ├── Title                       "🏆 LEADERBOARD 🏆"
+      ├── MyScoreText                 "🏆 Senin Max Skorun: 0"
+      ├── ScrollView                  [ScrollRect]
+      │   └── Viewport               [Mask, Image]
+      │       └── Content            [VerticalLayoutGroup, ContentSizeFitter]
+      └── LoadingText                 "Yükleniyor..."
+
++ FirebaseManager                    [FirebaseLeaderboardManager]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test Butonları Eklendiğinde:
+
+LeaderboardPanel
+  └── TestButtons                     [HorizontalLayoutGroup]
+      ├── ➕ Test Oyuncuları Ekle    [Button]
+      ├── 🗑️ Test Oyuncuları Sil     [Button]
+      └── 🔄 Yenile                   [Button]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 İPUÇLARI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Otomatik kurulumu kullan - manuel kurulumdan çok daha hızlı!
+✅ Test butonlarını ekle - test etmek çok kolaylaşır
+✅ Console log'larını takip et - her şey loglanıyor
+✅ Prefab oluştur - sonraki sahnelerde kullanabilirsin
+✅ Git'e commit et - her şey çalışıyorken kaydet!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 HIZLI TEST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. GameObject → Leaderboard → 🚀 Otomatik Kurulum
+2. GameObject → Leaderboard → 🧪 Test Butonu Ekle
+3. Play mode
+4. "Test Oyuncuları Ekle" butonuna tıkla
+5. 2 saniye bekle
+6. "Yenile" butonuna tıkla
+7. Scroll view'da oyuncuları gör! 🎉
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Artık kurulum çok kolay! Tek tıkla her şey hazır! 🚀
+
+Başarılar! 🎮
