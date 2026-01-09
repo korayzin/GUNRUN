@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,6 +151,25 @@ public class GameManager : MonoBehaviour
         Debug.Log("⏸️ Oyun durduruldu (Time.timeScale = 0)");
 
         SaveBestScores();
+        
+        // Score'u önce güncelle (restart canvas açılmadan önce)
+        UpdateScoreUI();
+        
+        // Firebase'e max score kaydet
+        if (FirebaseLeaderboardManager.Instance != null)
+        {
+            FirebaseLeaderboardManager.Instance.SaveMaxScore(score, (success) =>
+            {
+                if (success)
+                {
+                    Debug.Log($"✅ Firebase'e max score kaydedildi: {score}");
+                }
+                else
+                {
+                    Debug.LogWarning("⚠️ Firebase'e score kaydedilemedi veya daha yüksek score zaten var.");
+                }
+            });
+        }
 
         if (portalSpawner != null)
         {
@@ -167,16 +186,23 @@ public class GameManager : MonoBehaviour
         {
             timeAndScorePanel.SetActive(false);
         }
-
+        
         if (restartCanvas != null)
         {
             restartCanvas.SetActive(true);
-            Debug.Log("✅ Restart canvas gösterildi");
+            Debug.Log($"✅ Restart canvas gösterildi - Final Score: {score}");
+            
+            // Restart canvas açıldıktan SONRA score'u güncelle (UI aktif olmalı)
+            StartCoroutine(UpdateScoreAfterCanvasActive());
         }
         else
         {
             Debug.LogError("❌ restartCanvas atanmamış! Unity Inspector'dan GameManager'a restartCanvas'i atayın!");
         }
+        
+        // Leaderboard'u göster (Firebase'den bağımsız)
+        Debug.Log("🎯 Game Over'da leaderboard açma çağrısı yapılıyor...");
+        StartCoroutine(ShowLeaderboardDelayed());
 
         if (backgroundMusic != null)
         {
@@ -225,6 +251,130 @@ public class GameManager : MonoBehaviour
             return JsonUtility.FromJson<ScoreList>(json).scores;
         }
         return new List<ScoreEntry>(); 
+    }
+    
+    private System.Collections.IEnumerator ShowLeaderboardDelayed()
+    {
+        Debug.Log("⏳ Leaderboard açma delay başlıyor...");
+        // Kısa bir delay (UI'ların aktif olması için)
+        yield return new WaitForSecondsRealtime(0.5f);
+        Debug.Log("✅ Leaderboard açma delay bitti");
+
+        // LeaderboardUI'yi bul ve göster
+        LeaderboardUI leaderboardUI = FindObjectOfType<LeaderboardUI>();
+        if (leaderboardUI != null)
+        {
+            Debug.Log($"✅ LeaderboardUI bulundu: {leaderboardUI.gameObject.name}");
+            leaderboardUI.ShowLeaderboard();
+            Debug.Log("✅ Leaderboard otomatik açıldı");
+
+            // Ekstra kontrol - panel gerçekten aktif mi?
+            if (leaderboardUI.leaderboardPanel != null)
+            {
+                Debug.Log($"📊 Leaderboard panel aktif durumu: {leaderboardUI.leaderboardPanel.activeSelf}");
+                if (!leaderboardUI.leaderboardPanel.activeSelf)
+                {
+                    leaderboardUI.leaderboardPanel.SetActive(true);
+                    Debug.Log("🔄 Leaderboard panel manuel aktif edildi");
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ LeaderboardUI bulunamadı! Scene'de LeaderboardUI script'i olan bir GameObject var mı kontrol et.");
+            Debug.LogWarning("   Tüm GameObject'ler kontrol ediliyor...");
+
+            // Tüm GameObject'leri kontrol et
+            GameObject[] allObjects = FindObjectsOfType<GameObject>();
+            foreach (GameObject obj in allObjects)
+            {
+                if (obj.GetComponent<LeaderboardUI>() != null)
+                {
+                    Debug.Log($"   🔍 LeaderboardUI bulundu: {obj.name}");
+                    obj.GetComponent<LeaderboardUI>().ShowLeaderboard();
+                    break;
+                }
+            }
+        }
+    }
+    
+    private System.Collections.IEnumerator UpdateScoreAfterCanvasActive()
+    {
+        // Canvas aktif olana kadar bekle
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.2f);
+        
+        // Score'u güncelle
+        UpdateScoreUI();
+        UpdateRestartCanvasScore();
+        
+        // Bir kez daha güncelle (bazı UI'lar geç yüklenebilir)
+        yield return new WaitForSecondsRealtime(0.3f);
+        UpdateScoreUI();
+        UpdateRestartCanvasScore();
+        
+        Debug.Log($"✅ Score güncellendi: {score}");
+    }
+    
+    private void UpdateRestartCanvasScore()
+    {
+        // Restart canvas içindeki tüm score text'lerini bul ve güncelle
+        if (restartCanvas == null)
+        {
+            Debug.LogWarning("⚠️ RestartCanvas null, score güncellenemedi");
+            return;
+        }
+        
+        Debug.Log($"📊 Restart canvas içinde score güncelleniyor... (Score: {score})");
+        
+        // Önce atanmış text'leri güncelle
+        if (scoreText != null)
+        {
+            scoreText.text = score.ToString();
+            Debug.Log($"✅ ScoreText güncellendi: {scoreText.gameObject.name} = {score}");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ scoreText null!");
+        }
+        
+        if (secondaryScoreText != null)
+        {
+            secondaryScoreText.text = score.ToString();
+            Debug.Log($"✅ SecondaryScoreText güncellendi: {secondaryScoreText.gameObject.name} = {score}");
+        }
+        
+        // Restart canvas içinde TÜM text'leri bul ve score içerenleri güncelle
+        TextMeshProUGUI[] allTexts = restartCanvas.GetComponentsInChildren<TextMeshProUGUI>(true);
+        Debug.Log($"📊 Restart canvas içinde {allTexts.Length} text bulundu");
+        
+        int updatedCount = 0;
+        foreach (TextMeshProUGUI text in allTexts)
+        {
+            if (text == null) continue;
+            
+            string textName = text.gameObject.name.ToLower();
+            string textContent = text.text.ToLower();
+            
+            // Score içeren text'leri bul
+            bool isScoreText = textName.Contains("score") || 
+                              textContent.Contains("score") ||
+                              text == scoreText || 
+                              text == secondaryScoreText;
+            
+            // Veya sadece sayı içeriyorsa (muhtemelen score)
+            int currentValue;
+            bool isNumeric = int.TryParse(text.text.Trim(), out currentValue);
+            
+            if (isScoreText || (isNumeric && currentValue < score))
+            {
+                text.text = score.ToString();
+                updatedCount++;
+                Debug.Log($"✅ Score text güncellendi: {text.gameObject.name} = {score} (önceki: {text.text})");
+            }
+        }
+        
+        Debug.Log($"📊 Toplam {updatedCount} score text güncellendi");
     }
 }
 
