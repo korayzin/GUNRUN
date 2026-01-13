@@ -1,0 +1,104 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║     🎯 CHILD NESNELERİNİ BAĞIMSIZ HAREKET ETTİRME REHBERİ 🎯          ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+📌 SORUN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LeaderboardRow üzerinde "Horizontal Layout Group" component'i var.
+Bu component, child nesnelerin (RankText, NameText, ScoreText) 
+konumlarını otomatik olarak kontrol ediyor. Bu yüzden onları 
+bağımsız olarak hareket ettiremiyorsun.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 ÇÖZÜM 1: Layout Group'u Geçici Olarak Devre Dışı Bırak (ÖNERİLEN)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Hierarchy'de "LeaderboardRow" objesini seç
+2. Inspector'da "Horizontal Layout Group" component'ini bul
+3. Component'in sol üst köşesindeki ☑ checkbox'u KAPAT
+   (Component devre dışı kalır ama silinmez)
+4. Artık child nesneleri (RankText, NameText, ScoreText) 
+   bağımsız olarak hareket ettirebilirsin!
+5. İstediğin konumları ayarladıktan sonra, Layout Group'u 
+   tekrar açabilirsin (ama bu durumda tekrar otomatik düzenlenir)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 ÇÖZÜM 2: Child Nesneleri Doğrudan Seç
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Hierarchy'de doğrudan child nesneyi seç:
+   - RankText
+   - NameText  
+   - ScoreText
+2. Scene view'da o nesneyi seçiliyken hareket ettir
+3. Inspector'da RectTransform değerlerini manuel olarak değiştir:
+   - Pos X, Pos Y değerlerini değiştir
+   - Anchor ve Pivot ayarlarını değiştir
+
+NOT: Layout Group aktifken, manuel değişiklikler genellikle 
+     geri alınır. Bu yüzden Çözüm 1 daha etkili.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 ÇÖZÜM 3: Layout Group Ayarlarını Değiştir
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. LeaderboardRow'u seç
+2. Inspector'da "Horizontal Layout Group" component'ini bul
+3. Şu ayarları değiştir:
+   
+   ☐ Child Control Width  → KAPALI (zaten kapalı)
+   ☐ Child Control Height → KAPALI (zaten kapalı)
+   ☐ Child Force Expand Width  → KAPALI yap
+   ☐ Child Force Expand Height → KAPALI yap
+   
+4. Bu ayarlar child nesnelerin otomatik genişlemesini engeller
+5. Ama yine de Layout Group spacing ve alignment'ı etkiler
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 ÇÖZÜM 4: Layout Group'u Tamamen Kaldır (Kalıcı)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. LeaderboardRow'u seç
+2. Inspector'da "Horizontal Layout Group" component'ine sağ tıkla
+3. "Remove Component" seç
+4. Artık child nesneleri tamamen bağımsız hareket ettirebilirsin
+
+⚠️ DİKKAT: Eğer kod içinde Layout Group kullanılıyorsa, 
+           bu çözüm sorun yaratabilir. Çözüm 1 daha güvenli.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 İPUÇLARI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Scene view'da child nesneyi seçmek için:
+   - Hierarchy'de child nesneye tıkla
+   - VEYA Scene view'da doğrudan nesneye tıkla
+
+✅ RectTransform ile hassas konumlandırma:
+   - Inspector'da RectTransform component'inde
+   - "Pos X" ve "Pos Y" değerlerini manuel gir
+   - Anchor ve Pivot ayarlarını değiştir
+
+✅ Anchor Presets kullan:
+   - RectTransform'da sol üstteki "Anchor Presets" butonuna tıkla
+   - İstediğin anchor tipini seç (örn: Top Left, Center, vb.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 HIZLI ADIMLAR (ÖNERİLEN):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. LeaderboardRow seç → Inspector → Horizontal Layout Group ☑ → KAPAT
+2. Hierarchy'de RankText seç → Scene'de istediğin yere sürükle
+3. NameText seç → Scene'de istediğin yere sürükle  
+4. ScoreText seç → Scene'de istediğin yere sürükle
+5. Konumları ayarladıktan sonra Layout Group'u tekrar açabilirsin
+   (ama bu durumda tekrar otomatik düzenlenir, bu yüzden açma)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

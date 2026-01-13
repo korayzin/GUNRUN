@@ -325,7 +325,7 @@ public class LeaderboardUI : MonoBehaviour
             
             if (myScoreText != null)
             {
-                myScoreText.text = $"🏆 Senin Max Skorun: {myScore}";
+                myScoreText.text = $"🏆 YOUR HIGH SCORE: {myScore}";
                 myScoreText.gameObject.SetActive(true);
                 Debug.Log($"✅ MyScoreText güncellendi: {myScoreText.gameObject.name}");
             }
@@ -336,7 +336,7 @@ public class LeaderboardUI : MonoBehaviour
                 FindMyScoreText();
                 if (myScoreText != null)
                 {
-                    myScoreText.text = $"🏆 Senin Max Skorun: {myScore}";
+                    myScoreText.text = $"🏆 YOUR HIGH SCORE: {myScore}";
                     myScoreText.gameObject.SetActive(true);
                     Debug.Log($"✅ MyScoreText otomatik bulundu ve güncellendi: {myScoreText.gameObject.name}");
                 }

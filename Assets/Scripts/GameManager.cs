@@ -356,6 +356,14 @@ public class GameManager : MonoBehaviour
             string textName = text.gameObject.name.ToLower();
             string textContent = text.text.ToLower();
             
+            // "puan text" gibi sadece label görevi gören text'leri atla
+            // Eğer text'in adında "puan" geçiyorsa, bu bir label'dır ve güncellenmemeli
+            if (textName.Contains("puan"))
+            {
+                Debug.Log($"⏭️ 'puan text' label olarak atlandı: {text.gameObject.name} = '{text.text}' (güncellenmedi)");
+                continue;
+            }
+            
             // Score içeren text'leri bul
             bool isScoreText = textName.Contains("score") || 
                               textContent.Contains("score") ||
