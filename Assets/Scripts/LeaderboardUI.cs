@@ -40,6 +40,20 @@ public class LeaderboardUI : MonoBehaviour
         
         // Eksik referansları otomatik bul
         AutoFindReferences();
+        
+        // UI scene'inde otomatik açılması için
+        // Kısa bir delay ile aç (UI'ların tam yüklenmesi için)
+        StartCoroutine(ShowLeaderboardOnStart());
+    }
+    
+    private System.Collections.IEnumerator ShowLeaderboardOnStart()
+    {
+        // UI'ların tam yüklenmesi için kısa bir bekleme
+        yield return new WaitForSeconds(0.1f);
+        
+        // Leaderboard'u göster
+        ShowLeaderboard();
+        Debug.Log("✅ Leaderboard otomatik olarak açıldı (Start metodundan)");
     }
     
     // TEST FONKSIYONU: Test oyuncuları ekle

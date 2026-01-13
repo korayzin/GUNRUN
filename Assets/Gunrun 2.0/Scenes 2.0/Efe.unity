@@ -39940,7 +39940,7 @@ Transform:
   m_GameObject: {fileID: 704817682}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.45763364, z: -0, w: 0.88914084}
-  m_LocalPosition: {x: -16.34, y: -1.11, z: 30.11}
+  m_LocalPosition: {x: -11.12, y: -0.24, z: 27.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -85033,7 +85033,7 @@ MonoBehaviour:
   timerText: {fileID: 1587404790}
   timeAndScorePanel: {fileID: 953788455}
   backgroundMusic: {fileID: 0}
-  gameDuration: 5
+  gameDuration: 195.17
   score: 0
 --- !u!4 &1834682428
 Transform:
@@ -89902,7 +89902,7 @@ Transform:
   m_GameObject: {fileID: 1982940888}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.81, y: -0.45, z: -48.06}
+  m_LocalPosition: {x: -0.81, y: 0.39, z: -48.06}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 1
   m_Children: []
