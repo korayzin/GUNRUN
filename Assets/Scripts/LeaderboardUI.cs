@@ -9,6 +9,7 @@ public class LeaderboardUI : MonoBehaviour
     public GameObject leaderboardPanel;
     public Transform leaderboardContent;
     public GameObject leaderboardEntryPrefab;
+    public GameObject leaderboardHeaderPrefab;
     public TextMeshProUGUI loadingText;
     public TextMeshProUGUI myScoreText;
     public Button refreshButton;
@@ -442,6 +443,25 @@ public class LeaderboardUI : MonoBehaviour
 
     private void CreateHeaderEntry()
     {
+        GameObject headerObj;
+        
+        if (leaderboardHeaderPrefab != null)
+        {
+            // Prefab varsa kullan
+            headerObj = Instantiate(leaderboardHeaderPrefab, leaderboardContent, false);
+            headerObj.name = "LeaderboardHeader";
+            Debug.Log($"✅ Header prefab kullanılarak oluşturuldu");
+        }
+        else
+        {
+            // Prefab yoksa otomatik header oluştur
+            headerObj = CreateDefaultHeader();
+            Debug.Log($"⚠️ Otomatik header oluşturuldu (prefab yok)");
+        }
+    }
+    
+    private GameObject CreateDefaultHeader()
+    {
         GameObject headerObj = new GameObject("LeaderboardHeader");
         headerObj.transform.SetParent(leaderboardContent, false);
 
@@ -506,6 +526,8 @@ public class LeaderboardUI : MonoBehaviour
         UnityEngine.UI.LayoutElement layoutElement = headerObj.AddComponent<UnityEngine.UI.LayoutElement>();
         layoutElement.minHeight = 50;
         layoutElement.preferredHeight = 50;
+        
+        return headerObj;
     }
     
     private void CreateLeaderboardEntry(int rank, LeaderboardEntry entry)
