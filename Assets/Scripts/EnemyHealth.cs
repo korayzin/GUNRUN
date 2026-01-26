@@ -26,6 +26,10 @@ public class EnemyHealth : MonoBehaviour
     [Header("Single Collider System (for new enemies)")]
     public GameObject floatingTextPrefab; // Tek collider için genel floating text
 
+    [Header("Health Glow System")]
+    public bool useHealthGlow = true;
+    public string glowColorPropertyName = "_NeonColor"; // veya "_GlowColor", "_RimColor"
+
     public AudioClip damageSFX;
     public AudioClip deathSFX;
     private AudioSource audioSource;
@@ -35,11 +39,15 @@ public class EnemyHealth : MonoBehaviour
     public int scoreValue = 50;
     private bool isDead = false;
 
+    private Renderer[] enemyRenderers;
+    private MaterialPropertyBlock propertyBlock;
+
     void Start()
     {
         currentHealth = totalHealth;
         audioSource = GetComponent<AudioSource>();
         gunFire = FindObjectOfType<GunFire>();
+        InitializeHealthGlow();
     }
 
     public void TakeDamage(float damage, Collider hitCollider)
@@ -90,6 +98,8 @@ public class EnemyHealth : MonoBehaviour
         currentHealth -= adjustedDamage;
 
         //GameManager.Instance.AddScore((int)adjustedDamage);
+
+        UpdateHealthGlow();
 
         if (currentHealth <= 0)
         {
@@ -165,6 +175,45 @@ public class EnemyHealth : MonoBehaviour
         headPos.y += 0.2f;
         
         return headPos;
+    }
+
+    private void InitializeHealthGlow()
+    {
+        if (!useHealthGlow) return;
+        
+        enemyRenderers = GetComponentsInChildren<Renderer>();
+        propertyBlock = new MaterialPropertyBlock();
+        UpdateHealthGlow(); // İlk renk ayarını yap
+    }
+
+    private void UpdateHealthGlow()
+    {
+        if (!useHealthGlow || enemyRenderers == null || propertyBlock == null) return;
+        
+        float healthRatio = currentHealth / totalHealth;
+        Color healthColor = GetHealthColor(healthRatio);
+        
+        foreach (Renderer renderer in enemyRenderers)
+        {
+            if (renderer != null && renderer.sharedMaterial != null)
+            {
+                renderer.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor(glowColorPropertyName, healthColor);
+                renderer.SetPropertyBlock(propertyBlock);
+            }
+        }
+    }
+
+    private Color GetHealthColor(float healthRatio)
+    {
+        if (healthRatio > 0.75f)
+            return Color.Lerp(Color.green, Color.yellow, (1f - healthRatio) * 4f);
+        else if (healthRatio > 0.5f)
+            return Color.Lerp(Color.yellow, new Color(1f, 0.53f, 0f), (0.75f - healthRatio) * 4f);
+        else if (healthRatio > 0.25f)
+            return Color.Lerp(new Color(1f, 0.53f, 0f), Color.red, (0.5f - healthRatio) * 4f);
+        else
+            return Color.red;
     }
 
     private void Die()
