@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: 50
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
   m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
@@ -94,8 +94,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 5
-  m_fontSizeBase: 5
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -149,8 +149,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyTime: 1.5
-  offset: {x: 0, y: 1, z: 0}
   floatSpeed: 1
+  floatDistance: 1.5
+  scaleUpDuration: 0.2
+  scaleDownDuration: 0.3
+  scaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fadeStartTime: 0.8
+  fadeDuration: 0.7
 --- !u!1 &7127387094801913698
 GameObject:
   m_ObjectHideFlags: 0
@@ -164,7 +192,7 @@ GameObject:
   - component: {fileID: 4937555544235509157}
   - component: {fileID: 7389290208520211412}
   m_Layer: 5
-  m_Name: hs float
+  m_Name: body float
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

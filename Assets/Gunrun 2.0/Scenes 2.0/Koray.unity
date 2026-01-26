@@ -5087,7 +5087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f603ccb526f7a4949b5a51a818444912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstWeapon: {fileID: 20849705}
+  firstWeapon: {fileID: 828508232}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 1057328217}
   fourthWeapon: {fileID: 2972479651670665011}
@@ -5095,7 +5095,7 @@ MonoBehaviour:
   sixthWeapon: {fileID: 2443542293831071706}
   seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
-  ninthWeapon: {fileID: 0}
+  ninthWeapon: {fileID: 20849705}
   firstWeaponImage: {fileID: 0}
   secondWeaponImage: {fileID: 0}
   thirdWeaponImage: {fileID: 0}
@@ -72196,6 +72196,8 @@ MonoBehaviour:
   tur2Enemy: {fileID: 5333744322337909881, guid: a5bbdc8d2f824ad4680afbb477631197,
     type: 3}
   tur3Enemy: {fileID: 3014174030876529923, guid: 4dd716d44bf9fc04dae8a6b6b082d73f,
+    type: 3}
+  floatingTextPrefab: {fileID: 7127387094801913698, guid: 0dd27ccc7d25e96458067037de82e456,
     type: 3}
   enemySpawnInterval: 2
   delayBeforeFirstSpawn: 10

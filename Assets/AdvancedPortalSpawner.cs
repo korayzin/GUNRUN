@@ -26,6 +26,10 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public GameObject tur2Enemy;
     public GameObject tur3Enemy;
 
+    [Header("Damage Feedback Prefabs")]
+    [Tooltip("Tek collider sistemli yeni düşmanlar için genel floating text")]
+    public GameObject floatingTextPrefab;
+
     [Header("Spawn Settings")]
     public float enemySpawnInterval = 2f;
     public float delayBeforeFirstSpawn = 5f;
@@ -213,10 +217,19 @@ public class AdvancedPortalSpawner : MonoBehaviour
             enemyHealth.bodyMultiplier = 1f;
             enemyHealth.legsMultiplier = 0.7f;
             enemyHealth.scoreValue = 50;
+            
+            // Floating text prefab'ını ata (tek collider sistemi için)
+            if (floatingTextPrefab != null)
+                enemyHealth.floatingTextPrefab = floatingTextPrefab;
+            
             Debug.Log($"[SETUP] ✅ EnemyHealth eklendi: {enemy.name}");
         }
         else
         {
+            // Var olan EnemyHealth'e de floating text prefab'ını ata (eğer atanmamışsa)
+            if (enemyHealth.floatingTextPrefab == null && floatingTextPrefab != null)
+                enemyHealth.floatingTextPrefab = floatingTextPrefab;
+            
             Debug.Log($"[SETUP] ℹ️ EnemyHealth zaten var: {enemy.name}");
         }
 

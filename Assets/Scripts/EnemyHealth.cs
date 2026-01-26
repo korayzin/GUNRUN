@@ -23,6 +23,8 @@ public class EnemyHealth : MonoBehaviour
     public GameObject headshotFloatingTextPrefab;
     public GameObject bodyFloatingTextPrefab;
     public GameObject legsFloatingTextPrefab;
+    [Header("Single Collider System (for new enemies)")]
+    public GameObject floatingTextPrefab; // Tek collider için genel floating text
 
     public AudioClip damageSFX;
     public AudioClip deathSFX;
@@ -45,27 +47,45 @@ public class EnemyHealth : MonoBehaviour
         Debug.Log(hitCollider.name + " tarafından vuruldu! Hasar: " + damage);
 
         float adjustedDamage = 0f;
+        GameObject textPrefabToUse = null;
 
-        if (hitCollider == headCollider)
+        // Eski sistem: Head/Body/Legs collider'ları varsa
+        if (headCollider != null || bodyCollider != null || legsCollider != null)
         {
-            adjustedDamage = damage * headshotMultiplier;
-            ShowFloatingText(adjustedDamage, headCollider, headshotFloatingTextPrefab);
+            if (hitCollider == headCollider && headCollider != null)
+            {
+                adjustedDamage = damage * headshotMultiplier;
+                textPrefabToUse = headshotFloatingTextPrefab;
+            }
+            else if (hitCollider == bodyCollider && bodyCollider != null)
+            {
+                adjustedDamage = damage * bodyMultiplier;
+                textPrefabToUse = bodyFloatingTextPrefab;
+            }
+            else if (hitCollider == legsCollider && legsCollider != null)
+            {
+                adjustedDamage = damage * legsMultiplier;
+                textPrefabToUse = legsFloatingTextPrefab;
+            }
+            else
+            {
+                // Eşleşme yoksa body olarak kabul et
+                adjustedDamage = damage * bodyMultiplier;
+                textPrefabToUse = bodyFloatingTextPrefab;
+            }
         }
-        else if (hitCollider == bodyCollider)
+        // Yeni sistem: Tek collider (head/body/legs yok)
+        else
         {
-            adjustedDamage = damage * bodyMultiplier;
-            ShowFloatingText(adjustedDamage, bodyCollider, bodyFloatingTextPrefab);
+            adjustedDamage = damage; // Multiplier yok, direkt damage
+            textPrefabToUse = floatingTextPrefab != null ? floatingTextPrefab : bodyFloatingTextPrefab;
         }
-        else /*if (hitCollider == legsCollider)*/
+
+        // Floating text göster
+        if (textPrefabToUse != null)
         {
-            adjustedDamage = damage * legsMultiplier;
-            ShowFloatingText(adjustedDamage, legsCollider, legsFloatingTextPrefab);
+            ShowFloatingText(adjustedDamage, hitCollider, textPrefabToUse);
         }
-        //else
-        //{
-        //    adjustedDamage = damage;
-        //    ShowFloatingText(adjustedDamage, hitCollider, bodyFloatingTextPrefab);
-        //}
 
         currentHealth -= adjustedDamage;
 
@@ -84,27 +104,67 @@ public class EnemyHealth : MonoBehaviour
 
     private void ShowFloatingText(float damage, Collider hitCollider, GameObject floatingTextPrefab)
     {
-        if (floatingTextPrefab != null)
+        if (floatingTextPrefab != null && hitCollider != null)
         {
-            Vector3 hitPosition = hitCollider.ClosestPointOnBounds(transform.position);
-            GameObject damageText = Instantiate(floatingTextPrefab, hitPosition, Quaternion.identity);
+            // Kafa pozisyonunu bul - düşmanın en üst noktası
+            Vector3 headPosition = GetHeadPosition(hitCollider);
+            
+            GameObject damageText = Instantiate(floatingTextPrefab, headPosition, Quaternion.identity);
 
-            Vector3 moveDirection = agent.velocity.normalized;
-
-            if (moveDirection.magnitude < 0.1f)
+            // Text'i ayarla
+            FloatingText floatingTextScript = damageText.GetComponent<FloatingText>();
+            if (floatingTextScript != null)
             {
-                moveDirection = transform.forward;
+                floatingTextScript.SetText(Mathf.RoundToInt(damage).ToString());
             }
-
-            damageText.transform.rotation = Quaternion.LookRotation(moveDirection);
-            damageText.transform.position += new Vector3(0, 0.5f, 0);
-
-            TextMeshPro textMesh = damageText.GetComponent<TextMeshPro>();
-            if (textMesh != null)
+            else
             {
-                textMesh.text = damage.ToString();
+                // Eğer FloatingText script yoksa direkt TextMeshPro'ya yaz
+                TextMeshPro textMesh = damageText.GetComponent<TextMeshPro>();
+                if (textMesh != null)
+                {
+                    textMesh.text = Mathf.RoundToInt(damage).ToString();
+                }
             }
         }
+    }
+    
+    private Vector3 GetHeadPosition(Collider hitCollider)
+    {
+        Vector3 headPos = transform.position;
+        
+        // Önce headCollider varsa onu kullan
+        if (headCollider != null)
+        {
+            headPos = headCollider.bounds.center;
+            headPos.y = headCollider.bounds.max.y; // En üst nokta
+        }
+        // Renderer'ların bounds'ını kullan
+        else
+        {
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            if (renderers.Length > 0)
+            {
+                Bounds combinedBounds = renderers[0].bounds;
+                foreach (Renderer renderer in renderers)
+                {
+                    combinedBounds.Encapsulate(renderer.bounds);
+                }
+                headPos = combinedBounds.center;
+                headPos.y = combinedBounds.max.y; // En üst nokta
+            }
+            // Renderer yoksa collider'ın üst noktasını kullan
+            else if (hitCollider != null)
+            {
+                headPos = hitCollider.bounds.center;
+                headPos.y = hitCollider.bounds.max.y;
+            }
+        }
+        
+        // Kafanın biraz üstüne yerleştir (daha görünür olsun)
+        headPos.y += 0.2f;
+        
+        return headPos;
     }
 
     private void Die()
