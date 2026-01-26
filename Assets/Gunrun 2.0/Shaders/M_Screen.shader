@@ -37,7 +37,6 @@ Shader "Custom/M_Screen"
             struct Attributes {
                 float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct Varyings {
                 float4 positionHCS : SV_POSITION;
@@ -112,7 +111,6 @@ Shader "Custom/M_Screen"
             }
             Varyings vert(Attributes input) {
                 Varyings o;
-                UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.positionHCS = TransformObjectToHClip(input.positionOS.xyz);
                 o.uv = input.uv;
