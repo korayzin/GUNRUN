@@ -123,6 +123,7 @@ Shader "Custom/M_RealEye_Advanced"
                 float2 uv : TEXCOORD0;
                 float3 normalOS : NORMAL;
                 float4 tangentOS : TANGENT;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             
             struct Varyings
@@ -297,6 +298,7 @@ Shader "Custom/M_RealEye_Advanced"
             Varyings vert(Attributes input)
             {
                 Varyings output = (Varyings)0;
+                UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
                 // Cornea bulge effect

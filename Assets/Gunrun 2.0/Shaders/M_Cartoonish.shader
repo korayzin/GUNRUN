@@ -32,6 +32,7 @@ Shader "Custom/M_Cartoonish"
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct Varyings {
                 float4 positionHCS : SV_POSITION;
@@ -50,6 +51,7 @@ Shader "Custom/M_Cartoonish"
             CBUFFER_END
             Varyings vert(Attributes input) {
                 Varyings o;
+                UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 VertexPositionInputs vpos = GetVertexPositionInputs(input.positionOS.xyz);
                 o.positionHCS = vpos.positionCS;
@@ -82,10 +84,14 @@ Shader "Custom/M_Cartoonish"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _STEREO_INSTANCING_ON
+            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             struct Attributes {
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             struct Varyings {
                 float4 positionHCS : SV_POSITION;
@@ -97,6 +103,7 @@ Shader "Custom/M_Cartoonish"
             CBUFFER_END
             Varyings vert(Attributes input) {
                 Varyings o;
+                UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 float3 norm = TransformObjectToWorldNormal(input.normalOS);
                 float3 pos = input.positionOS.xyz + norm * _OutlineThickness;

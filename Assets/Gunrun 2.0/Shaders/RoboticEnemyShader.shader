@@ -56,6 +56,7 @@ Shader "Custom/RoboticEnemyShader"
                 float3 normalOS : NORMAL;
                 float4 tangentOS : TANGENT;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             
             struct Varyings
@@ -97,6 +98,7 @@ Shader "Custom/RoboticEnemyShader"
             Varyings vert(Attributes input)
             {
                 Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
                 // URP vertex transformation
