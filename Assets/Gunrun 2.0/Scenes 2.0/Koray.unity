@@ -5098,16 +5098,6 @@ MonoBehaviour:
   hitHapticDuration: 0.15
   fireAudioSource: {fileID: 0}
   hitAudioSource: {fileID: 0}
-  weaponDamages:
-  - 25
-  - 25
-  - 50
-  - 50
-  - 50
-  - 75
-  - 75
-  - 100
-  - 100
   killsToSecond: 6
   killsToThird: 14
   killsToFourth: 24
@@ -70225,11 +70215,22 @@ MonoBehaviour:
     type: 3}
   floatingTextPrefab: {fileID: 7127387094801913698, guid: 0dd27ccc7d25e96458067037de82e456,
     type: 3}
-  enemySpawnInterval: 2
   delayBeforeFirstSpawn: 10
   spawnHeightOffset: 1
-  stage2ScoreThreshold: 2000
-  stage3ScoreThreshold: 5000
+  stage2KillThreshold: 36
+  stage3KillThreshold: 90
+  stage1SpawnInterval: 2.5
+  stage2SpawnInterval: 2
+  stage3SpawnInterval: 1.5
+  stage1EnemySpeed: 3
+  stage2EnemySpeed: 3.5
+  stage3EnemySpeed: 4
+  tur1HP: 50
+  tur2HP: 100
+  tur3HP: 200
+  tur1Score: 25
+  tur2Score: 50
+  tur3Score: 100
 --- !u!4 &1622565105
 Transform:
   m_ObjectHideFlags: 0
