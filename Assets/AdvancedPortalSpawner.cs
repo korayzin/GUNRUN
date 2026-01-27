@@ -33,6 +33,8 @@ public class AdvancedPortalSpawner : MonoBehaviour
     [Header("Spawn Settings")]
     public float enemySpawnInterval = 2f;
     public float delayBeforeFirstSpawn = 5f;
+    [Tooltip("Düşmanların portalın ne kadar yukarısından spawn olacağı (portalın ortasına hizalamak için)")]
+    public float spawnHeightOffset = 1.5f;
 
     [Header("Stage Score Thresholds")]
     public int stage2ScoreThreshold = 200;
@@ -114,8 +116,18 @@ public class AdvancedPortalSpawner : MonoBehaviour
             GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
             string portal = GetPreferredPortalForEnemy(enemyPrefab);
             Vector3 spawnPos = GetPortalPosition(portal);
+            
+            // Spawn yüksekliğini ayarla (portalın ortasına hizalama)
+            spawnPos.y += spawnHeightOffset;
 
-            GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+            // Düşmanı oyuncuya bakacak şekilde spawn et (portaldan dönerek çıkmasını engeller)
+            Vector3 directionToPlayer = Camera.main.transform.position - spawnPos;
+            directionToPlayer.y = 0; // Y eksenini sabitle, sadece yatay düzlemde dönsün
+            Quaternion spawnRotation = directionToPlayer != Vector3.zero 
+                ? Quaternion.LookRotation(directionToPlayer) 
+                : Quaternion.identity;
+
+            GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
             enemy.tag = "Enemy";
 
             // Enemy'ye gerekli componentleri ekle (eğer yoksa)
