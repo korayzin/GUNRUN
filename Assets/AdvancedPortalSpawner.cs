@@ -31,7 +31,8 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public GameObject floatingTextPrefab;
 
     [Header("Spawn Settings")]
-    public float delayBeforeFirstSpawn = 5f;
+    [Tooltip("Portallar açıldıktan sonra ilk düşman spawn'ı için bekleme süresi")]
+    public float delayBeforeFirstSpawn = 2f;
     [Tooltip("Düşmanların portalın ne kadar yukarısından spawn olacağı (portalın ortasına hizalamak için)")]
     public float spawnHeightOffset = 1.5f;
 
@@ -60,6 +61,18 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public int tur1Score = 25;
     public int tur2Score = 50;
     public int tur3Score = 100;
+
+    [Header("Portal Spawn Animation")]
+    [Tooltip("Oyun başladıktan kaç saniye sonra portallar açılsın")]
+    public float portalSpawnStartDelay = 7.5f;
+    [Tooltip("Portal açılma animasyon süresi")]
+    public float portalSpawnDuration = 1.5f;
+    [Tooltip("Portallar arası açılma gecikmesi")]
+    public float portalSpawnDelay = 0.3f;
+    [Tooltip("Açılırken dönme miktarı (derece)")]
+    public float portalSpawnRotation = 360f;
+    [Tooltip("Overshoot (bounce) efekti için")]
+    public float portalOvershoot = 1.1f;
 
     private List<string> portals = new List<string> { "A", "B", "C" };
     private Dictionary<string, GameObject> portalPrefabs;
@@ -99,7 +112,19 @@ public class AdvancedPortalSpawner : MonoBehaviour
             { "C", portalPrefabC }
         };
 
-        SpawnPortals();
+        // Portalları ve düşmanları gecikmeli başlat
+        StartCoroutine(StartGameSequence());
+    }
+
+    IEnumerator StartGameSequence()
+    {
+        // Portallar için bekle
+        yield return new WaitForSeconds(portalSpawnStartDelay);
+        
+        // Portalları animasyonla spawn et
+        yield return StartCoroutine(SpawnPortalsWithAnimation());
+        
+        // Portallar açıldıktan sonra düşman spawn'ı başlat
         StartCoroutine(SpawnEnemiesContinuously());
     }
 
@@ -137,22 +162,116 @@ public class AdvancedPortalSpawner : MonoBehaviour
         _ => stage3EnemySpeed
     };
 
-    void SpawnPortals()
+    IEnumerator SpawnPortalsWithAnimation()
     {
+        // Portal A
         if (portalPrefabA != null)
         {
-            Instantiate(portalPrefabA, portalAPosition, portalARotation);
+            GameObject portalA = Instantiate(portalPrefabA, portalAPosition, portalARotation);
+            StartCoroutine(AnimatePortalSpawn(portalA, portalARotation));
         }
         
+        yield return new WaitForSeconds(portalSpawnDelay);
+        
+        // Portal B
         if (portalPrefabB != null)
         {
-            Instantiate(portalPrefabB, portalBPosition, portalBRotation);
+            GameObject portalB = Instantiate(portalPrefabB, portalBPosition, portalBRotation);
+            StartCoroutine(AnimatePortalSpawn(portalB, portalBRotation));
         }
         
+        yield return new WaitForSeconds(portalSpawnDelay);
+        
+        // Portal C
         if (portalPrefabC != null)
         {
-            Instantiate(portalPrefabC, portalCPosition, portalCRotation);
+            GameObject portalC = Instantiate(portalPrefabC, portalCPosition, portalCRotation);
+            StartCoroutine(AnimatePortalSpawn(portalC, portalCRotation));
         }
+    }
+
+    IEnumerator AnimatePortalSpawn(GameObject portal, Quaternion targetRotation)
+    {
+        if (portal == null) yield break;
+
+        Transform portalTransform = portal.transform;
+        Vector3 targetScale = portalTransform.localScale;
+        
+        // Başlangıç: sıfır scale
+        portalTransform.localScale = Vector3.zero;
+        
+        float elapsed = 0f;
+        float startRotationY = targetRotation.eulerAngles.y - portalSpawnRotation;
+        
+        while (elapsed < portalSpawnDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / portalSpawnDuration;
+            
+            // Elastic/Bounce easing fonksiyonu
+            float easedT = EaseOutBack(t, portalOvershoot);
+            
+            // Scale animasyonu (sıfırdan hedefe)
+            portalTransform.localScale = Vector3.LerpUnclamped(Vector3.zero, targetScale, easedT);
+            
+            // Dönme animasyonu
+            float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, EaseOutCubic(t));
+            portalTransform.rotation = Quaternion.Euler(
+                targetRotation.eulerAngles.x,
+                currentRotationY,
+                targetRotation.eulerAngles.z
+            );
+            
+            yield return null;
+        }
+        
+        // Son değerleri garanti et
+        portalTransform.localScale = targetScale;
+        portalTransform.rotation = targetRotation;
+        
+        // Pulse efekti (tatlı bir son dokunuş)
+        yield return StartCoroutine(PulseEffect(portalTransform, targetScale));
+    }
+
+    IEnumerator PulseEffect(Transform portalTransform, Vector3 baseScale)
+    {
+        float pulseDuration = 0.2f;
+        float pulseAmount = 1.05f;
+        
+        // Büyü
+        float elapsed = 0f;
+        while (elapsed < pulseDuration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / (pulseDuration / 2f);
+            portalTransform.localScale = Vector3.Lerp(baseScale, baseScale * pulseAmount, t);
+            yield return null;
+        }
+        
+        // Küçül
+        elapsed = 0f;
+        while (elapsed < pulseDuration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / (pulseDuration / 2f);
+            portalTransform.localScale = Vector3.Lerp(baseScale * pulseAmount, baseScale, t);
+            yield return null;
+        }
+        
+        portalTransform.localScale = baseScale;
+    }
+
+    // Easing fonksiyonları
+    float EaseOutBack(float t, float overshoot = 1.70158f)
+    {
+        float c1 = overshoot;
+        float c3 = c1 + 1f;
+        return 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
+    }
+
+    float EaseOutCubic(float t)
+    {
+        return 1f - Mathf.Pow(1f - t, 3f);
     }
 
     IEnumerator SpawnEnemiesContinuously()

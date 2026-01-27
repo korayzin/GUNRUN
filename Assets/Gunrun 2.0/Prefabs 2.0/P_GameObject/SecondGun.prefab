@@ -369,7 +369,7 @@ MonoBehaviour:
   bulletHitSound: {fileID: 8300000, guid: 32aca17d1605a69408e53e178ba3eda8, type: 3}
   damageEffectPrefab: {fileID: 0}
   maxAmmo: 30
-  ammoText: {fileID: 0}
+  ammoText: {fileID: 1295492856184157805}
   ammoUI: {fileID: 0}
   useDualBarrel: 0
   isAutomatic: 0

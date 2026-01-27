@@ -34,8 +34,6 @@ public class EnemyHealth : MonoBehaviour
     public AudioClip deathSFX;
     private AudioSource audioSource;
 
-    private GunFire gunFire;
-
     public int scoreValue = 50;
     private bool isDead = false;
 
@@ -46,7 +44,6 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHealth = totalHealth;
         audioSource = GetComponent<AudioSource>();
-        gunFire = FindObjectOfType<GunFire>();
         InitializeHealthGlow();
     }
 
@@ -226,10 +223,11 @@ public class EnemyHealth : MonoBehaviour
 
         GameManager.Instance.AddScore(scoreValue);
 
-        // Baretta için özel reload - tüm Baretta silahlarını yenile
-        if (gunFire != null)
+        // Aktif silahı bul ve yenile
+        GunFire activeGun = FindActiveGunFire();
+        if (activeGun != null)
         {
-            if (gunFire.isBaretta)
+            if (activeGun.isBaretta)
             {
                 // Tüm aktif Baretta silahlarını yenile
                 ReloadAllBarettas();
@@ -237,7 +235,8 @@ public class EnemyHealth : MonoBehaviour
             else
             {
                 // Normal silah için sadece o silahı yenile
-                gunFire.Reload();
+                activeGun.Reload();
+                Debug.Log($"{activeGun.gameObject.name} silahı yenilendi.");
             }
         }
 
@@ -264,6 +263,21 @@ public class EnemyHealth : MonoBehaviour
         Destroy(gameObject, Mathf.Max(sfxDuration, 0.4f));
     }
 
+
+    // Aktif silahı bul (enabled ve aktif olan GunFire)
+    private GunFire FindActiveGunFire()
+    {
+        GunFire[] allGuns = FindObjectsOfType<GunFire>();
+        foreach (GunFire gun in allGuns)
+        {
+            // Aktif ve enabled olan silahı bul
+            if (gun.gameObject.activeInHierarchy && gun.enabled)
+            {
+                return gun;
+            }
+        }
+        return null;
+    }
 
     // Tüm aktif Baretta silahlarını yenile
     private void ReloadAllBarettas()
