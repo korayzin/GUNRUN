@@ -15,6 +15,10 @@ public class GameManager : MonoBehaviour
     public GameObject timeAndScorePanel;
     public AudioSource backgroundMusic;
     private AdvancedPortalSpawner portalSpawner;
+    
+    [Header("Hand Ray UI Interactor")]
+    [Tooltip("Retry menüsünde el ray etkileşimi için - otomatik bulunur eğer atanmazsa")]
+    public HandRayUIInteractor handRayInteractor;
 
     private float gameTimer;
     public float gameDuration = 150f;
@@ -24,14 +28,30 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
+        }
+        
+        // Awake'te de Time.timeScale'i kontrol et
+        if (Time.timeScale != 1f)
+        {
+            Debug.LogWarning($"⚠️ Awake'te Time.timeScale = {Time.timeScale}, 1'e ayarlanıyor...");
+            Time.timeScale = 1f;
         }
     }
 
     private void Start()
     {
+        // ÖNCE Time.timeScale'in 1 olduğundan emin ol (önceki sahneden kalmış olabilir)
+        Time.timeScale = 1f;
+        Debug.Log($"🕐 Time.timeScale başlangıçta {Time.timeScale} olarak ayarlandı");
+        
+        // Oyun durumlarını sıfırla
+        isGameOver = false;
+        score = 0;
+        
         gameTimer = gameDuration;
         UpdateTimerUI();
 
@@ -49,6 +69,16 @@ public class GameManager : MonoBehaviour
         Debug.Log($"   - timerText: {(timerText != null ? "✅ Atanmış" : "❌ Atanmamış")}");
         Debug.Log($"   - restartCanvas: {(restartCanvas != null ? "✅ Atanmış" : "❌ Atanmamış")}");
         Debug.Log($"   - timeAndScorePanel: {(timeAndScorePanel != null ? "✅ Atanmış" : "❌ Atanmamış")}");
+        
+        // HandRayUIInteractor'ı bul (atanmamışsa)
+        if (handRayInteractor == null)
+        {
+            handRayInteractor = FindObjectOfType<HandRayUIInteractor>();
+            if (handRayInteractor != null)
+            {
+                Debug.Log("🔍 HandRayUIInteractor otomatik bulundu");
+            }
+        }
 
         // Eksik referansları otomatik bulmaya çalış
         if (restartCanvas == null)
@@ -194,6 +224,19 @@ public class GameManager : MonoBehaviour
             
             // Restart canvas açıldıktan SONRA score'u güncelle (UI aktif olmalı)
             StartCoroutine(UpdateScoreAfterCanvasActive());
+            
+            // Hand Ray UI Interactor'ı etkinleştir
+            if (handRayInteractor != null)
+            {
+                // Canvas referansını ayarla (eğer atanmamışsa)
+                Canvas canvasComponent = restartCanvas.GetComponent<Canvas>();
+                if (canvasComponent != null)
+                {
+                    handRayInteractor.SetTargetCanvas(canvasComponent);
+                }
+                handRayInteractor.EnableRay();
+                Debug.Log("🎯 Hand Ray UI Interactor etkinleştirildi");
+            }
         }
         else
         {
@@ -224,9 +267,51 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Debug.Log("🔄 Oyun yeniden başlatılıyor...");
-        Time.timeScale = 1f; // Oyunu devam ettir
+        
+        // ÖNCELİKLE Time.timeScale'i sıfırla (sahne yüklenmeden önce)
+        Time.timeScale = 1f;
+        
+        // Hand Ray UI Interactor'ı devre dışı bırak
+        if (handRayInteractor != null)
+        {
+            handRayInteractor.DisableRay();
+        }
+        
+        // Tüm durumları sıfırla
         isGameOver = false;
+        score = 0;
+        gameTimer = gameDuration;
+        
+        // Tüm coroutine'leri durdur
+        StopAllCoroutines();
+        
+        Debug.Log($"✅ Time.timeScale = {Time.timeScale}, Sahne yükleniyor...");
+        
+        // Sahneyi yeniden yükle
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+    /// <summary>
+    /// Ana menüye dön
+    /// </summary>
+    public void GoToMainMenu()
+    {
+        Debug.Log("🏠 Ana menüye dönülüyor...");
+        
+        // Time.timeScale'i sıfırla
+        Time.timeScale = 1f;
+        
+        // Hand Ray UI Interactor'ı devre dışı bırak
+        if (handRayInteractor != null)
+        {
+            handRayInteractor.DisableRay();
+        }
+        
+        isGameOver = false;
+        StopAllCoroutines();
+        
+        // Ana menü sahnesini yükle (sahne adını projenize göre ayarlayın)
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void SaveBestScores()
