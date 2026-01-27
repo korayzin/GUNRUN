@@ -5098,6 +5098,16 @@ MonoBehaviour:
   hitHapticDuration: 0.15
   fireAudioSource: {fileID: 0}
   hitAudioSource: {fileID: 0}
+  weaponDamages:
+  - 25
+  - 25
+  - 50
+  - 50
+  - 50
+  - 75
+  - 75
+  - 100
+  - 100
   killsToSecond: 6
   killsToThird: 14
   killsToFourth: 24
@@ -44399,7 +44409,7 @@ MonoBehaviour:
   hapticStrength: 0.5
   bulletHitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
-  maxAmmo: 20
+  maxAmmo: 30
   ammoText: {fileID: 1981389842}
   ammoUI: {fileID: 0}
   useDualBarrel: 1
@@ -58513,6 +58523,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6619016708118863199, guid: 38a6a9f97183106429c37216093488dd,
+        type: 3}
+      propertyPath: m_text
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_Name
@@ -58597,7 +58612,7 @@ MonoBehaviour:
   hapticStrength: 0.5
   bulletHitSound: {fileID: 8300000, guid: deb22714fdd8e9146a3757d9236aebdf, type: 3}
   damageEffectPrefab: {fileID: 0}
-  maxAmmo: 20
+  maxAmmo: 30
   ammoText: {fileID: 1280245132}
   ammoUI: {fileID: 0}
   useDualBarrel: 1
@@ -93161,6 +93176,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6619016708118863199, guid: 38a6a9f97183106429c37216093488dd,
+        type: 3}
+      propertyPath: m_text
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}

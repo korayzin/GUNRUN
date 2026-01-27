@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float damage = 100f;
+    [Tooltip("Merminin verdigi hasar miktari")]
+    public float damage = 25f;
     public float speed = 20f; 
     public AudioClip hitSound;
     public GameObject damageEffectPrefab;
@@ -21,10 +22,10 @@ public class Bullet : MonoBehaviour
         EnemyHealth enemyHealth = other.GetComponentInParent<EnemyHealth>();
         if (enemyHealth != null)
         {
-            Debug.Log("Dü?mana hasar verildi: " + damage);
+            Debug.Log("Dusmana hasar verildi: " + damage);
             enemyHealth.TakeDamage(damage, other);
             
-            // WeaponManager üzerinden hit sesi ve haptic çal
+            // WeaponManager uzerinden hit sesi ve haptic cal
             if (WeaponManager.Instance != null)
             {
                 WeaponManager.Instance.PlayHitSound();

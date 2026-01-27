@@ -20,23 +20,31 @@ public class FloatingText : MonoBehaviour
     private Vector3 startPosition;
     private Vector3 targetPosition;
     private float elapsedTime = 0f;
-    private TextMeshPro textMesh;
+    private TextMeshPro textMesh3D;
+    private TextMeshProUGUI textMeshUI;
     private Color originalColor;
     private Vector3 originalScale;
 
     private void Start()
     {
-        textMesh = GetComponent<TextMeshPro>();
-        if (textMesh != null)
+        // Hem 3D (TextMeshPro) hem UI (TextMeshProUGUI) versiyonunu ara
+        textMesh3D = GetComponent<TextMeshPro>();
+        textMeshUI = GetComponent<TextMeshProUGUI>();
+        
+        if (textMesh3D != null)
         {
-            originalColor = textMesh.color;
+            originalColor = textMesh3D.color;
+        }
+        else if (textMeshUI != null)
+        {
+            originalColor = textMeshUI.color;
         }
         
         originalScale = transform.localScale;
         startPosition = transform.position;
         targetPosition = startPosition + Vector3.up * floatDistance;
         
-        // Başlangıçta scale 0
+        // Baslangicta scale 0
         transform.localScale = Vector3.zero;
     }
 
@@ -73,13 +81,17 @@ public class FloatingText : MonoBehaviour
         transform.position += transform.right * swayAmount;
         
         // Fade out animasyonu
-        if (elapsedTime > fadeStartTime && textMesh != null)
+        if (elapsedTime > fadeStartTime)
         {
             float fadeProgress = (elapsedTime - fadeStartTime) / fadeDuration;
             fadeProgress = Mathf.Clamp01(fadeProgress);
             Color currentColor = originalColor;
             currentColor.a = Mathf.Lerp(originalColor.a, 0f, fadeProgress);
-            textMesh.color = currentColor;
+            
+            if (textMesh3D != null)
+                textMesh3D.color = currentColor;
+            else if (textMeshUI != null)
+                textMeshUI.color = currentColor;
         }
         
         // Kamera'ya bak
@@ -102,13 +114,24 @@ public class FloatingText : MonoBehaviour
 
     public void SetText(string text)
     {
-        if (textMesh == null)
-            textMesh = GetComponent<TextMeshPro>();
-            
-        if (textMesh != null)
+        // Henuz atanmamissa bul
+        if (textMesh3D == null && textMeshUI == null)
         {
-            textMesh.text = text;
+            textMesh3D = GetComponent<TextMeshPro>();
+            textMeshUI = GetComponent<TextMeshProUGUI>();
         }
+        
+        // Hangisi varsa ona yaz
+        if (textMesh3D != null)
+        {
+            textMesh3D.text = text;
+        }
+        else if (textMeshUI != null)
+        {
+            textMeshUI.text = text;
+        }
+        
+        Debug.Log("FloatingText SetText: " + text);
     }
 }
 

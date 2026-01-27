@@ -50,12 +50,13 @@ public class GunFire : MonoBehaviour
     //public float rotationSpeed = 5f; 
 
     private Quaternion originalRotation;
+    private bool isOutOfAmmo = false;
 
     void Start()
     {
         currentAmmo = maxAmmo;
         UpdateAmmoDisplay();
-        EnemyHealth.OnEnemyKilled += Reload;
+        // Artik dusman oldugunde otomatik reload yok - mermi bitince oyun biter
 
         originalRotation = transform.localRotation;
     }
@@ -106,9 +107,15 @@ public class GunFire : MonoBehaviour
             }
         }
 
-        if (currentAmmo <= 0)
+        if (currentAmmo <= 0 && !isOutOfAmmo)
         {
-            Reload();
+            // Mermi bitince oyun biter
+            isOutOfAmmo = true;
+            if (GameManager.Instance != null)
+            {
+                Debug.Log("Mermi bitti! Oyun bitiyor...");
+                GameManager.Instance.GameOver(null);
+            }
         }
     }
 

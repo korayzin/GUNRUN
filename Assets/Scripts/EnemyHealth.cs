@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 using TMPro;
@@ -121,19 +121,20 @@ public class EnemyHealth : MonoBehaviour
             
             GameObject damageText = Instantiate(floatingTextPrefab, headPosition, Quaternion.identity);
 
-            // Text'i ayarla
-            FloatingText floatingTextScript = damageText.GetComponent<FloatingText>();
+            // Text'i ayarla - hasar degerini "-X" formatinda goster
+            // GetComponentInChildren kullan cunku TextMeshPro ve FloatingText child objede
+            FloatingText floatingTextScript = damageText.GetComponentInChildren<FloatingText>();
             if (floatingTextScript != null)
             {
-                floatingTextScript.SetText(Mathf.RoundToInt(damage).ToString());
+                floatingTextScript.SetText("-" + Mathf.RoundToInt(damage).ToString());
             }
             else
             {
-                // Eğer FloatingText script yoksa direkt TextMeshPro'ya yaz
-                TextMeshPro textMesh = damageText.GetComponent<TextMeshPro>();
+                // Eger FloatingText script yoksa direkt TextMeshPro'ya yaz
+                TextMeshPro textMesh = damageText.GetComponentInChildren<TextMeshPro>();
                 if (textMesh != null)
                 {
-                    textMesh.text = Mathf.RoundToInt(damage).ToString();
+                    textMesh.text = "-" + Mathf.RoundToInt(damage).ToString();
                 }
             }
         }
