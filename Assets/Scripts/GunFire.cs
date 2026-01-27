@@ -117,7 +117,7 @@ public class GunFire : MonoBehaviour
         canFire = false;
         Fire();
         StartCoroutine(HapticFeedback());
-        currentAmmo -= useDualBarrel ? 5 : 1;
+        currentAmmo -= 1;
         UpdateAmmoDisplay();
 
         yield return new WaitForSeconds(fireCooldown);
@@ -138,7 +138,7 @@ public class GunFire : MonoBehaviour
         {
             Fire();
             StartCoroutine(HapticFeedback());
-            currentAmmo -= useDualBarrel ? 5 : 1;
+            currentAmmo -= 1;
             UpdateAmmoDisplay();
 
             yield return new WaitForSeconds(fireCooldown);
@@ -176,6 +176,12 @@ public class GunFire : MonoBehaviour
         if (ps != null)
         {
             ps.Play();
+        }
+
+        // WeaponManager üzerinden ateş sesini çal
+        if (WeaponManager.Instance != null)
+        {
+            WeaponManager.Instance.PlayFireSound();
         }
     }
 

@@ -21,8 +21,15 @@ public class Bullet : MonoBehaviour
         EnemyHealth enemyHealth = other.GetComponentInParent<EnemyHealth>();
         if (enemyHealth != null)
         {
-            Debug.Log("Düþmana hasar verildi: " + damage);
+            Debug.Log("Dü?mana hasar verildi: " + damage);
             enemyHealth.TakeDamage(damage, other);
+            
+            // WeaponManager üzerinden hit sesi ve haptic çal
+            if (WeaponManager.Instance != null)
+            {
+                WeaponManager.Instance.PlayHitSound();
+            }
+            
             Destroy(gameObject);
             return;
         }

@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class WeaponManager : MonoBehaviour
 {
+    // Singleton instance
+    public static WeaponManager Instance { get; private set; }
+
     [Header("Weapons")]
     public GameObject firstWeapon;
     public GameObject secondWeapon;
@@ -37,9 +40,28 @@ public class WeaponManager : MonoBehaviour
     public GameObject vfxEighth;
     public GameObject vfxNinth;
 
+    [Header("Weapon Sound Effects")]
+    [Tooltip("Her silah için ateş sesi (1-9 sırasıyla)")]
+    public AudioClip[] fireSounds = new AudioClip[9];
+    [Tooltip("Her silah için hit sesi (1-9 sırasıyla)")]
+    public AudioClip[] hitSounds = new AudioClip[9];
+    [Tooltip("Ateş sesi çalma süresi")]
+    public float fireSoundDuration = 1f;
+    [Tooltip("Hit haptic gücü (0-1)")]
+    public float hitHapticStrength = 0.7f;
+    [Tooltip("Hit haptic süresi")]
+    public float hitHapticDuration = 0.15f;
+
+    [Header("Audio Sources")]
+    [Tooltip("Ateş sesleri için AudioSource")]
+    public AudioSource fireAudioSource;
+    [Tooltip("Hit sesleri için AudioSource")]
+    public AudioSource hitAudioSource;
+
     private int currentWeapon = 0;
     private int enemyKillCount = 0;
     private bool isSwitchingWeapon = false;
+    private Coroutine fireSoundCoroutine;
 
     [Header("Weapon Switch Settings")]
     public int killsToSecond = 10;
@@ -59,6 +81,32 @@ public class WeaponManager : MonoBehaviour
     [Header("UI Image Scale Settings")]
     public float activeUIImageScale = 0.8f;
     public float inactiveUIImageScale = 0.6f;
+
+    private void Awake()
+    {
+        // Singleton pattern
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // AudioSource'ları otomatik oluştur (atanmamışsa)
+        if (fireAudioSource == null)
+        {
+            fireAudioSource = gameObject.AddComponent<AudioSource>();
+            fireAudioSource.playOnAwake = false;
+        }
+        if (hitAudioSource == null)
+        {
+            hitAudioSource = gameObject.AddComponent<AudioSource>();
+            hitAudioSource.playOnAwake = false;
+        }
+    }
 
     private void Start()
     {
@@ -375,5 +423,74 @@ public class WeaponManager : MonoBehaviour
             image.rectTransform.localScale = Vector3.one * (isActive ? activeUIImageScale : inactiveUIImageScale);
         }
     }
+
+    #region Sound System
+
+    /// <summary>
+    /// Mevcut silahın ateş sesini çalar (1 saniye süreyle)
+    /// </summary>
+    public void PlayFireSound()
+    {
+        if (fireAudioSource == null) return;
+        
+        if (currentWeapon >= 0 && currentWeapon < fireSounds.Length && fireSounds[currentWeapon] != null)
+        {
+            // Önceki ses coroutine'ini durdur
+            if (fireSoundCoroutine != null)
+            {
+                StopCoroutine(fireSoundCoroutine);
+            }
+            
+            fireAudioSource.clip = fireSounds[currentWeapon];
+            fireAudioSource.Play();
+            fireSoundCoroutine = StartCoroutine(StopFireSoundAfterDuration());
+        }
+    }
+
+    private IEnumerator StopFireSoundAfterDuration()
+    {
+        yield return new WaitForSeconds(fireSoundDuration);
+        if (fireAudioSource != null && fireAudioSource.isPlaying)
+        {
+            fireAudioSource.Stop();
+        }
+    }
+
+    /// <summary>
+    /// Mevcut silahın hit sesini çalar ve haptic gönderir
+    /// </summary>
+    public void PlayHitSound()
+    {
+        // Hit sesini çal
+        if (hitAudioSource != null && currentWeapon >= 0 && currentWeapon < hitSounds.Length && hitSounds[currentWeapon] != null)
+        {
+            hitAudioSource.PlayOneShot(hitSounds[currentWeapon]);
+        }
+        
+        // Hit haptic gönder
+        StartCoroutine(HitHapticFeedback());
+    }
+
+    private IEnumerator HitHapticFeedback()
+    {
+        // Her iki controller'a da haptic gönder (hangi elde silah tutuluyorsa hissetsin)
+        OVRInput.SetControllerVibration(1, hitHapticStrength, OVRInput.Controller.RTouch);
+        OVRInput.SetControllerVibration(1, hitHapticStrength, OVRInput.Controller.LTouch);
+        
+        yield return new WaitForSeconds(hitHapticDuration);
+        
+        OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+        OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.LTouch);
+    }
+
+    /// <summary>
+    /// Mevcut aktif silah indeksini döndürür (0-8)
+    /// </summary>
+    public int GetCurrentWeaponIndex()
+    {
+        return currentWeapon;
+    }
+
+    #endregion
 
 }
