@@ -109,14 +109,59 @@ public class GunFire : MonoBehaviour
 
         if (currentAmmo <= 0 && !isOutOfAmmo)
         {
-            // Mermi bitince oyun biter
-            isOutOfAmmo = true;
-            if (GameManager.Instance != null)
+            // Baretta için özel kontrol - iki silah da 0 olmalı
+            if (isBaretta)
             {
-                Debug.Log("Mermi bitti! Oyun bitiyor...");
-                GameManager.Instance.GameOver(null);
+                // Diğer Baretta silahını bul
+                GunFire partnerBaretta = FindPartnerBaretta();
+                
+                // Diğer Baretta'da hala mermi varsa oyun devam eder
+                if (partnerBaretta != null && partnerBaretta.GetCurrentAmmo() > 0)
+                {
+                    Debug.Log($"Bu Baretta'nın mermisi bitti ama diğerinde {partnerBaretta.GetCurrentAmmo()} mermi var. Oyun devam ediyor.");
+                    return;
+                }
+                
+                // İki Baretta da 0 ise oyun biter
+                isOutOfAmmo = true;
+                if (GameManager.Instance != null)
+                {
+                    Debug.Log("Her iki Baretta'nın da mermisi bitti! Oyun bitiyor...");
+                    GameManager.Instance.GameOver(null);
+                }
+            }
+            else
+            {
+                // Normal silahlar için - mermi bitince oyun biter
+                isOutOfAmmo = true;
+                if (GameManager.Instance != null)
+                {
+                    Debug.Log("Mermi bitti! Oyun bitiyor...");
+                    GameManager.Instance.GameOver(null);
+                }
             }
         }
+    }
+
+    // Diğer Baretta silahını bul (sol ise sağı, sağ ise solu)
+    private GunFire FindPartnerBaretta()
+    {
+        GunFire[] allGuns = FindObjectsOfType<GunFire>();
+        foreach (GunFire gun in allGuns)
+        {
+            // Aktif, Baretta ve farklı el (partner)
+            if (gun != this && gun.isBaretta && gun.gameObject.activeInHierarchy && gun.isLeftHanded != this.isLeftHanded)
+            {
+                return gun;
+            }
+        }
+        return null;
+    }
+
+    // Mevcut mermi sayısını döndür
+    public int GetCurrentAmmo()
+    {
+        return currentAmmo;
     }
 
     private IEnumerator FireWithCooldown()
@@ -231,6 +276,7 @@ public class GunFire : MonoBehaviour
     public void Reload()
     {
         currentAmmo = maxAmmo;
+        isOutOfAmmo = false; // Yenilendiğinde flag'i sıfırla
         UpdateAmmoDisplay();
     }
 
@@ -239,6 +285,20 @@ public class GunFire : MonoBehaviour
         if (ammoText != null)
         {
             ammoText.text = currentAmmo.ToString();
+            
+            // Son 3 mermide kırmızı, son 5 mermide turuncu, diğer durumlarda beyaz
+            if (currentAmmo <= 3)
+            {
+                ammoText.color = Color.red;
+            }
+            else if (currentAmmo <= 5)
+            {
+                ammoText.color = new Color(1f, 0.5f, 0f); // Turuncu
+            }
+            else
+            {
+                ammoText.color = Color.white;
+            }
         }
     }
 

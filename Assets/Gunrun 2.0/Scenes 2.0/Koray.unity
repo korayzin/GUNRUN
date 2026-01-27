@@ -92666,7 +92666,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8827409479991493232, guid: 2e535274bec18964c8081ddf2bc32333,
         type: 3}
+      propertyPath: ps
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8827409479991493232, guid: 2e535274bec18964c8081ddf2bc32333,
+        type: 3}
+      propertyPath: ammoText
+      value: 
+      objectReference: {fileID: 1735730324613644643}
+    - target: {fileID: 8827409479991493232, guid: 2e535274bec18964c8081ddf2bc32333,
+        type: 3}
+      propertyPath: velocity
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8827409479991493232, guid: 2e535274bec18964c8081ddf2bc32333,
+        type: 3}
       propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8827409479991493232, guid: 2e535274bec18964c8081ddf2bc32333,
+        type: 3}
+      propertyPath: bulletPrefab
+      value: 
+      objectReference: {fileID: 1234567890000000001, guid: e3f7ea6af2f53224e86737e523bbfc35,
+        type: 3}
+    - target: {fileID: 8827409479991493232, guid: 2e535274bec18964c8081ddf2bc32333,
+        type: 3}
+      propertyPath: muzzleFlashPrefab
       value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -92674,6 +92700,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e535274bec18964c8081ddf2bc32333, type: 3}
+--- !u!114 &1735730324613644643 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1413017598928489309, guid: 2e535274bec18964c8081ddf2bc32333,
+    type: 3}
+  m_PrefabInstance: {fileID: 1735730324613644642}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2443542293831071704
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -92890,6 +92928,11 @@ PrefabInstance:
         type: 3}
       propertyPath: gunAnimator
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825842782081584259, guid: 9a6aae92add380a43b27e1b1831350bb,
+        type: 3}
+      propertyPath: isAutomatic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5825842782081584259, guid: 9a6aae92add380a43b27e1b1831350bb,
         type: 3}
@@ -93768,6 +93811,12 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1532767937191004107, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: bulletPrefab
+      value: 
+      objectReference: {fileID: 6353009549537173005, guid: 7ab8677034758ec4486d1936e04cf365,
+        type: 3}
     - target: {fileID: 7017134687239859271, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
         type: 3}
       propertyPath: m_LocalScale.x

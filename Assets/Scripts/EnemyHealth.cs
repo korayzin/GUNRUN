@@ -226,9 +226,19 @@ public class EnemyHealth : MonoBehaviour
 
         GameManager.Instance.AddScore(scoreValue);
 
+        // Baretta için özel reload - tüm Baretta silahlarını yenile
         if (gunFire != null)
         {
-            gunFire.Reload();
+            if (gunFire.isBaretta)
+            {
+                // Tüm aktif Baretta silahlarını yenile
+                ReloadAllBarettas();
+            }
+            else
+            {
+                // Normal silah için sadece o silahı yenile
+                gunFire.Reload();
+            }
         }
 
         if (agent != null) agent.enabled = false;
@@ -254,6 +264,20 @@ public class EnemyHealth : MonoBehaviour
         Destroy(gameObject, Mathf.Max(sfxDuration, 0.4f));
     }
 
+
+    // Tüm aktif Baretta silahlarını yenile
+    private void ReloadAllBarettas()
+    {
+        GunFire[] allGuns = FindObjectsOfType<GunFire>();
+        foreach (GunFire gun in allGuns)
+        {
+            if (gun.isBaretta && gun.gameObject.activeInHierarchy)
+            {
+                gun.Reload();
+                Debug.Log($"{gun.gameObject.name} Baretta yenilendi (Sol el: {gun.isLeftHanded})");
+            }
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
