@@ -5055,11 +5055,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f603ccb526f7a4949b5a51a818444912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstWeapon: {fileID: 2972479651670665011}
+  firstWeapon: {fileID: 1046036456}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 0}
   fourthWeapon: {fileID: 0}
-  fifthWeapon: {fileID: 1046036456}
+  fifthWeapon: {fileID: 0}
   sixthWeapon: {fileID: 2443542293831071706}
   seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
@@ -5110,8 +5110,8 @@ MonoBehaviour:
   killsToSecond: 6
   killsToThird: 14
   killsToFourth: 24
-  killsToFifth: 32
-  killsToSixth: 42
+  killsToFifth: 500
+  killsToSixth: 500
   killsToSeventh: 54
   killsToEighth: 64
   killsToNinth: 78
@@ -44711,6 +44711,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 833107669}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &833509874 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 141772004296165526, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8095152120504372453}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &838635534
 GameObject:
   m_ObjectHideFlags: 0
@@ -93480,6 +93492,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5825842782081584259, guid: 9a6aae92add380a43b27e1b1831350bb,
         type: 3}
+      propertyPath: maxAmmo
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825842782081584259, guid: 9a6aae92add380a43b27e1b1831350bb,
+        type: 3}
       propertyPath: ammoText
       value: 
       objectReference: {fileID: 2972479651670665012}
@@ -93511,6 +93528,11 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 5825842782081584259, guid: 9a6aae92add380a43b27e1b1831350bb,
         type: 3}
+      propertyPath: fireCooldown
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5825842782081584259, guid: 9a6aae92add380a43b27e1b1831350bb,
+        type: 3}
       propertyPath: targetDirection1
       value: 
       objectReference: {fileID: 1468605564}
@@ -93522,7 +93544,7 @@ PrefabInstance:
     - target: {fileID: 8838416688805562950, guid: 9a6aae92add380a43b27e1b1831350bb,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -93532,12 +93554,6 @@ PrefabInstance:
 --- !u!4 &2972479651670665010 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2466783692616416363, guid: 9a6aae92add380a43b27e1b1831350bb,
-    type: 3}
-  m_PrefabInstance: {fileID: 2972479651670665009}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2972479651670665011 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8838416688805562950, guid: 9a6aae92add380a43b27e1b1831350bb,
     type: 3}
   m_PrefabInstance: {fileID: 2972479651670665009}
   m_PrefabAsset: {fileID: 0}
@@ -94398,12 +94414,107 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: uiSize
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: uiOffset.x
+      value: 0.71
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: uiOffset.y
+      value: -0.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: uiOffset.z
+      value: -0.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: laserColor.b
+      value: 0.1487732
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: laserColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: laserColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: lightColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: lightColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: lightColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: laserEndWidth
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: maxLaserShots
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: lightIntensity
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: laserStartWidth
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: laserCloseDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1425481084244958446, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: laserExtendDuration
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1532767937191004107, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: ammoText
+      value: 
+      objectReference: {fileID: 833509874}
+    - target: {fileID: 1532767937191004107, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: velocity
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 1532767937191004107, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
         type: 3}
       propertyPath: bulletPrefab
       value: 
-      objectReference: {fileID: 6353009549537173005, guid: 7ab8677034758ec4486d1936e04cf365,
+      objectReference: {fileID: 3986653680961476808, guid: c17b34e8333b16c4aa6fb42317d2da06,
         type: 3}
+    - target: {fileID: 1532767937191004107, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
+        type: 3}
+      propertyPath: hapticStrength
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7017134687239859271, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -94427,7 +94538,7 @@ PrefabInstance:
     - target: {fileID: 7976646575491721944, guid: 19a864bd3f9a3bc42903f794ba2b7c1f,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
