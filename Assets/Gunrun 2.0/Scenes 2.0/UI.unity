@@ -2574,8 +2574,7 @@ MonoBehaviour:
   m_text: TRAINING LAB
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
-  m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: b0f6d4a77bcad784c975be80b253d01f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4140,8 +4139,7 @@ MonoBehaviour:
   m_text: INFO
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
-  m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: b0f6d4a77bcad784c975be80b253d01f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5505,8 +5503,7 @@ MonoBehaviour:
   m_text: OPTIONS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
-  m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: b0f6d4a77bcad784c975be80b253d01f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6717,6 +6714,7 @@ GameObject:
   - component: {fileID: 1083481732}
   - component: {fileID: 1083481733}
   - component: {fileID: 1083481734}
+  - component: {fileID: 1083481735}
   m_Layer: 0
   m_Name: Play (1)
   m_TagString: PlayButton
@@ -6889,6 +6887,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hiddenImage: {fileID: 256560125}
+--- !u!114 &1083481735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083481727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bd8a6976078ff34c9f80d658a5e5ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableWobble: 1
+  wobbleAmountX: 0.015
+  wobbleAmountY: 0.015
+  wobbleSpeed: 1.2
+  phaseOffset: 0.7
+  enableRotationWobble: 1
+  rotationAmount: 1.97
+  rotationSpeed: 0.8
+  enablePositionSway: 0
+  swayAmount: 3
+  swaySpeed: 0.6
+  enableEntranceAnimation: 1
+  entranceDuration: 0.5
+  entranceType: 1
+  enablePulse: 0
+  pulseInterval: 3
+  pulseScale: 1.03
+  pulseDuration: 0.4
 --- !u!1 &1087723263
 GameObject:
   m_ObjectHideFlags: 0
@@ -10633,6 +10661,7 @@ GameObject:
   - component: {fileID: 1561528711}
   - component: {fileID: 1561528710}
   - component: {fileID: 1561528715}
+  - component: {fileID: 1561528716}
   m_Layer: 0
   m_Name: TRAINING LAB (1)
   m_TagString: TrainingLabButton
@@ -10805,6 +10834,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hiddenImage: {fileID: 1633146584}
+--- !u!114 &1561528716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561528707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bd8a6976078ff34c9f80d658a5e5ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableWobble: 1
+  wobbleAmountX: 0.015
+  wobbleAmountY: 0.015
+  wobbleSpeed: 1.2
+  phaseOffset: 0.7
+  enableRotationWobble: 1
+  rotationAmount: 1.97
+  rotationSpeed: 0.8
+  enablePositionSway: 0
+  swayAmount: 3
+  swaySpeed: 0.6
+  enableEntranceAnimation: 1
+  entranceDuration: 0.5
+  entranceType: 1
+  enablePulse: 0
+  pulseInterval: 3
+  pulseScale: 1.03
+  pulseDuration: 0.4
 --- !u!1 &1580742772
 GameObject:
   m_ObjectHideFlags: 0
@@ -10976,8 +11035,7 @@ MonoBehaviour:
   m_text: PLAY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
-  m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: b0f6d4a77bcad784c975be80b253d01f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -11997,6 +12055,7 @@ GameObject:
   - component: {fileID: 1772704061}
   - component: {fileID: 1772704062}
   - component: {fileID: 1772704063}
+  - component: {fileID: 1772704064}
   m_Layer: 0
   m_Name: Options (1)
   m_TagString: OptionsButton
@@ -12169,6 +12228,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hiddenImage: {fileID: 386007460}
+--- !u!114 &1772704064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1772704056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bd8a6976078ff34c9f80d658a5e5ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableWobble: 1
+  wobbleAmountX: 0.015
+  wobbleAmountY: 0.015
+  wobbleSpeed: 1.2
+  phaseOffset: 0.7
+  enableRotationWobble: 1
+  rotationAmount: 1.97
+  rotationSpeed: 0.8
+  enablePositionSway: 0
+  swayAmount: 3
+  swaySpeed: 0.6
+  enableEntranceAnimation: 1
+  entranceDuration: 0.5
+  entranceType: 1
+  enablePulse: 0
+  pulseInterval: 3
+  pulseScale: 1.03
+  pulseDuration: 0.4
 --- !u!1 &1798385373
 GameObject:
   m_ObjectHideFlags: 0
@@ -14039,8 +14128,7 @@ MonoBehaviour:
   m_text: YOUR HIGH SCORE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
-  m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: b0f6d4a77bcad784c975be80b253d01f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -14582,6 +14670,7 @@ GameObject:
   - component: {fileID: 2096847739}
   - component: {fileID: 2096847740}
   - component: {fileID: 2096847741}
+  - component: {fileID: 2096847742}
   m_Layer: 0
   m_Name: Info (1)
   m_TagString: InfoButton
@@ -14742,6 +14831,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hiddenImage: {fileID: 1238299056}
+--- !u!114 &2096847742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096847734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bd8a6976078ff34c9f80d658a5e5ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableWobble: 1
+  wobbleAmountX: 0.015
+  wobbleAmountY: 0.015
+  wobbleSpeed: 1.2
+  phaseOffset: 0.7
+  enableRotationWobble: 1
+  rotationAmount: 1.97
+  rotationSpeed: 0.8
+  enablePositionSway: 0
+  swayAmount: 3
+  swaySpeed: 0.6
+  enableEntranceAnimation: 1
+  entranceDuration: 0.5
+  entranceType: 1
+  enablePulse: 0
+  pulseInterval: 3
+  pulseScale: 1.03
+  pulseDuration: 0.4
 --- !u!1 &2123294262
 GameObject:
   m_ObjectHideFlags: 0
