@@ -39,6 +39,16 @@ public class EnemyHealth : MonoBehaviour
 
     private Renderer[] enemyRenderers;
     private MaterialPropertyBlock propertyBlock;
+    
+    // Buzlanma efekti
+    private bool isFrozen = false;
+    private ParticleSystem freezeParticleSystem;
+    private Color originalGlowColor;
+    private Color freezeColor = new Color(0.5f, 0.8f, 1f, 1f); // Buz mavisi
+    
+    // SLOWED yazısı
+    private GameObject slowedTextObject;
+    private TextMeshPro slowedTextMesh;
 
     void Start()
     {
@@ -191,6 +201,16 @@ public class EnemyHealth : MonoBehaviour
         float healthRatio = currentHealth / totalHealth;
         Color healthColor = GetHealthColor(healthRatio);
         
+        // Buzlanma efekti varsa renge ekle - GÜÇLENDİRİLMİŞ
+        if (isFrozen)
+        {
+            healthColor = Color.Lerp(healthColor, freezeColor, 0.85f); // Daha güçlü buz efekti (0.6'dan 0.85'e)
+            // Buz efekti için ekstra parlaklık
+            healthColor.r = Mathf.Min(healthColor.r + 0.2f, 1f);
+            healthColor.g = Mathf.Min(healthColor.g + 0.3f, 1f);
+            healthColor.b = Mathf.Min(healthColor.b + 0.4f, 1f);
+        }
+        
         foreach (Renderer renderer in enemyRenderers)
         {
             if (renderer != null && renderer.sharedMaterial != null)
@@ -200,6 +220,177 @@ public class EnemyHealth : MonoBehaviour
                 renderer.SetPropertyBlock(propertyBlock);
             }
         }
+    }
+    
+    // Buzlanma efekti metodları
+    public void ApplyFreezeEffect()
+    {
+        if (isFrozen) return; // Zaten buzlu
+        
+        isFrozen = true;
+        
+        // Buz partikül efekti oluştur
+        CreateFreezeParticles();
+        
+        // SLOWED yazısını göster
+        ShowSlowedText();
+        
+        // Glow rengini güncelle
+        UpdateHealthGlow();
+    }
+    
+    public void RemoveFreezeEffect()
+    {
+        if (!isFrozen) return; // Zaten buzlu değil
+        
+        isFrozen = false;
+        
+        // Buz partiküllerini kaldır
+        if (freezeParticleSystem != null && freezeParticleSystem.gameObject != null)
+        {
+            freezeParticleSystem.Stop();
+            Destroy(freezeParticleSystem.gameObject, 1f);
+            freezeParticleSystem = null;
+        }
+        
+        // SLOWED yazısını kaldır
+        HideSlowedText();
+        
+        // Glow rengini güncelle
+        UpdateHealthGlow();
+    }
+    
+    private void ShowSlowedText()
+    {
+        // Zaten varsa tekrar oluşturma
+        if (slowedTextObject != null) return;
+        
+        // SLOWED yazısı için GameObject oluştur
+        slowedTextObject = new GameObject("SlowedText");
+        slowedTextObject.transform.SetParent(transform);
+        
+        // TextMeshPro ekle
+        slowedTextMesh = slowedTextObject.AddComponent<TextMeshPro>();
+        slowedTextMesh.text = "SLOWED";
+        slowedTextMesh.fontSize = 2f;
+        slowedTextMesh.color = new Color(0.5f, 0.8f, 1f, 1f); // Buz mavisi
+        slowedTextMesh.alignment = TextAlignmentOptions.Center;
+        slowedTextMesh.sortingOrder = 10;
+        
+        // Pozisyonu ayarla (düşmanın üstünde) - local position kullan
+        slowedTextObject.transform.localPosition = Vector3.up * 0.3f;
+        
+        // Kamera'ya bakması için script ekle
+        SlowedTextController controller = slowedTextObject.AddComponent<SlowedTextController>();
+    }
+    
+    private void HideSlowedText()
+    {
+        if (slowedTextObject != null)
+        {
+            Destroy(slowedTextObject);
+            slowedTextObject = null;
+            slowedTextMesh = null;
+        }
+    }
+    
+    private void Update()
+    {
+        // SLOWED yazısı parent'a bağlı olduğu için otomatik olarak düşmanla birlikte hareket eder
+        // Sadece pozisyonu güncellemeye gerek yok, local position kullanıyoruz
+    }
+    
+    private void CreateFreezeParticles()
+    {
+        // Buz partikül sistemi oluştur - GÜÇLENDİRİLMİŞ VERSİYON
+        GameObject freezeParticleObj = new GameObject("FreezeParticles");
+        freezeParticleObj.transform.SetParent(transform);
+        freezeParticleObj.transform.localPosition = Vector3.zero;
+        
+        freezeParticleSystem = freezeParticleObj.AddComponent<ParticleSystem>();
+        var main = freezeParticleSystem.main;
+        main.startLifetime = new ParticleSystem.MinMaxCurve(1.5f, 3f); // Daha uzun ömür
+        main.startSpeed = new ParticleSystem.MinMaxCurve(0.3f, 0.8f); // Daha hızlı
+        main.startSize = new ParticleSystem.MinMaxCurve(0.08f, 0.15f); // Daha büyük partiküller
+        main.startColor = new ParticleSystem.MinMaxGradient(
+            new Color(0.8f, 0.95f, 1f, 1f), // Daha parlak beyaz-mavi
+            new Color(0.4f, 0.7f, 1f, 0.9f) // Daha koyu mavi
+        );
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.maxParticles = 300; // Daha fazla partikül (100'den 300'e)
+        main.gravityModifier = -0.15f; // Daha fazla yukarı çıkış
+        main.loop = true;
+        
+        var emission = freezeParticleSystem.emission;
+        emission.rateOverTime = 80f; // Daha fazla partikül/saniye (30'dan 80'e)
+        
+        var shape = freezeParticleSystem.shape;
+        // Düşmanın mesh'ini kullan, yoksa sphere kullan
+        Mesh enemyMesh = GetEnemyMesh();
+        if (enemyMesh != null)
+        {
+            shape.shapeType = ParticleSystemShapeType.Mesh;
+            shape.mesh = enemyMesh;
+        }
+        else
+        {
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.5f;
+        }
+        shape.scale = Vector3.one * 1.5f; // Daha geniş alan (1.2'den 1.5'e)
+        
+        // Size over lifetime - daha belirgin
+        var sizeOverLifetime = freezeParticleSystem.sizeOverLifetime;
+        sizeOverLifetime.enabled = true;
+        AnimationCurve sizeCurve = new AnimationCurve();
+        sizeCurve.AddKey(0f, 0.3f);
+        sizeCurve.AddKey(0.3f, 1f);
+        sizeCurve.AddKey(0.7f, 1.2f);
+        sizeCurve.AddKey(1f, 0f);
+        sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+        
+        // Color over lifetime - daha parlak ve belirgin
+        var colorOverLifetime = freezeParticleSystem.colorOverLifetime;
+        colorOverLifetime.enabled = true;
+        Gradient colorGradient = new Gradient();
+        colorGradient.SetKeys(
+            new GradientColorKey[] { 
+                new GradientColorKey(new Color(1f, 1f, 1f, 1f), 0f), // Beyaz başlangıç
+                new GradientColorKey(new Color(0.7f, 0.9f, 1f, 1f), 0.3f), 
+                new GradientColorKey(new Color(0.4f, 0.7f, 1f, 0.9f), 0.7f),
+                new GradientColorKey(new Color(0.2f, 0.5f, 1f, 0f), 1f) 
+            },
+            new GradientAlphaKey[] { 
+                new GradientAlphaKey(1f, 0f), // Tam opak başlangıç
+                new GradientAlphaKey(0.9f, 0.3f), 
+                new GradientAlphaKey(0.7f, 0.7f),
+                new GradientAlphaKey(0f, 1f) 
+            }
+        );
+        colorOverLifetime.color = colorGradient;
+        
+        // Velocity over lifetime - daha dinamik
+        var velocityOverLifetime = freezeParticleSystem.velocityOverLifetime;
+        velocityOverLifetime.enabled = true;
+        velocityOverLifetime.space = ParticleSystemSimulationSpace.Local;
+        velocityOverLifetime.radial = new ParticleSystem.MinMaxCurve(0.2f, 0.5f); // Dışa doğru genişleme
+        
+        var renderer = freezeParticleSystem.GetComponent<ParticleSystemRenderer>();
+        renderer.material = new Material(Shader.Find("Sprites/Default"));
+        renderer.sortingOrder = 1;
+    }
+    
+    private Mesh GetEnemyMesh()
+    {
+        // Düşmanın mesh'ini bul
+        MeshFilter meshFilter = GetComponentInChildren<MeshFilter>();
+        if (meshFilter != null && meshFilter.mesh != null)
+        {
+            return meshFilter.mesh;
+        }
+        
+        // Mesh bulunamazsa sphere kullan
+        return null; // Shape otomatik olarak sphere kullanacak
     }
 
     private Color GetHealthColor(float healthRatio)
@@ -218,6 +409,12 @@ public class EnemyHealth : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        
+        // Buzlanma efektini kaldır
+        if (isFrozen)
+        {
+            RemoveFreezeEffect();
+        }
 
         OnEnemyKilled?.Invoke();
 
@@ -262,12 +459,27 @@ public class EnemyHealth : MonoBehaviour
 
         Destroy(gameObject, Mathf.Max(sfxDuration, 0.4f));
     }
+    
+    private void OnDestroy()
+    {
+        // Buzlanma efektini temizle
+        if (freezeParticleSystem != null && freezeParticleSystem.gameObject != null)
+        {
+            Destroy(freezeParticleSystem.gameObject);
+        }
+        
+        // SLOWED yazısını temizle
+        if (slowedTextObject != null)
+        {
+            Destroy(slowedTextObject);
+        }
+    }
 
 
     // Aktif silahı bul (enabled ve aktif olan GunFire)
     private GunFire FindActiveGunFire()
     {
-        GunFire[] allGuns = FindObjectsOfType<GunFire>();
+        GunFire[] allGuns = FindObjectsOfType<GunFire>(true); // Include inactive objects
         foreach (GunFire gun in allGuns)
         {
             // Aktif ve enabled olan silahı bul
@@ -276,6 +488,18 @@ public class EnemyHealth : MonoBehaviour
                 return gun;
             }
         }
+        
+        // Eğer aktif silah bulunamazsa, aktif hierarchy'deki ilk silahı dene
+        // (Bazı durumlarda enabled=false olabilir ama activeInHierarchy=true)
+        foreach (GunFire gun in allGuns)
+        {
+            if (gun.gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning($"FindActiveGunFire: {gun.gameObject.name} aktif ama enabled=false. Yenileme deneniyor...");
+                return gun;
+            }
+        }
+        
         return null;
     }
 

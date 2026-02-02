@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 50
-  speed: 0.75
+  speed: 20
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
 --- !u!136 &5230822648304932289

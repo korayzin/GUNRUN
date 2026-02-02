@@ -260,13 +260,16 @@ public class GunFire : MonoBehaviour
         Quaternion finalRotation = lookRotation * bulletPrefabRotation;
         
         GameObject spawnedBullet = Instantiate(bulletPrefab, barrel.position, finalRotation);
-        spawnedBullet.GetComponent<Rigidbody>().velocity = velocity * (target.position - barrel.position).normalized;
+        Vector3 targetDirection = (target.position - barrel.position).normalized;
+        spawnedBullet.GetComponent<Rigidbody>().velocity = velocity * targetDirection;
 
         Bullet bulletScript = spawnedBullet.GetComponent<Bullet>();
         if (bulletScript != null)
         {
             bulletScript.hitSound = bulletHitSound;
             bulletScript.damageEffectPrefab = damageEffectPrefab;
+            // Hareket yönünü doğrudan set et (prefab rotasyonundan bağımsız, target direction'a göre)
+            bulletScript.SetMovementDirection(targetDirection);
         }
 
         if (audioSource != null)
@@ -295,6 +298,10 @@ public class GunFire : MonoBehaviour
     {
         currentAmmo = maxAmmo;
         isOutOfAmmo = false; // Yenilendiğinde flag'i sıfırla
+        
+        // Debug log ekle
+        Debug.Log($"[Reload] {gameObject.name}: Mermi {currentAmmo}/{maxAmmo} olarak yenilendi. ammoText null mu? {ammoText == null}");
+        
         UpdateAmmoDisplay();
     }
 
@@ -317,6 +324,10 @@ public class GunFire : MonoBehaviour
             {
                 ammoText.color = Color.white;
             }
+        }
+        else
+        {
+            Debug.LogWarning($"[UpdateAmmoDisplay] {gameObject.name}: ammoText null! Mermi sayısı güncellenemedi.");
         }
     }
 

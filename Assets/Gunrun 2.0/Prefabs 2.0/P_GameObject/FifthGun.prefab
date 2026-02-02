@@ -571,7 +571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 940753537500fe74dbcab41b13c015fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocity: 50
+  velocity: 20
   bulletPrefab: {fileID: 4858235730514071926, guid: 394911edc6b548747a1abc01b82d45c6,
     type: 3}
   barrel1: {fileID: 2083268871158550854}
@@ -659,6 +659,9 @@ MonoBehaviour:
   raycastLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  laserCountText: {fileID: 0}
+  textNormalColor: {r: 1, g: 1, b: 1, a: 1}
+  textEmptyColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &7152020470653277982
 PrefabInstance:
   m_ObjectHideFlags: 0

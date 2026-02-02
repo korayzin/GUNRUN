@@ -9,6 +9,11 @@ public class EnemyBehavior : MonoBehaviour
     public float speed = 3f; // Stage bazlı hız, spawn anında atanır
 
     [SerializeField] private List<Collider> colliders;
+    
+    // Slow mekanizması
+    private float slowMultiplier = 1f;
+    private bool isSlowed = false;
+    private float originalSpeed;
 
     public void Stop()
     {
@@ -21,6 +26,28 @@ public class EnemyBehavior : MonoBehaviour
         {
             collider.enabled = false;
         }
+    }
+    
+    // Slow mekanizması metodları
+    public void ApplySlow(float multiplier)
+    {
+        if (!isSlowed)
+        {
+            originalSpeed = speed;
+        }
+        slowMultiplier = multiplier;
+        isSlowed = true;
+    }
+    
+    public void RemoveSlow()
+    {
+        slowMultiplier = 1f;
+        isSlowed = false;
+    }
+    
+    public bool IsSlowed()
+    {
+        return isSlowed;
     }
 
     private void Update()
@@ -42,7 +69,7 @@ public class EnemyBehavior : MonoBehaviour
 
         // Hedefe git
         agent.SetDestination(targetPosition);
-        agent.speed = speed;
+        agent.speed = speed * slowMultiplier; // Slow multiplier uygula
 
         // Debug bilgisi (sadece arada)
         if (Time.frameCount % 300 == 0)
