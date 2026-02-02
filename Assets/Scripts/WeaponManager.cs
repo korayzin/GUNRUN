@@ -315,7 +315,8 @@ public class WeaponManager : MonoBehaviour
 
     private void HandleBarettaSwitch(GameObject newWeapon)
     {
-        GunFire gunFire = newWeapon.GetComponent<GunFire>();
+        // GunFire component'ini bul (prefab instance içinde de olabilir)
+        GunFire gunFire = newWeapon.GetComponentInChildren<GunFire>(true);
         if (gunFire != null && gunFire.isBaretta)
         {
             gunFire.isLeftHanded = false;
@@ -387,11 +388,35 @@ public class WeaponManager : MonoBehaviour
         nextWeaponObj.SetActive(true);
         Debug.Log("Yeni silaha geçildi: " + nextWeaponObj.name);
 
-        GunFire nextGunFire = nextWeaponObj.GetComponent<GunFire>();
+        // Prefab instance child'larını da aktif et (mesh yükleme sorunları için)
+        Transform[] allChildren = nextWeaponObj.GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in allChildren)
+        {
+            if (child.gameObject != nextWeaponObj && !child.gameObject.activeSelf)
+            {
+                child.gameObject.SetActive(true);
+            }
+        }
+
+        // Mesh renderer'ları açıkça etkinleştir (prefab instance sorunları için)
+        Renderer[] allRenderers = nextWeaponObj.GetComponentsInChildren<Renderer>(true);
+        foreach (Renderer renderer in allRenderers)
+        {
+            renderer.enabled = true;
+        }
+        Debug.Log($"{nextWeaponObj.name} için {allRenderers.Length} renderer etkinleştirildi.");
+
+        // GunFire component'ini bul (prefab instance içinde de olabilir)
+        GunFire nextGunFire = nextWeaponObj.GetComponentInChildren<GunFire>(true);
         if (nextGunFire != null)
         {
             nextGunFire.enabled = true;
-            Debug.Log($"{nextWeaponObj.name} silahı açıldı.");
+            nextGunFire.canFire = true; // Ateş edebilmesi için canFire'ı true yap
+            Debug.Log($"{nextWeaponObj.name} silahı açıldı ve ateş edebilir durumda.");
+        }
+        else
+        {
+            Debug.LogWarning($"{nextWeaponObj.name} için GunFire component'i bulunamadı!");
         }
 
         UpdateWeaponUI();
