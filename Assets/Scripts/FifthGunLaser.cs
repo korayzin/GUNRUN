@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// FifthGun silahı için YILDIRIM sistemi.
@@ -20,7 +21,7 @@ public class FifthGunLaser : MonoBehaviour
     public float laserDamage = 9999f;
     
     [Tooltip("Kaç kez ateşlenebilir (0 = sınırsız)")]
-    public int maxLaserShots = 1;
+    public int maxLaserShots = 2;
     
     [Header("=== CHARGE SİSTEMİ ===")]
     [Tooltip("Charge süresi (saniye)")]
@@ -154,6 +155,16 @@ public class FifthGunLaser : MonoBehaviour
     [Header("=== LAYER ===")]
     public LayerMask raycastLayerMask = ~0;
     
+    [Header("=== LASER UI ===")]
+    [Tooltip("Laser kullanım sayısını gösteren text (örn: 2/2)")]
+    public TextMeshProUGUI laserCountText;
+    
+    [Tooltip("Text'in normal rengi")]
+    public Color textNormalColor = Color.white;
+    
+    [Tooltip("Text'in kırmızı rengi (0/2 olduğunda)")]
+    public Color textEmptyColor = Color.red;
+    
     // Private değişkenler
     private int remainingShots;
     private GunFire gunFire;
@@ -178,6 +189,13 @@ public class FifthGunLaser : MonoBehaviour
     void Start()
     {
         gunFire = GetComponent<GunFire>();
+        
+        // maxLaserShots'i 2 olarak garanti et (eğer prefab'ta farklı ayarlanmışsa)
+        if (maxLaserShots != 2)
+        {
+            maxLaserShots = 2;
+        }
+        
         remainingShots = maxLaserShots;
         
         if (audioSource == null)
@@ -189,10 +207,14 @@ public class FifthGunLaser : MonoBehaviour
             if (laserChild != null)
                 laserSpawnPoint = laserChild;
         }
+        
+        // UI text'i başlangıç değeriyle güncelle
+        UpdateLaserCountUI();
     }
     
     void Update()
     {
+        // Laser bitti mi kontrol et
         if (maxLaserShots > 0 && remainingShots <= 0) return;
         
         // A tuşu basılı tutulunca CHARGE
@@ -211,6 +233,12 @@ public class FifthGunLaser : MonoBehaviour
     
     void StartCharging()
     {
+        // Laser bitti mi kontrol et
+        if (maxLaserShots > 0 && remainingShots <= 0)
+        {
+            return; // Laser bitti, charge başlatma
+        }
+        
         isCharging = true;
         currentCharge = 0f;
         
@@ -422,6 +450,9 @@ public class FifthGunLaser : MonoBehaviour
         {
             remainingShots--;
             Debug.Log($"⚡ YILDIRIM! Charge: {chargeAmount:P0} | Kalan: {remainingShots}");
+            
+            // UI text'i güncelle
+            UpdateLaserCountUI();
         }
         
         // BÜYÜK HAPTİK
@@ -953,6 +984,7 @@ public class FifthGunLaser : MonoBehaviour
     public void ResetLaser()
     {
         remainingShots = maxLaserShots;
+        UpdateLaserCountUI();
     }
     
     public bool HasLaserBeenFired()
@@ -968,6 +1000,35 @@ public class FifthGunLaser : MonoBehaviour
     public void AddLaserShots(int amount)
     {
         remainingShots += amount;
+        UpdateLaserCountUI();
+    }
+    
+    /// <summary>
+    /// Laser kullanım sayısını UI'da günceller ve renk değiştirir
+    /// </summary>
+    void UpdateLaserCountUI()
+    {
+        if (laserCountText == null) return;
+        
+        // maxLaserShots'i 2 olarak garanti et
+        int displayMaxShots = maxLaserShots > 0 ? maxLaserShots : 2;
+        if (displayMaxShots != 2) displayMaxShots = 2;
+        
+        // remainingShots'i sınırla
+        int displayRemainingShots = Mathf.Clamp(remainingShots, 0, displayMaxShots);
+        
+        // Text'i güncelle: remainingShots/maxLaserShots (her zaman 2/2 formatında)
+        laserCountText.text = $"{displayRemainingShots}/{displayMaxShots}";
+        
+        // 0/2 olduğunda kırmızı, diğer durumlarda normal renk
+        if (displayRemainingShots <= 0)
+        {
+            laserCountText.color = textEmptyColor;
+        }
+        else
+        {
+            laserCountText.color = textNormalColor;
+        }
     }
     
     void OnDrawGizmosSelected()
@@ -995,7 +1056,7 @@ public class FifthGunLaser : MonoBehaviour
         chargeCanvas.renderMode = RenderMode.WorldSpace;
         
         RectTransform canvasRect = chargeCanvas.GetComponent<RectTransform>();
-        canvasRect.sizeDelta = new Vector2(100, 100);
+        canvasRect.sizeDelta = new Vector2(2, 2);
         canvasRect.localScale = Vector3.one * uiSize * 0.01f;
         
         // Minimal tasarım - sadece ince arc

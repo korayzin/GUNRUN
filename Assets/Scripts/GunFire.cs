@@ -50,6 +50,7 @@ public class GunFire : MonoBehaviour
     //public float rotationSpeed = 5f; 
 
     private Quaternion originalRotation;
+    private Quaternion bulletPrefabRotation;
     private bool isOutOfAmmo = false;
 
     void Start()
@@ -59,6 +60,18 @@ public class GunFire : MonoBehaviour
         // Artik dusman oldugunde otomatik reload yok - mermi bitince oyun biter
 
         originalRotation = transform.localRotation;
+        
+        // Prefab'ın rotasyonunu sakla (prefab asset'inin rotasyonunu almak için geçici olarak instantiate edip destroy ediyoruz)
+        if (bulletPrefab != null)
+        {
+            GameObject tempPrefab = Instantiate(bulletPrefab);
+            bulletPrefabRotation = tempPrefab.transform.rotation;
+            Destroy(tempPrefab);
+        }
+        else
+        {
+            bulletPrefabRotation = Quaternion.identity;
+        }
     }
 
     void Update()
@@ -241,7 +254,12 @@ public class GunFire : MonoBehaviour
     {
         if (barrel == null || target == null) return; 
 
-        GameObject spawnedBullet = Instantiate(bulletPrefab, barrel.position, Quaternion.LookRotation(target.position - barrel.position));
+        // Prefab'ın rotasyonunu baz alarak hesapla
+        Quaternion lookRotation = Quaternion.LookRotation(target.position - barrel.position);
+        // Prefab rotasyonunu baz alarak LookRotation'ı uygula
+        Quaternion finalRotation = lookRotation * bulletPrefabRotation;
+        
+        GameObject spawnedBullet = Instantiate(bulletPrefab, barrel.position, finalRotation);
         spawnedBullet.GetComponent<Rigidbody>().velocity = velocity * (target.position - barrel.position).normalized;
 
         Bullet bulletScript = spawnedBullet.GetComponent<Bullet>();

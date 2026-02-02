@@ -11,27 +11,27 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.001571953
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.007044877
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
@@ -41,43 +41,54 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.50460786
+      value: 0.5644859
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.50460786
+      value: -0.5644859
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.49534938
+      value: -0.42585874
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.49534938
+      value: 0.42585874
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -178.939
+      value: -15.937
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -90
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 63c7d95df6f921c4bbfbe31f4ddec385, type: 2}
+    - target: {fileID: -5754084199372789682, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -6675047952364192028, guid: 200943e4b99b1b142bb9b551fbbf40a9,
+        type: 3}
     - target: {fileID: 919132149155446097, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
         type: 3}
       propertyPath: m_Name
@@ -99,6 +110,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 361611040495636805}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2989417574894925513}
   m_SourcePrefab: {fileID: 100100000, guid: 8136b9c9df4e66a4bbb2900fd40eaa19, type: 3}
 --- !u!1 &3986653680961476808 stripped
 GameObject:
@@ -118,8 +133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bef4c87dd49b70443a9cb1cb8fbe05a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
-  speed: 2
+  damage: 50
+  speed: 0.75
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
 --- !u!136 &5230822648304932289
@@ -153,7 +168,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3986653680961476808}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 3.58
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -172,3 +187,50 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &2989417574894925513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3986653680961476808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41be59ca1622fd94bb37e32c49cf439b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinSpeed: 900
+  spinAxis: {x: 0, y: 1, z: 0}
+  randomizeSpinSpeed: 1
+  spinSpeedVariation: 0.3
+  enableFlameEffect: 0
+  flameOffset: {x: 0, y: 0, z: -0.3}
+  flameSize: 0.15
+  flameCoreColor: {r: 1, g: 1, b: 1, a: 1}
+  flameStartColor: {r: 1, g: 1, b: 1, a: 1}
+  flameEndColor: {r: 0, g: 0.059990406, b: 1, a: 0}
+  flameIntensity: 20
+  flameParticleCount: 80
+  enableTrail: 1
+  trailTime: 0.3
+  trailStartWidth: 0.1
+  trailEndWidth: 0.05
+  glowTrailStartWidth: 0.2
+  glowTrailEndWidth: 0.1
+  trailCoreColor: {r: 1, g: 1, b: 1, a: 1}
+  trailMainColor: {r: 0.17622232, g: 0, b: 1, a: 0.9}
+  trailGlowColor: {r: 0.40204334, g: 0, b: 1, a: 0.4}
+  enableLight: 1
+  lightIntensity: 0.5
+  lightRange: 0.6
+  lightColor: {r: 0.48302728, g: 0.21982914, b: 0.7169812, a: 1}
+  enableLightning: 1
+  lightningCount: 4
+  lightningLength: 0.3
+  lightningJagged: 0.15
+  lightningSegments: 8
+  lightningCoreColor: {r: 1, g: 1, b: 1, a: 1}
+  lightningGlowColor: {r: 0.4, g: 0.7, b: 1, a: 0.6}
+  lightningUpdateRate: 0.05
+  lightningCoreWidth: 0.02
+  lightningGlowWidth: 0.08
