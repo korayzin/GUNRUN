@@ -43,6 +43,12 @@ public class GunFire : MonoBehaviour
     public bool isBaretta = false;
     public bool isLeftHanded = false;
 
+    [Header("Dual Shot (altlı üstlü 2 mermi)")]
+    [Tooltip("Açıkken her atışta 2 mermi atar (üst + alt), yine 1 mermi harcanır.")]
+    public bool useDualShotVertical = false;
+    [Tooltip("İki mermi arasındaki dikey mesafe (barrel.up yönünde).")]
+    public float dualShotSpacing = 0.04f;
+
     //[Header("Magic System")]
     //public bool isMagicalGun = false; 
     //private bool isMagicTouching = false;
@@ -223,7 +229,16 @@ public class GunFire : MonoBehaviour
 
     public void Fire()
     {
-        FireFromBarrel(barrel1, targetDirection1);
+        if (useDualShotVertical && barrel1 != null && targetDirection1 != null)
+        {
+            float half = dualShotSpacing * 0.5f;
+            FireFromBarrel(barrel1, targetDirection1, half);
+            FireFromBarrel(barrel1, targetDirection1, -half);
+        }
+        else
+        {
+            FireFromBarrel(barrel1, targetDirection1);
+        }
 
         if (useDualBarrel)
         {
@@ -252,14 +267,20 @@ public class GunFire : MonoBehaviour
 
     private void FireFromBarrel(Transform barrel, Transform target)
     {
-        if (barrel == null || target == null) return; 
+        FireFromBarrel(barrel, target, 0f);
+    }
+
+    private void FireFromBarrel(Transform barrel, Transform target, float verticalOffset)
+    {
+        if (barrel == null || target == null) return;
+
+        Vector3 spawnPos = barrel.position + (verticalOffset != 0f ? barrel.up * verticalOffset : Vector3.zero);
 
         // Prefab'ın rotasyonunu baz alarak hesapla
         Quaternion lookRotation = Quaternion.LookRotation(target.position - barrel.position);
-        // Prefab rotasyonunu baz alarak LookRotation'ı uygula
         Quaternion finalRotation = lookRotation * bulletPrefabRotation;
-        
-        GameObject spawnedBullet = Instantiate(bulletPrefab, barrel.position, finalRotation);
+
+        GameObject spawnedBullet = Instantiate(bulletPrefab, spawnPos, finalRotation);
         Vector3 targetDirection = (target.position - barrel.position).normalized;
         spawnedBullet.GetComponent<Rigidbody>().velocity = velocity * targetDirection;
 
@@ -268,7 +289,6 @@ public class GunFire : MonoBehaviour
         {
             bulletScript.hitSound = bulletHitSound;
             bulletScript.damageEffectPrefab = damageEffectPrefab;
-            // Hareket yönünü doğrudan set et (prefab rotasyonundan bağımsız, target direction'a göre)
             bulletScript.SetMovementDirection(targetDirection);
         }
 
