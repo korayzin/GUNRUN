@@ -7,6 +7,9 @@ public class WeaponManager : MonoBehaviour
     // Singleton instance
     public static WeaponManager Instance { get; private set; }
 
+    /// <summary> Silah değiştiğinde (indeks 0-8) tetiklenir. Watch UI vb. dinleyebilir. </summary>
+    public static event System.Action<int> OnWeaponChanged;
+
     [Header("Weapons")]
     public GameObject firstWeapon;
     public GameObject secondWeapon;
@@ -201,6 +204,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(firstWeapon, secondWeapon, vfxFirst, vfxSecond));
             currentWeapon = 1;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(secondWeapon);
             Debug.Log($"First weapon kapatıldı, Second weapon açıldı ({enemyKillCount} kill).");
         }
@@ -216,6 +220,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(secondWeapon, thirdWeapon, vfxSecond, vfxThird));
             currentWeapon = 2;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(thirdWeapon);
             Debug.Log($"Second weapon kapatıldı, Third weapon açıldı ({enemyKillCount} kill).");
         }
@@ -231,6 +236,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(thirdWeapon, fourthWeapon, vfxThird, vfxFourth));
             currentWeapon = 3;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(fourthWeapon);
             Debug.Log($"Third weapon kapatıldı, Fourth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -246,6 +252,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(fourthWeapon, fifthWeapon, vfxFourth, vfxFifth));
             currentWeapon = 4;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(fifthWeapon);
             Debug.Log($"Fourth weapon kapatıldı, Fifth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -261,6 +268,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(fifthWeapon, sixthWeapon, vfxFifth, vfxSixth));
             currentWeapon = 5;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(sixthWeapon);
             Debug.Log($"Fifth weapon kapatıldı, Sixth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -276,6 +284,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(sixthWeapon, seventhWeapon, vfxSixth, vfxSeventh));
             currentWeapon = 6;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(seventhWeapon);
             Debug.Log($"Sixth weapon kapatıldı, Seventh weapon açıldı ({enemyKillCount} kill).");
         }
@@ -291,6 +300,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(seventhWeapon, eighthWeapon, vfxSeventh, vfxEighth));
             currentWeapon = 7;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(eighthWeapon);
             Debug.Log($"Seventh weapon kapatıldı, Eighth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -306,6 +316,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(eighthWeapon, ninthWeapon, vfxEighth, vfxNinth));
             currentWeapon = 8;
+            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(ninthWeapon);
             Debug.Log($"Eighth weapon kapatıldı, Ninth weapon açıldı ({enemyKillCount} kill).");
         }
