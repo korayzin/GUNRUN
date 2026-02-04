@@ -527,6 +527,14 @@ public class WeaponManager : MonoBehaviour
         return currentWeapon;
     }
 
+    /// <summary>
+    /// Toplam düşman öldürme sayısını döndürür (silah değişim UI vb. için).
+    /// </summary>
+    public int GetEnemyKillCount()
+    {
+        return enemyKillCount;
+    }
+
     #endregion
 
 }
