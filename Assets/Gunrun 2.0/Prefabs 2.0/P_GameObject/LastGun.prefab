@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &612345670001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 612345670002}
+  m_Layer: 0
+  m_Name: SprayEnergyUIPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &612345670002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612345670001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.05, y: 0.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 265413033476371406}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &402125995863325305
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,6 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 265413033476371406}
   - component: {fileID: 5454319604277176373}
+  - component: {fileID: 612345670003}
   m_Layer: 0
   m_Name: LastGun
   m_TagString: Untagged
@@ -31,6 +63,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8849118122753408191}
+  - {fileID: 9127417016530942076}
   - {fileID: 498414647335360397}
   - {fileID: 1270697376248064974}
   - {fileID: 3627866073455713894}
@@ -41,6 +74,7 @@ Transform:
   - {fileID: 8549947422793901040}
   - {fileID: 6627909299656708808}
   - {fileID: 5340696010866778272}
+  - {fileID: 612345670002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5454319604277176373
@@ -85,6 +119,83 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 0
   isLeftHanded: 0
+  useDualShotVertical: 0
+  dualShotSpacing: 0.04
+--- !u!114 &612345670003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402125995863325305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f8a1b2c3d44e5f6789012345678abc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flameVfxPrefab: {fileID: 0, guid: c2f6a8962aac3814aa56cb9647c93470, type: 3}
+  sprayOrigin: {fileID: 498414647335360397}
+  sprayForwardTarget: {fileID: 1270697376248064974}
+  vfxForwardOffset: 0.15
+  vfxScale: {x: 1, y: 1, z: 1}
+  sprayForwardSpeed: 12
+  sprayConeAngle: 6
+  sprayDirectionRandomness: 0.06
+  flameLineSegments: 22
+  flameLineWidthStart: 0.03
+  flameLineWidthEnd: 0.09
+  flameLineWaveAmount: 0.028
+  flameLineWaveSpeed: 30
+  flameLineGlowColor: {r: 1, g: 0.35, b: 0.05, a: 0.55}
+  flameLineCoreColor: {r: 1, g: 0.9, b: 0.25, a: 1}
+  maxSprayEnergy: 100
+  drainRate: 25
+  regenRate: 15
+  damagePerSecond: 12
+  sprayRange: 8
+  damageCheckInterval: 0.08
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  hapticStrength: 0.6
+  isLeftHanded: 0
+  uiPosition: {fileID: 9127417016530942076}
+  uiOffset: {x: 0, y: 0, z: 0}
+  uiSize: 0.01
+  uiColor: {r: 1, g: 0.4, b: 0.1, a: 1}
+  uiBgColor: {r: 0.1, g: 0.1, b: 0.15, a: 0.8}
+  uiArcThickness: 0.15
+--- !u!1 &1154427170944606142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9127417016530942076}
+  m_Layer: 0
+  m_Name: T
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9127417016530942076
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1154427170944606142}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.1454, y: 0.10793114, z: -0.0455}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 265413033476371406}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1242549847591397313
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,7 +590,8 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 317287417052317774, guid: d96f937b3814d7e4a97b6d1e337fb67c, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d96f937b3814d7e4a97b6d1e337fb67c, type: 3}

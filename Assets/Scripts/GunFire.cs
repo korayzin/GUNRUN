@@ -84,6 +84,11 @@ public class GunFire : MonoBehaviour
     {
         if (!canFire) return;
 
+        // LastGun: ateş püskürtme bu silahta LastGunFlameSpray tarafından yönetilir, mermi atma.
+        var flameSpray = GetComponent<LastGunFlameSpray>();
+        if (flameSpray != null && flameSpray.enabled)
+            return;
+
         if (ammoUI != null)
         {
             ammoUI.transform.rotation = Quaternion.LookRotation(ammoUI.transform.position - Camera.main.transform.position);

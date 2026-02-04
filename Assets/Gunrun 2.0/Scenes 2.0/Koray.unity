@@ -5180,7 +5180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f603ccb526f7a4949b5a51a818444912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstWeapon: {fileID: 828508232}
+  firstWeapon: {fileID: 20849705}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 1735730324613644644}
   fourthWeapon: {fileID: 2972479651670665011}
@@ -5188,7 +5188,7 @@ MonoBehaviour:
   sixthWeapon: {fileID: 2443542293831071706}
   seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
-  ninthWeapon: {fileID: 20849705}
+  ninthWeapon: {fileID: 0}
   firstWeaponImage: {fileID: 0}
   secondWeaponImage: {fileID: 0}
   thirdWeaponImage: {fileID: 0}
@@ -59236,7 +59236,7 @@ PrefabInstance:
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -93225,6 +93225,75 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1601181432}
     m_Modifications:
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: uiSize
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: barHeight
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: segmentGap
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: sprayRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: sprayOrigin
+      value: 
+      objectReference: {fileID: 891149923}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: flameVfxPrefab
+      value: 
+      objectReference: {fileID: 1582275357731197809, guid: 5334360cd0cfad84bbf6855beaf10de4,
+        type: 3}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: sprayConeAngle
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: damagePerSecond
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: vfxForwardOffset
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: flameLineWidthEnd
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: sprayForwardSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: flameLineWaveSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: sprayForwardTarget
+      value: 
+      objectReference: {fileID: 1318334481}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: flameLineWaveAmount
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: flameLineWidthStart
+      value: 0.048
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: flameOutlineThickness
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 612345670003, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
+      propertyPath: sprayDirectionRandomness
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 265413033476371406, guid: 4517f4fd3e0ef004ea2c3878f120396e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -93283,7 +93352,7 @@ PrefabInstance:
     - target: {fileID: 402125995863325305, guid: 4517f4fd3e0ef004ea2c3878f120396e,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 498414647335360397, guid: 4517f4fd3e0ef004ea2c3878f120396e,
         type: 3}
@@ -93348,6 +93417,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5454319604277176373, guid: 4517f4fd3e0ef004ea2c3878f120396e,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454319604277176373, guid: 4517f4fd3e0ef004ea2c3878f120396e,
+        type: 3}
       propertyPath: audioSource
       value: 
       objectReference: {fileID: 0}
@@ -93408,6 +93482,31 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9156974889021201898, guid: e149d31226196b14cacf4499b808e7f3,
         type: 3}
+    - target: {fileID: 5454319604277176373, guid: 4517f4fd3e0ef004ea2c3878f120396e,
+        type: 3}
+      propertyPath: onFire.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454319604277176373, guid: 4517f4fd3e0ef004ea2c3878f120396e,
+        type: 3}
+      propertyPath: onFire.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454319604277176373, guid: 4517f4fd3e0ef004ea2c3878f120396e,
+        type: 3}
+      propertyPath: onFire.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454319604277176375, guid: 4517f4fd3e0ef004ea2c3878f120396e,
+        type: 3}
+      propertyPath: barrel
+      value: 
+      objectReference: {fileID: 891149923}
+    - target: {fileID: 5454319604277176375, guid: 4517f4fd3e0ef004ea2c3878f120396e,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 1318334481}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 1242549847591397313, guid: 4517f4fd3e0ef004ea2c3878f120396e, type: 3}
@@ -94424,7 +94523,7 @@ PrefabInstance:
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
