@@ -5186,7 +5186,7 @@ MonoBehaviour:
   fourthWeapon: {fileID: 2972479651670665011}
   fifthWeapon: {fileID: 1046036456}
   sixthWeapon: {fileID: 2443542293831071706}
-  seventhWeapon: {fileID: 5555600068782280050}
+  seventhWeapon: {fileID: 2443542293831071706}
   eighthWeapon: {fileID: 1568333046196313104}
   ninthWeapon: {fileID: 20849705}
   firstWeaponImage: {fileID: 0}
@@ -5207,15 +5207,15 @@ MonoBehaviour:
   vfxSeventh: {fileID: 0}
   vfxEighth: {fileID: 0}
   vfxNinth: {fileID: 0}
-  killsToSecond: 6
-  killsToThird: 14
-  killsToFourth: 24
-  killsToFifth: 36
-  killsToSixth: 48
-  killsToSeventh: 54
-  killsToEighth: 64
-  killsToNinth: 78
-  vfxDelay: 0.5
+  killsToSecond: 1
+  killsToThird: 1
+  killsToFourth: 1
+  killsToFifth: 1
+  killsToSixth: 1
+  killsToSeventh: 1
+  killsToEighth: 1
+  killsToNinth: 1
+  vfxDelay: 1
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
   activeUIImageScale: 0.8
@@ -41615,7 +41615,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 752648650}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -41623,7 +41623,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 66.9, y: -26.4}
+  m_AnchoredPosition: {x: 122.1, y: -20.5}
   m_SizeDelta: {x: 200, y: 24}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &752648652
@@ -41646,10 +41646,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: HEAVY MODE ANY DESTRUCTOR
+  m_text: WEAPON LINE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
+  m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -41709,7 +41710,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: 8.84974}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -45658,8 +45659,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: WEAPON
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
+  m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -86621,14 +86623,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1917262744}
-  m_LocalRotation: {x: -0, y: 0.0084034195, z: -0, w: 0.9999647}
+  m_LocalRotation: {x: 0.34330708, y: -0.29087642, z: 0.11272083, w: 0.8859036}
   m_LocalPosition: {x: 0, y: 0, z: -0.0926}
   m_LocalScale: {x: 0.001, y: 0.0009999999, z: 0.001}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 979181513}
   m_Father: {fileID: 1601181430}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 42.365, y: -36.354, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.1307, y: 0.0911}
@@ -86668,7 +86670,7 @@ MonoBehaviour:
   rightSlotImage: {fileID: 552055532}
   rightButton: {fileID: 1745138283}
   warningLabel: {fileID: 752648652}
-  warningText: HEAVY MODE ANY DESTRUCTOR
+  warningText: GUN LINE
   transitionDuration: 0.25
   scaleCurve:
     serializedVersion: 2
