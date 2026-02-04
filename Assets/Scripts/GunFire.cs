@@ -82,6 +82,18 @@ public class GunFire : MonoBehaviour
 
     void Update()
     {
+        // Mermi/enerji bitti mi kontrolü (LastGun için de çalışsın; flameSpray varken trigger atılmaz ama ammo 0 olunca oyun biter)
+        if (currentAmmo <= 0 && !isOutOfAmmo)
+        {
+            bool partnerHasAmmo = isBaretta && FindPartnerBaretta() != null && FindPartnerBaretta().GetCurrentAmmo() > 0;
+            if (!partnerHasAmmo)
+            {
+                isOutOfAmmo = true;
+                if (GameManager.Instance != null)
+                    GameManager.Instance.GameOver(null);
+            }
+        }
+
         if (!canFire) return;
 
         // LastGun: ateş püskürtme bu silahta LastGunFlameSpray tarafından yönetilir, mermi atma.
@@ -131,40 +143,6 @@ public class GunFire : MonoBehaviour
             }
         }
 
-        if (currentAmmo <= 0 && !isOutOfAmmo)
-        {
-            // Baretta için özel kontrol - iki silah da 0 olmalı
-            if (isBaretta)
-            {
-                // Diğer Baretta silahını bul
-                GunFire partnerBaretta = FindPartnerBaretta();
-                
-                // Diğer Baretta'da hala mermi varsa oyun devam eder
-                if (partnerBaretta != null && partnerBaretta.GetCurrentAmmo() > 0)
-                {
-                    Debug.Log($"Bu Baretta'nın mermisi bitti ama diğerinde {partnerBaretta.GetCurrentAmmo()} mermi var. Oyun devam ediyor.");
-                    return;
-                }
-                
-                // İki Baretta da 0 ise oyun biter
-                isOutOfAmmo = true;
-                if (GameManager.Instance != null)
-                {
-                    Debug.Log("Her iki Baretta'nın da mermisi bitti! Oyun bitiyor...");
-                    GameManager.Instance.GameOver(null);
-                }
-            }
-            else
-            {
-                // Normal silahlar için - mermi bitince oyun biter
-                isOutOfAmmo = true;
-                if (GameManager.Instance != null)
-                {
-                    Debug.Log("Mermi bitti! Oyun bitiyor...");
-                    GameManager.Instance.GameOver(null);
-                }
-            }
-        }
     }
 
     // Diğer Baretta silahını bul (sol ise sağı, sağ ise solu)
@@ -186,6 +164,16 @@ public class GunFire : MonoBehaviour
     public int GetCurrentAmmo()
     {
         return currentAmmo;
+    }
+
+    /// <summary>
+    /// Alternatif giriş (örn. LastGun A tuşu) ile tek atış. Bu silahın bulletPrefab'ını kullanır.
+    /// </summary>
+    public bool TryFire()
+    {
+        if (!canFire || currentAmmo <= 0) return false;
+        StartCoroutine(FireWithCooldown());
+        return true;
     }
 
     private IEnumerator FireWithCooldown()

@@ -50,6 +50,9 @@ public class EnemyHealth : MonoBehaviour
     private GameObject slowedTextObject;
     private TextMeshPro slowedTextMesh;
 
+    // BURNED (ateş püskürtme) sadece renk - yazı yok
+    private bool isBurned = false;
+
     void Start()
     {
         currentHealth = totalHealth;
@@ -57,9 +60,11 @@ public class EnemyHealth : MonoBehaviour
         InitializeHealthGlow();
     }
 
-    public void TakeDamage(float damage, Collider hitCollider)
+    public void TakeDamage(float damage, Collider hitCollider, bool fromFlameSpray = false)
     {
         Debug.Log(hitCollider.name + " tarafından vuruldu! Hasar: " + damage);
+        if (fromFlameSpray)
+            ApplyBurnEffect();
 
         float adjustedDamage = 0f;
         GameObject textPrefabToUse = null;
@@ -196,6 +201,22 @@ public class EnemyHealth : MonoBehaviour
 
     private void UpdateHealthGlow()
     {
+        // Yanma: full kırmızı (health glow kullanmasa bile renderer rengi güncellenir)
+        if (isBurned)
+        {
+            if (enemyRenderers == null) enemyRenderers = GetComponentsInChildren<Renderer>();
+            if (propertyBlock == null) propertyBlock = new MaterialPropertyBlock();
+            Color burnRed = new Color(1f, 0.1f, 0.05f, 1f);
+            foreach (Renderer r in enemyRenderers)
+            {
+                if (r == null) continue;
+                r.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor(glowColorPropertyName, burnRed);
+                r.SetPropertyBlock(propertyBlock);
+            }
+            return;
+        }
+
         if (!useHealthGlow || enemyRenderers == null || propertyBlock == null) return;
         
         float healthRatio = currentHealth / totalHealth;
@@ -210,7 +231,6 @@ public class EnemyHealth : MonoBehaviour
             healthColor.g = Mathf.Min(healthColor.g + 0.3f, 1f);
             healthColor.b = Mathf.Min(healthColor.b + 0.4f, 1f);
         }
-        
         foreach (Renderer renderer in enemyRenderers)
         {
             if (renderer != null && renderer.sharedMaterial != null)
@@ -293,7 +313,14 @@ public class EnemyHealth : MonoBehaviour
             slowedTextMesh = null;
         }
     }
-    
+
+    public void ApplyBurnEffect()
+    {
+        if (isBurned) return;
+        isBurned = true;
+        UpdateHealthGlow();
+    }
+
     private void Update()
     {
         // SLOWED yazısı parent'a bağlı olduğu için otomatik olarak düşmanla birlikte hareket eder
@@ -412,9 +439,7 @@ public class EnemyHealth : MonoBehaviour
         
         // Buzlanma efektini kaldır
         if (isFrozen)
-        {
             RemoveFreezeEffect();
-        }
 
         OnEnemyKilled?.Invoke();
 
@@ -468,11 +493,8 @@ public class EnemyHealth : MonoBehaviour
             Destroy(freezeParticleSystem.gameObject);
         }
         
-        // SLOWED yazısını temizle
         if (slowedTextObject != null)
-        {
             Destroy(slowedTextObject);
-        }
     }
 
 

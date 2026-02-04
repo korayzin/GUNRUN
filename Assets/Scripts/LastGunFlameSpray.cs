@@ -123,6 +123,7 @@ public class LastGunFlameSpray : MonoBehaviour
     private HashSet<EnemyHealth> hitEnemiesThisSpray = new HashSet<EnemyHealth>();
     private GunFire gunFire;
     private Coroutine hapticCoroutine;
+    private bool sprayEnergyGameOverTriggered;
 
     // UI (FifthGun tarzı circle/arc)
     private GameObject uiContainer;
@@ -207,8 +208,20 @@ public class LastGunFlameSpray : MonoBehaviour
             if (currentSprayEnergy > maxSprayEnergy) currentSprayEnergy = maxSprayEnergy;
         }
 
+        // Enerji sıfırlanınca bir kez game over
+        if (currentSprayEnergy <= 0f && !sprayEnergyGameOverTriggered)
+        {
+            sprayEnergyGameOverTriggered = true;
+            if (GameManager.Instance != null)
+                GameManager.Instance.GameOver(null);
+        }
+
         if (isSpraying && currentSprayEnergy > 0f)
             DoDamageTick();
+
+        // VR kontrolcüsü A butonu: GunFire'ın bulletPrefab'ı ile tek atış (Fireball vb.)
+        if (gunFire != null && OVRInput.GetDown(OVRInput.Button.One))
+            gunFire.TryFire();
 
         UpdateVFXPosition();
         if (isSpraying)
@@ -429,7 +442,7 @@ public class LastGunFlameSpray : MonoBehaviour
             EnemyHealth eh = hit.collider.GetComponentInParent<EnemyHealth>();
             if (eh != null)
             {
-                eh.TakeDamage(damageThisTick, hit.collider);
+                eh.TakeDamage(damageThisTick, hit.collider, fromFlameSpray: true);
                 hitEnemiesThisSpray.Add(eh);
             }
         }
