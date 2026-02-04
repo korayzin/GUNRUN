@@ -4,11 +4,7 @@ using UnityEngine.UI;
 
 public class WeaponManager : MonoBehaviour
 {
-    // Singleton instance
     public static WeaponManager Instance { get; private set; }
-
-    /// <summary> Silah değiştiğinde (indeks 0-8) tetiklenir. Watch UI vb. dinleyebilir. </summary>
-    public static event System.Action<int> OnWeaponChanged;
 
     [Header("Weapons")]
     public GameObject firstWeapon;
@@ -43,28 +39,9 @@ public class WeaponManager : MonoBehaviour
     public GameObject vfxEighth;
     public GameObject vfxNinth;
 
-    [Header("Weapon Sound Effects")]
-    [Tooltip("Her silah için ateş sesi (1-9 sırasıyla)")]
-    public AudioClip[] fireSounds = new AudioClip[9];
-    [Tooltip("Her silah için hit sesi (1-9 sırasıyla)")]
-    public AudioClip[] hitSounds = new AudioClip[9];
-    [Tooltip("Ateş sesi çalma süresi")]
-    public float fireSoundDuration = 1f;
-    [Tooltip("Hit haptic gücü (0-1)")]
-    public float hitHapticStrength = 0.7f;
-    [Tooltip("Hit haptic süresi")]
-    public float hitHapticDuration = 0.15f;
-
-    [Header("Audio Sources")]
-    [Tooltip("Ateş sesleri için AudioSource")]
-    public AudioSource fireAudioSource;
-    [Tooltip("Hit sesleri için AudioSource")]
-    public AudioSource hitAudioSource;
-
     private int currentWeapon = 0;
     private int enemyKillCount = 0;
     private bool isSwitchingWeapon = false;
-    private Coroutine fireSoundCoroutine;
 
     [Header("Weapon Switch Settings")]
     public int killsToSecond = 10;
@@ -85,30 +62,40 @@ public class WeaponManager : MonoBehaviour
     public float activeUIImageScale = 0.8f;
     public float inactiveUIImageScale = 0.6f;
 
+    [Header("Holographic HUD - Weapon Display Names")]
+    public string[] weaponDisplayNames = new string[9];
+
+    public int CurrentWeaponIndex => currentWeapon;
+    public bool AllWeaponsUnlocked => currentWeapon == 8;
+    public event System.Action<int> OnWeaponChanged;
+
+    public int GetCurrentWeaponIndex() => currentWeapon;
+    public int GetEnemyKillCount() => enemyKillCount;
+
+    public void PlayFireSound()
+    {
+        // Ses çalma mantığını buraya ekleyebilirsin (örn. AudioSource.PlayClipAtPoint)
+    }
+
+    public void PlayHitSound()
+    {
+        // Ses çalma mantığını buraya ekleyebilirsin
+    }
+
     private void Awake()
     {
-        // Singleton pattern
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+        Instance = this;
+    }
 
-        // AudioSource'ları otomatik oluştur (atanmamışsa)
-        if (fireAudioSource == null)
-        {
-            fireAudioSource = gameObject.AddComponent<AudioSource>();
-            fireAudioSource.playOnAwake = false;
-        }
-        if (hitAudioSource == null)
-        {
-            hitAudioSource = gameObject.AddComponent<AudioSource>();
-            hitAudioSource.playOnAwake = false;
-        }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     private void Start()
@@ -204,7 +191,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(firstWeapon, secondWeapon, vfxFirst, vfxSecond));
             currentWeapon = 1;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(secondWeapon);
             Debug.Log($"First weapon kapatıldı, Second weapon açıldı ({enemyKillCount} kill).");
         }
@@ -220,7 +206,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(secondWeapon, thirdWeapon, vfxSecond, vfxThird));
             currentWeapon = 2;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(thirdWeapon);
             Debug.Log($"Second weapon kapatıldı, Third weapon açıldı ({enemyKillCount} kill).");
         }
@@ -236,7 +221,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(thirdWeapon, fourthWeapon, vfxThird, vfxFourth));
             currentWeapon = 3;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(fourthWeapon);
             Debug.Log($"Third weapon kapatıldı, Fourth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -252,7 +236,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(fourthWeapon, fifthWeapon, vfxFourth, vfxFifth));
             currentWeapon = 4;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(fifthWeapon);
             Debug.Log($"Fourth weapon kapatıldı, Fifth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -268,7 +251,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(fifthWeapon, sixthWeapon, vfxFifth, vfxSixth));
             currentWeapon = 5;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(sixthWeapon);
             Debug.Log($"Fifth weapon kapatıldı, Sixth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -284,7 +266,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(sixthWeapon, seventhWeapon, vfxSixth, vfxSeventh));
             currentWeapon = 6;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(seventhWeapon);
             Debug.Log($"Sixth weapon kapatıldı, Seventh weapon açıldı ({enemyKillCount} kill).");
         }
@@ -300,7 +281,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(seventhWeapon, eighthWeapon, vfxSeventh, vfxEighth));
             currentWeapon = 7;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(eighthWeapon);
             Debug.Log($"Seventh weapon kapatıldı, Eighth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -316,7 +296,6 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(eighthWeapon, ninthWeapon, vfxEighth, vfxNinth));
             currentWeapon = 8;
-            OnWeaponChanged?.Invoke(currentWeapon);
             HandleBarettaSwitch(ninthWeapon);
             Debug.Log($"Eighth weapon kapatıldı, Ninth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -326,8 +305,7 @@ public class WeaponManager : MonoBehaviour
 
     private void HandleBarettaSwitch(GameObject newWeapon)
     {
-        // GunFire component'ini bul (prefab instance içinde de olabilir)
-        GunFire gunFire = newWeapon.GetComponentInChildren<GunFire>(true);
+        GunFire gunFire = newWeapon.GetComponent<GunFire>();
         if (gunFire != null && gunFire.isBaretta)
         {
             gunFire.isLeftHanded = false;
@@ -399,41 +377,77 @@ public class WeaponManager : MonoBehaviour
         nextWeaponObj.SetActive(true);
         Debug.Log("Yeni silaha geçildi: " + nextWeaponObj.name);
 
-        // Prefab instance child'larını da aktif et (mesh yükleme sorunları için)
-        Transform[] allChildren = nextWeaponObj.GetComponentsInChildren<Transform>(true);
-        foreach (Transform child in allChildren)
-        {
-            if (child.gameObject != nextWeaponObj && !child.gameObject.activeSelf)
-            {
-                child.gameObject.SetActive(true);
-            }
-        }
-
-        // Mesh renderer'ları açıkça etkinleştir (prefab instance sorunları için)
-        Renderer[] allRenderers = nextWeaponObj.GetComponentsInChildren<Renderer>(true);
-        foreach (Renderer renderer in allRenderers)
-        {
-            renderer.enabled = true;
-        }
-        Debug.Log($"{nextWeaponObj.name} için {allRenderers.Length} renderer etkinleştirildi.");
-
-        // GunFire component'ini bul (prefab instance içinde de olabilir)
-        GunFire nextGunFire = nextWeaponObj.GetComponentInChildren<GunFire>(true);
+        GunFire nextGunFire = nextWeaponObj.GetComponent<GunFire>();
         if (nextGunFire != null)
         {
             nextGunFire.enabled = true;
-            nextGunFire.canFire = true; // Ateş edebilmesi için canFire'ı true yap
-            Debug.Log($"{nextWeaponObj.name} silahı açıldı ve ateş edebilir durumda.");
-        }
-        else
-        {
-            Debug.LogWarning($"{nextWeaponObj.name} için GunFire component'i bulunamadı!");
+            Debug.Log($"{nextWeaponObj.name} silahı açıldı.");
         }
 
         UpdateWeaponUI();
         isSwitchingWeapon = false;
+        OnWeaponChanged?.Invoke(currentWeapon);
     }
 
+    public void NextWeaponManual()
+    {
+        if (currentWeapon != 8) return;
+        SelectWeaponByIndex((currentWeapon + 1) % 9);
+    }
+
+    public void PreviousWeaponManual()
+    {
+        if (currentWeapon != 8) return;
+        SelectWeaponByIndex((currentWeapon - 1 + 9) % 9);
+    }
+
+    public void SelectWeaponByIndex(int index)
+    {
+        if (currentWeapon != 8) return;
+        if (index < 0 || index > 8) return;
+        SetWeaponByIndex(index);
+    }
+
+    private GameObject GetWeaponAt(int index)
+    {
+        switch (index)
+        {
+            case 0: return firstWeapon;
+            case 1: return secondWeapon;
+            case 2: return thirdWeapon;
+            case 3: return fourthWeapon;
+            case 4: return fifthWeapon;
+            case 5: return sixthWeapon;
+            case 6: return seventhWeapon;
+            case 7: return eighthWeapon;
+            case 8: return ninthWeapon;
+            default: return null;
+        }
+    }
+
+    private void SetWeaponByIndex(int index)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            GameObject w = GetWeaponAt(i);
+            if (w != null)
+            {
+                w.SetActive(false);
+                GunFire gf = w.GetComponent<GunFire>();
+                if (gf != null) gf.enabled = false;
+            }
+        }
+        GameObject next = GetWeaponAt(index);
+        if (next != null)
+        {
+            next.SetActive(true);
+            GunFire nextGun = next.GetComponent<GunFire>();
+            if (nextGun != null) nextGun.enabled = true;
+        }
+        currentWeapon = index;
+        UpdateWeaponUI();
+        OnWeaponChanged?.Invoke(currentWeapon);
+    }
 
     private void UpdateWeaponUI()
     {
@@ -459,82 +473,5 @@ public class WeaponManager : MonoBehaviour
             image.rectTransform.localScale = Vector3.one * (isActive ? activeUIImageScale : inactiveUIImageScale);
         }
     }
-
-    #region Sound System
-
-    /// <summary>
-    /// Mevcut silahın ateş sesini çalar (1 saniye süreyle)
-    /// </summary>
-    public void PlayFireSound()
-    {
-        if (fireAudioSource == null) return;
-        
-        if (currentWeapon >= 0 && currentWeapon < fireSounds.Length && fireSounds[currentWeapon] != null)
-        {
-            // Önceki ses coroutine'ini durdur
-            if (fireSoundCoroutine != null)
-            {
-                StopCoroutine(fireSoundCoroutine);
-            }
-            
-            fireAudioSource.clip = fireSounds[currentWeapon];
-            fireAudioSource.Play();
-            fireSoundCoroutine = StartCoroutine(StopFireSoundAfterDuration());
-        }
-    }
-
-    private IEnumerator StopFireSoundAfterDuration()
-    {
-        yield return new WaitForSeconds(fireSoundDuration);
-        if (fireAudioSource != null && fireAudioSource.isPlaying)
-        {
-            fireAudioSource.Stop();
-        }
-    }
-
-    /// <summary>
-    /// Mevcut silahın hit sesini çalar ve haptic gönderir
-    /// </summary>
-    public void PlayHitSound()
-    {
-        // Hit sesini çal
-        if (hitAudioSource != null && currentWeapon >= 0 && currentWeapon < hitSounds.Length && hitSounds[currentWeapon] != null)
-        {
-            hitAudioSource.PlayOneShot(hitSounds[currentWeapon]);
-        }
-        
-        // Hit haptic gönder
-        StartCoroutine(HitHapticFeedback());
-    }
-
-    private IEnumerator HitHapticFeedback()
-    {
-        // Her iki controller'a da haptic gönder (hangi elde silah tutuluyorsa hissetsin)
-        OVRInput.SetControllerVibration(1, hitHapticStrength, OVRInput.Controller.RTouch);
-        OVRInput.SetControllerVibration(1, hitHapticStrength, OVRInput.Controller.LTouch);
-        
-        yield return new WaitForSeconds(hitHapticDuration);
-        
-        OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
-        OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.LTouch);
-    }
-
-    /// <summary>
-    /// Mevcut aktif silah indeksini döndürür (0-8)
-    /// </summary>
-    public int GetCurrentWeaponIndex()
-    {
-        return currentWeapon;
-    }
-
-    /// <summary>
-    /// Toplam düşman öldürme sayısını döndürür (silah değişim UI vb. için).
-    /// </summary>
-    public int GetEnemyKillCount()
-    {
-        return enemyKillCount;
-    }
-
-    #endregion
 
 }

@@ -22,14 +22,17 @@ public class WatchWeaponDisplay : MonoBehaviour
 
     private void OnEnable()
     {
-        WeaponManager.OnWeaponChanged += ApplyWeaponIcon;
-        int index = WeaponManager.Instance != null ? WeaponManager.Instance.GetCurrentWeaponIndex() : 0;
-        ApplyWeaponIcon(index);
+        if (WeaponManager.Instance != null)
+        {
+            WeaponManager.Instance.OnWeaponChanged += ApplyWeaponIcon;
+            ApplyWeaponIcon(WeaponManager.Instance.GetCurrentWeaponIndex());
+        }
     }
 
     private void OnDisable()
     {
-        WeaponManager.OnWeaponChanged -= ApplyWeaponIcon;
+        if (WeaponManager.Instance != null)
+            WeaponManager.Instance.OnWeaponChanged -= ApplyWeaponIcon;
     }
 
     private void ApplyWeaponIcon(int weaponIndex)
