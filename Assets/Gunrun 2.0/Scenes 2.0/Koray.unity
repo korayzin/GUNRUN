@@ -93710,6 +93710,36 @@ PrefabInstance:
       propertyPath: fireTwoBulletsPerShot
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4972473535457554842, guid: c9c0f3325e107d14b8345b515cc11659,
+        type: 3}
+      propertyPath: hapticHit
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972473535457554842, guid: c9c0f3325e107d14b8345b515cc11659,
+        type: 3}
+      propertyPath: damagePerTick
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972473535457554842, guid: c9c0f3325e107d14b8345b515cc11659,
+        type: 3}
+      propertyPath: hapticDeployReturn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972473535457554842, guid: c9c0f3325e107d14b8345b515cc11659,
+        type: 3}
+      propertyPath: deployScaleMultiplier
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972473535457554842, guid: c9c0f3325e107d14b8345b515cc11659,
+        type: 3}
+      propertyPath: positionSwitchDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4972473535457554842, guid: c9c0f3325e107d14b8345b515cc11659,
+        type: 3}
+      propertyPath: positionSwitchInterval
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7538824823498133042, guid: c9c0f3325e107d14b8345b515cc11659,
         type: 3}
       propertyPath: m_Name
@@ -94540,7 +94570,7 @@ PrefabInstance:
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

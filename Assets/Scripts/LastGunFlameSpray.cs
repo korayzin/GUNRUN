@@ -219,9 +219,13 @@ public class LastGunFlameSpray : MonoBehaviour
         if (isSpraying && currentSprayEnergy > 0f)
             DoDamageTick();
 
-        // VR kontrolcüsü A butonu: GunFire'ın bulletPrefab'ı ile tek atış (Fireball vb.)
+        // VR kontrolcüsü A butonu: Toy kullanılabilirse ToyHelper tüketir; Toy aktifken ateş engellenir; değilse tek atış (Fireball vb.)
         if (gunFire != null && OVRInput.GetDown(OVRInput.Button.One))
-            gunFire.TryFire();
+        {
+            ToyHelper toyHelper = GetComponent<ToyHelper>();
+            if (toyHelper == null || (toyHelper.IsIdle() && !toyHelper.WouldConsumeA()))
+                gunFire.TryFire();
+        }
 
         UpdateVFXPosition();
         if (isSpraying)
