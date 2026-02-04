@@ -1,0 +1,285 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class HolographicWeaponHUD : MonoBehaviour
+{
+    [Header("Anchoring")]
+    [SerializeField] private Transform leftHandAnchor;
+    [Tooltip("World Space canvas scale. Keep small (0.005-0.02) so HUD stays wrist-sized.")]
+    [SerializeField] private float hudScale = 0.01f;
+    [Tooltip("Local position offset from hand anchor (bilek üzerinde konum).")]
+    [SerializeField] private Vector3 localPositionOffset = new Vector3(0.02f, 0f, 0.06f);
+    [Tooltip("Local rotation: bileği saran eğimli ekran (X: yukarı eğim, Y: yön, Z: bilek etrafında kavrama).")]
+    [SerializeField] private Vector3 localRotationEuler = new Vector3(-50f, 12f, -55f);
+
+    [Header("Weapon Manager & Data")]
+    [SerializeField] private WeaponManager weaponManager;
+    [Tooltip("Optional. If empty, sprites are taken from WeaponManager's UI Images.")]
+    [SerializeField] private Sprite[] weaponIcons = new Sprite[9];
+
+    [Header("Center (Current Weapon)")]
+    [SerializeField] private Image centerWeaponImage;
+    [SerializeField] private TextMeshProUGUI centerWeaponName;
+
+    [Header("Left Slot (Previous Weapon)")]
+    [SerializeField] private Image leftSlotImage;
+    [SerializeField] private Button leftButton;
+
+    [Header("Right Slot (Next Weapon)")]
+    [SerializeField] private Image rightSlotImage;
+    [SerializeField] private Button rightButton;
+
+    [Header("Warning (Top-Left)")]
+    [SerializeField] private TextMeshProUGUI warningLabel;
+    [SerializeField] private string warningText = "HEAVY MODE ANY DESTRUCTOR";
+
+    [Header("Animation")]
+    [SerializeField] private float transitionDuration = 0.25f;
+    [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+    [Header("Sol Controller Joystick")]
+    [Tooltip("Sol joystick ile silah değiştirme (sadece tüm silahlar açıksa).")]
+    [SerializeField] private bool useLeftJoystick = true;
+    [Tooltip("Joystick bu eşiği geçince tetiklenir (0.3–0.8).")]
+    [SerializeField] private float joystickThreshold = 0.5f;
+    [Tooltip("Tekrar tetik için joystick bu değere dönmeli (neutral).")]
+    [SerializeField] private float joystickNeutralDeadzone = 0.2f;
+
+    private int _lastIndex = -1;
+    private bool _isAnimating;
+    private bool _joystickNeutral = true;
+
+    private void Start()
+    {
+        if (leftHandAnchor == null)
+        {
+            GameObject anchor = GameObject.Find("LeftHandAnchor");
+            if (anchor != null) leftHandAnchor = anchor.transform;
+            if (leftHandAnchor == null)
+            {
+                anchor = GameObject.Find("LeftHand");
+                if (anchor != null) leftHandAnchor = anchor.transform;
+            }
+        }
+        if (leftHandAnchor != null)
+        {
+            transform.SetParent(leftHandAnchor, false);
+            transform.localPosition = localPositionOffset;
+            transform.localRotation = Quaternion.Euler(localRotationEuler);
+            transform.localScale = Vector3.one * hudScale;
+        }
+
+        EnsureSpritesFromWeaponManager();
+        if (weaponManager != null)
+        {
+            weaponManager.OnWeaponChanged += OnWeaponChanged;
+            _lastIndex = weaponManager.CurrentWeaponIndex;
+        }
+
+        if (leftButton != null) leftButton.onClick.AddListener(OnLeftClick);
+        if (rightButton != null) rightButton.onClick.AddListener(OnRightClick);
+
+        if (warningLabel != null && !string.IsNullOrEmpty(warningText))
+            warningLabel.text = warningText;
+
+        RefreshDisplay(instant: true);
+        UpdateButtonInteractable();
+    }
+
+    private void LateUpdate()
+    {
+        if (leftHandAnchor == null) return;
+        if (transform.parent != leftHandAnchor) return;
+        transform.localPosition = localPositionOffset;
+        transform.localRotation = Quaternion.Euler(localRotationEuler);
+        transform.localScale = Vector3.one * hudScale;
+    }
+
+    private void OnDestroy()
+    {
+        if (weaponManager != null)
+            weaponManager.OnWeaponChanged -= OnWeaponChanged;
+    }
+
+    private void OnWeaponChanged(int newIndex)
+    {
+        if (_lastIndex == newIndex) return;
+        int prevIndex = _lastIndex;
+        _lastIndex = newIndex;
+        RefreshDisplay(instant: false, fromIndex: prevIndex, toIndex: newIndex);
+        UpdateButtonInteractable();
+    }
+
+    private void Update()
+    {
+        if (weaponManager == null) return;
+        int idx = weaponManager.CurrentWeaponIndex;
+        if (_lastIndex != idx && !_isAnimating)
+        {
+            int prev = _lastIndex;
+            _lastIndex = idx;
+            RefreshDisplay(instant: false, fromIndex: prev, toIndex: idx);
+            UpdateButtonInteractable();
+        }
+
+        if (useLeftJoystick && weaponManager.AllWeaponsUnlocked)
+            PollLeftJoystickWeaponSwitch();
+    }
+
+    private void PollLeftJoystickWeaponSwitch()
+    {
+        float x = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick).x;
+
+        if (Mathf.Abs(x) < joystickNeutralDeadzone)
+            _joystickNeutral = true;
+
+        if (!_joystickNeutral) return;
+
+        if (x > joystickThreshold)
+        {
+            weaponManager.NextWeaponManual();
+            _joystickNeutral = false;
+        }
+        else if (x < -joystickThreshold)
+        {
+            weaponManager.PreviousWeaponManual();
+            _joystickNeutral = false;
+        }
+    }
+
+    private void EnsureSpritesFromWeaponManager()
+    {
+        if (weaponManager == null) return;
+        bool anyMissing = false;
+        for (int i = 0; i < 9; i++)
+        {
+            if (weaponIcons == null || weaponIcons.Length <= i || weaponIcons[i] == null)
+            {
+                anyMissing = true;
+                break;
+            }
+        }
+        if (!anyMissing) return;
+
+        if (weaponIcons == null || weaponIcons.Length != 9)
+            weaponIcons = new Sprite[9];
+
+        Image[] imgs = new Image[]
+        {
+            weaponManager.firstWeaponImage, weaponManager.secondWeaponImage, weaponManager.thirdWeaponImage,
+            weaponManager.fourthWeaponImage, weaponManager.fifthWeaponImage, weaponManager.sixthWeaponImage,
+            weaponManager.seventhWeaponImage, weaponManager.eighthWeaponImage, weaponManager.ninthWeaponImage
+        };
+        for (int i = 0; i < 9 && i < imgs.Length; i++)
+        {
+            if (imgs[i] != null && imgs[i].sprite != null && (weaponIcons[i] == null))
+                weaponIcons[i] = imgs[i].sprite;
+        }
+    }
+
+    private void OnLeftClick()
+    {
+        if (weaponManager != null && weaponManager.AllWeaponsUnlocked)
+            weaponManager.PreviousWeaponManual();
+    }
+
+    private void OnRightClick()
+    {
+        if (weaponManager != null && weaponManager.AllWeaponsUnlocked)
+            weaponManager.NextWeaponManual();
+    }
+
+    private void UpdateButtonInteractable()
+    {
+        bool canManual = weaponManager != null && weaponManager.AllWeaponsUnlocked;
+        if (leftButton != null) leftButton.interactable = canManual;
+        if (rightButton != null) rightButton.interactable = canManual;
+    }
+
+    private void RefreshDisplay(bool instant, int fromIndex = -1, int toIndex = -1)
+    {
+        if (weaponManager == null) return;
+        int current = weaponManager.CurrentWeaponIndex;
+        int prevSlot = (current - 1 + 9) % 9;
+        int nextSlot = (current + 1) % 9;
+
+        Sprite prevSprite = GetSprite(prevSlot);
+        Sprite currSprite = GetSprite(current);
+        Sprite nextSprite = GetSprite(nextSlot);
+        string currName = GetWeaponName(current);
+
+        if (leftSlotImage != null) leftSlotImage.sprite = prevSprite;
+        if (rightSlotImage != null) rightSlotImage.sprite = nextSprite;
+
+        if (instant)
+        {
+            if (centerWeaponImage != null) centerWeaponImage.sprite = currSprite;
+            if (centerWeaponName != null) centerWeaponName.text = currName ?? "";
+            return;
+        }
+
+        StartCoroutine(TransitionCenter(currSprite, currName));
+    }
+
+    private IEnumerator TransitionCenter(Sprite newSprite, string newName)
+    {
+        _isAnimating = true;
+        float elapsed = 0f;
+
+        if (centerWeaponImage != null)
+        {
+            Image im = centerWeaponImage;
+            Vector3 startScale = im.rectTransform.localScale;
+            Color startColor = im.color;
+
+            while (elapsed < transitionDuration * 0.5f)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / (transitionDuration * 0.5f);
+                float curveT = scaleCurve.Evaluate(t);
+                im.rectTransform.localScale = Vector3.Lerp(startScale, startScale * 0.3f, curveT);
+                im.color = Color.Lerp(startColor, new Color(startColor.r, startColor.g, startColor.b, 0f), curveT);
+                yield return null;
+            }
+
+            if (newSprite != null) im.sprite = newSprite;
+            im.color = new Color(startColor.r, startColor.g, startColor.b, 0f);
+            im.rectTransform.localScale = startScale * 0.3f;
+
+            elapsed = 0f;
+            while (elapsed < transitionDuration * 0.5f)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / (transitionDuration * 0.5f);
+                float curveT = scaleCurve.Evaluate(t);
+                im.rectTransform.localScale = Vector3.Lerp(startScale * 0.3f, startScale, curveT);
+                im.color = Color.Lerp(new Color(startColor.r, startColor.g, startColor.b, 0f), startColor, curveT);
+                yield return null;
+            }
+
+            im.rectTransform.localScale = startScale;
+            im.color = startColor;
+        }
+
+        if (centerWeaponName != null)
+            centerWeaponName.text = newName ?? "";
+
+        _isAnimating = false;
+    }
+
+    private Sprite GetSprite(int index)
+    {
+        if (weaponIcons == null || index < 0 || index >= weaponIcons.Length) return null;
+        return weaponIcons[index];
+    }
+
+    private string GetWeaponName(int index)
+    {
+        if (weaponManager == null || weaponManager.weaponDisplayNames == null) return "";
+        if (index < 0 || index >= weaponManager.weaponDisplayNames.Length) return "";
+        string s = weaponManager.weaponDisplayNames[index];
+        return string.IsNullOrEmpty(s) ? $"Weapon {index + 1}" : s;
+    }
+}

@@ -60,6 +60,13 @@ public class WeaponManager : MonoBehaviour
     public float activeUIImageScale = 0.8f;
     public float inactiveUIImageScale = 0.6f;
 
+    [Header("Holographic HUD - Weapon Display Names")]
+    public string[] weaponDisplayNames = new string[9];
+
+    public int CurrentWeaponIndex => currentWeapon;
+    public bool AllWeaponsUnlocked => currentWeapon == 8;
+    public event System.Action<int> OnWeaponChanged;
+
     private void Start()
     {
         InitializeWeapons();
@@ -348,8 +355,68 @@ public class WeaponManager : MonoBehaviour
 
         UpdateWeaponUI();
         isSwitchingWeapon = false;
+        OnWeaponChanged?.Invoke(currentWeapon);
     }
 
+    public void NextWeaponManual()
+    {
+        if (currentWeapon != 8) return;
+        SelectWeaponByIndex((currentWeapon + 1) % 9);
+    }
+
+    public void PreviousWeaponManual()
+    {
+        if (currentWeapon != 8) return;
+        SelectWeaponByIndex((currentWeapon - 1 + 9) % 9);
+    }
+
+    public void SelectWeaponByIndex(int index)
+    {
+        if (currentWeapon != 8) return;
+        if (index < 0 || index > 8) return;
+        SetWeaponByIndex(index);
+    }
+
+    private GameObject GetWeaponAt(int index)
+    {
+        switch (index)
+        {
+            case 0: return firstWeapon;
+            case 1: return secondWeapon;
+            case 2: return thirdWeapon;
+            case 3: return fourthWeapon;
+            case 4: return fifthWeapon;
+            case 5: return sixthWeapon;
+            case 6: return seventhWeapon;
+            case 7: return eighthWeapon;
+            case 8: return ninthWeapon;
+            default: return null;
+        }
+    }
+
+    private void SetWeaponByIndex(int index)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            GameObject w = GetWeaponAt(i);
+            if (w != null)
+            {
+                w.SetActive(false);
+                GunFire gf = w.GetComponent<GunFire>();
+                if (gf != null) gf.enabled = false;
+            }
+        }
+        GameObject next = GetWeaponAt(index);
+        if (next != null)
+        {
+            next.SetActive(true);
+            GunFire nextGun = next.GetComponent<GunFire>();
+            if (nextGun != null) nextGun.enabled = true;
+        }
+        currentWeapon = index;
+        UpdateWeaponUI();
+        OnWeaponChanged?.Invoke(currentWeapon);
+    }
 
     private void UpdateWeaponUI()
     {
