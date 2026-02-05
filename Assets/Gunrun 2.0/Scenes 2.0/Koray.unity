@@ -5207,6 +5207,31 @@ MonoBehaviour:
   vfxSeventh: {fileID: 0}
   vfxEighth: {fileID: 0}
   vfxNinth: {fileID: 0}
+  fireSounds:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  hitSounds:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  fireSoundDuration: 1
+  hitHapticStrength: 0.7
+  hitHapticDuration: 0.15
+  fireAudioSource: {fileID: 0}
+  hitAudioSource: {fileID: 0}
   killsToSecond: 1
   killsToThird: 1
   killsToFourth: 1
@@ -5220,16 +5245,6 @@ MonoBehaviour:
   inactiveGlobalScale: 1
   activeUIImageScale: 0.8
   inactiveUIImageScale: 0.6
-  weaponDisplayNames:
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
 --- !u!4 &108028052
 Transform:
   m_ObjectHideFlags: 0
@@ -45634,7 +45649,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -32.1}
+  m_AnchoredPosition: {x: 0, y: -25.7}
   m_SizeDelta: {x: 140, y: 22}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &840673678
@@ -53791,7 +53806,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1060356757}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -53801,7 +53816,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -100, y: -10}
+  m_AnchoredPosition: {x: -100, y: 8.3}
   m_SizeDelta: {x: 70, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1066594229
@@ -55602,8 +55617,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb858b2d616856438a507e8b2d91f9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countdownText: {fileID: 1138728819}
-  textFormat: 'Gun Change After: {0} kill.'
 --- !u!114 &1138728819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58742,7 +58755,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 100, y: -10}
+  m_AnchoredPosition: {x: 100, y: 8.2}
   m_SizeDelta: {x: 70, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1259302058
@@ -81711,15 +81724,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1745138281}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1256782263}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 8}
+  m_AnchoredPosition: {x: 35.7, y: -5.7}
   m_SizeDelta: {x: 40, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1745138283
@@ -81779,14 +81792,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.95, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5f2ac69b25eae1a4b9d6ff39d163b0e7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4f051494157303f49a7d20a5e545790a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -84512,15 +84525,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1862542501}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1060356758}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 8}
+  m_AnchoredPosition: {x: -38.7, y: -4.8}
   m_SizeDelta: {x: 40, y: 28}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1862542503
@@ -84580,14 +84593,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.95, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5f2ac69b25eae1a4b9d6ff39d163b0e7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 621bffe061ea3554881e57941d6b8be3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -86648,57 +86661,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90b052627573b2b4084a5629c301f69e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftHandAnchor: {fileID: 0}
-  hudScale: 0.001
-  localPositionOffset: {x: -0.245, y: 0, z: 0.06}
-  localRotationEuler: {x: 0, y: 0, z: 0}
-  weaponManager: {fileID: 108028051}
-  weaponIcons:
-  - {fileID: 21300000, guid: 2f1ca9b34457be841bb4f7cb1a067555, type: 3}
-  - {fileID: 21300000, guid: 9bca3c166413b304591f5bba1161e501, type: 3}
-  - {fileID: 21300000, guid: 8c5dcef7d0a93fc488f7b8b90759eeb7, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  centerWeaponImage: {fileID: 2096398952}
-  centerWeaponName: {fileID: 840673678}
-  leftSlotImage: {fileID: 576607448}
-  leftButton: {fileID: 1862542503}
-  rightSlotImage: {fileID: 552055532}
-  rightButton: {fileID: 1745138283}
-  warningLabel: {fileID: 752648652}
-  warningText: GUN LINE
-  transitionDuration: 0.25
-  scaleCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  useLeftJoystick: 1
-  joystickThreshold: 0.5
-  joystickNeutralDeadzone: 0.2
 --- !u!114 &1917262747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87328,6 +87290,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1933824955}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1935032100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1935032101}
+  m_Layer: 0
+  m_Name: L
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1935032101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1935032100}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1935928707
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -96582,3 +96575,4 @@ SceneRoots:
   - {fileID: 1166169232}
   - {fileID: 1686065798}
   - {fileID: 1593532946}
+  - {fileID: 1935032101}
