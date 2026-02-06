@@ -25,6 +25,8 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public GameObject tur1Enemy;
     public GameObject tur2Enemy;
     public GameObject tur3Enemy;
+    [Tooltip("4. düşman - Stage 2'den itibaren nadiren spawn olur. Prefab'ı Inspector'dan atayın.")]
+    public GameObject tur4Enemy;
 
     [Header("Damage Feedback Prefabs")]
     [Tooltip("Tek collider sistemli yeni düşmanlar için genel floating text")]
@@ -56,11 +58,13 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public float tur1HP = 40f;
     public float tur2HP = 80f;
     public float tur3HP = 150f;
+    public float tur4HP = 200f;
 
     [Header("Enemy Score Values")]
     public int tur1Score = 25;
     public int tur2Score = 50;
     public int tur3Score = 100;
+    public int tur4Score = 150;
 
     [Header("Portal Spawn Animation")]
     [Tooltip("Oyun başladıktan kaç saniye sonra portallar açılsın")]
@@ -322,24 +326,30 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
         if (stage == 1)
         {
-            // Stage 1: %80 tur1, %20 tur2, %0 tur3 (Öğrenme fazı)
+            // Stage 1: %80 tur1, %20 tur2, tur3/tur4 yok (Öğrenme fazı)
             pool.AddRange(Enumerable.Repeat(tur1Enemy, 8));
             pool.AddRange(Enumerable.Repeat(tur2Enemy, 2));
-            // tur3 yok - tank düşmanlar henüz çıkmaz
         }
         else if (stage == 2)
         {
-            // Stage 2: %50 tur1, %40 tur2, %10 tur3 (Baskı fazı)
+            // Stage 2: tur1/tur2/tur3 ağırlıklı, tur4 nadiren (biraz daha sonra gelir)
             pool.AddRange(Enumerable.Repeat(tur1Enemy, 5));
             pool.AddRange(Enumerable.Repeat(tur2Enemy, 4));
             pool.AddRange(Enumerable.Repeat(tur3Enemy, 1));
+            if (tur4Enemy != null)
+                pool.Add(tur4Enemy); // Tek giriş = nadir
         }
         else
         {
-            // Stage 3: %30 tur1, %50 tur2, %20 tur3 (Hayatta kalma)
+            // Stage 3: tur4 hâlâ nadir, diğerleri yoğun
             pool.AddRange(Enumerable.Repeat(tur1Enemy, 3));
             pool.AddRange(Enumerable.Repeat(tur2Enemy, 5));
             pool.AddRange(Enumerable.Repeat(tur3Enemy, 2));
+            if (tur4Enemy != null)
+            {
+                pool.Add(tur4Enemy);
+                pool.Add(tur4Enemy); // Stage 3'te biraz daha sık ama yine nadir
+            }
         }
 
         return pool[Random.Range(0, pool.Count)];
@@ -410,7 +420,17 @@ public class AdvancedPortalSpawner : MonoBehaviour
             enemyHealth.totalHealth = tur2HP;
             enemyHealth.scoreValue = tur2Score;
         }
-        else // tur3Enemy
+        else if (prefab == tur3Enemy)
+        {
+            enemyHealth.totalHealth = tur3HP;
+            enemyHealth.scoreValue = tur3Score;
+        }
+        else if (prefab == tur4Enemy)
+        {
+            enemyHealth.totalHealth = tur4HP;
+            enemyHealth.scoreValue = tur4Score;
+        }
+        else
         {
             enemyHealth.totalHealth = tur3HP;
             enemyHealth.scoreValue = tur3Score;

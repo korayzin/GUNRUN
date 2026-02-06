@@ -5207,14 +5207,14 @@ MonoBehaviour:
   vfxSeventh: {fileID: 0}
   vfxEighth: {fileID: 0}
   vfxNinth: {fileID: 0}
-  killsToSecond: 1
-  killsToThird: 2
-  killsToFourth: 3
-  killsToFifth: 4
-  killsToSixth: 5
-  killsToSeventh: 6
-  killsToEighth: 7
-  killsToNinth: 8
+  killsToSecond: 4
+  killsToThird: 8
+  killsToFourth: 12
+  killsToFifth: 16
+  killsToSixth: 20
+  killsToSeventh: 24
+  killsToEighth: 28
+  killsToNinth: 32
   vfxDelay: 0
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
@@ -41615,7 +41615,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 752648650}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -41624,7 +41624,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 120.4, y: -20.5}
-  m_SizeDelta: {x: 279.64, y: 24}
+  m_SizeDelta: {x: 552.41, y: 24}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &752648652
 MonoBehaviour:
@@ -71713,7 +71713,9 @@ MonoBehaviour:
     type: 3}
   tur2Enemy: {fileID: 5333744322337909881, guid: a5bbdc8d2f824ad4680afbb477631197,
     type: 3}
-  tur3Enemy: {fileID: 3014174030876529923, guid: 4dd716d44bf9fc04dae8a6b6b082d73f,
+  tur3Enemy: {fileID: 4377912173820595719, guid: a565f6d26fce2544f90a24e9a84f3015,
+    type: 3}
+  tur4Enemy: {fileID: 4377912173820595719, guid: a565f6d26fce2544f90a24e9a84f3015,
     type: 3}
   floatingTextPrefab: {fileID: 7127387094801913698, guid: 0dd27ccc7d25e96458067037de82e456,
     type: 3}
@@ -71730,9 +71732,11 @@ MonoBehaviour:
   tur1HP: 50
   tur2HP: 100
   tur3HP: 200
+  tur4HP: 200
   tur1Score: 25
   tur2Score: 50
   tur3Score: 100
+  tur4Score: 150
   portalSpawnStartDelay: 7.5
   portalSpawnDuration: 1.5
   portalSpawnDelay: 0.3
@@ -86840,8 +86844,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3f55409be30e949498d2cd8ed13194b9, type: 3}
   - {fileID: 21300000, guid: 4172206869060b54ca27ccf665278ffd, type: 3}
   - {fileID: 21300000, guid: 04448439553735e418af777743feb662, type: 3}
-  - {fileID: 21300000, guid: 0793b941ed5987a4b88e7a006d17b83b, type: 3}
   - {fileID: 21300000, guid: 9bca3c166413b304591f5bba1161e501, type: 3}
+  - {fileID: 21300000, guid: 0793b941ed5987a4b88e7a006d17b83b, type: 3}
   - {fileID: 21300000, guid: 1519a721ee0f71747b281f277840d172, type: 3}
   - {fileID: 21300000, guid: 2f1ca9b34457be841bb4f7cb1a067555, type: 3}
   - {fileID: 21300000, guid: 8c5dcef7d0a93fc488f7b8b90759eeb7, type: 3}

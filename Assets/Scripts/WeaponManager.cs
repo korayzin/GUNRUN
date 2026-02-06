@@ -6,6 +6,13 @@ public class WeaponManager : MonoBehaviour
 {
     public static WeaponManager Instance { get; private set; }
 
+    [Header("Haptic - İsabet (düşmana vurulduğunda)")]
+    [Tooltip("İsabet haptic şiddeti (0-1)")]
+    [Range(0f, 1f)]
+    public float hitHapticStrength = 0.4f;
+    [Tooltip("İsabet haptic süresi (saniye)")]
+    public float hitHapticDuration = 0.06f;
+
     [Header("Weapons")]
     public GameObject firstWeapon;
     public GameObject secondWeapon;
@@ -42,6 +49,7 @@ public class WeaponManager : MonoBehaviour
     private int currentWeapon = 0;
     private int enemyKillCount = 0;
     private bool isSwitchingWeapon = false;
+    private int _lastFiringController = -1; // 0 = sol, 1 = sağ, -1 = bilinmiyor (OVRInput.Controller enum değeri)
     /// <summary>Bir kez 9. silaha ulaşıldığında true olur; joystick ile tüm silahlar arasında gezinmeye izin verir.</summary>
     private bool _allWeaponsUnlockedPermanent = false;
 
@@ -83,6 +91,41 @@ public class WeaponManager : MonoBehaviour
     public void PlayHitSound()
     {
         // Ses çalma mantığını buraya ekleyebilirsin
+    }
+
+    /// <summary>Hangi kontrolcüyle ateş edildiğini kaydeder (isabet haptic için).</summary>
+    public void SetLastFiringController(int controllerMaskOrIndex)
+    {
+        _lastFiringController = controllerMaskOrIndex;
+    }
+
+    /// <summary>Düşmana isabet ettiğinde kontrolcülere haptic verir. Son ateş eden el biliniyorsa sadece o, değilse her iki el.</summary>
+    public void TriggerHitHaptic()
+    {
+        StartCoroutine(HitHapticRoutine());
+    }
+
+    private IEnumerator HitHapticRoutine()
+    {
+        float freq = 1f;
+        float amp = Mathf.Clamp01(hitHapticStrength);
+        float dur = Mathf.Max(0.02f, hitHapticDuration);
+        bool left = (_lastFiringController == (int)OVRInput.Controller.LTouch);
+        bool right = (_lastFiringController == (int)OVRInput.Controller.RTouch);
+        if (_lastFiringController < 0)
+        {
+            left = true;
+            right = true;
+        }
+        if (left)
+            OVRInput.SetControllerVibration(freq, amp, OVRInput.Controller.LTouch);
+        if (right)
+            OVRInput.SetControllerVibration(freq, amp, OVRInput.Controller.RTouch);
+        yield return new WaitForSeconds(dur);
+        if (left)
+            OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.LTouch);
+        if (right)
+            OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.RTouch);
     }
 
     private void Awake()

@@ -73,10 +73,11 @@ public class Bullet : MonoBehaviour
             Debug.Log("Dusmana hasar verildi: " + damage);
             enemyHealth.TakeDamage(damage, other);
             
-            // WeaponManager uzerinden hit sesi ve haptic cal
+            // WeaponManager üzerinden hit sesi ve kontrolcülere haptic
             if (WeaponManager.Instance != null)
             {
                 WeaponManager.Instance.PlayHitSound();
+                WeaponManager.Instance.TriggerHitHaptic();
             }
             
             Destroy(gameObject);
