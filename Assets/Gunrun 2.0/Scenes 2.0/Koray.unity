@@ -5186,7 +5186,7 @@ MonoBehaviour:
   fourthWeapon: {fileID: 2972479651670665011}
   fifthWeapon: {fileID: 1046036456}
   sixthWeapon: {fileID: 2443542293831071706}
-  seventhWeapon: {fileID: 2443542293831071706}
+  seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
   ninthWeapon: {fileID: 20849705}
   firstWeaponImage: {fileID: 0}
@@ -5208,14 +5208,14 @@ MonoBehaviour:
   vfxEighth: {fileID: 0}
   vfxNinth: {fileID: 0}
   killsToSecond: 1
-  killsToThird: 1
-  killsToFourth: 1
-  killsToFifth: 1
-  killsToSixth: 1
-  killsToSeventh: 1
-  killsToEighth: 1
-  killsToNinth: 1
-  vfxDelay: 1
+  killsToThird: 2
+  killsToFourth: 3
+  killsToFifth: 4
+  killsToSixth: 5
+  killsToSeventh: 6
+  killsToEighth: 7
+  killsToNinth: 8
+  vfxDelay: 0
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
   activeUIImageScale: 0.8
@@ -46657,7 +46657,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 879791455}
-  - component: {fileID: 879791454}
+  - component: {fileID: 879791456}
   m_Layer: 0
   m_Name: WayManager
   m_TagString: Untagged
@@ -46665,18 +46665,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &879791454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 879791453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bf4b48fd3302904684492ac31da5644, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &879791455
 Transform:
   m_ObjectHideFlags: 0
@@ -46692,6 +46680,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &879791456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 879791453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ecc0e4c91f35f4a91c9d69f351431a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panels:
+  - {fileID: 1172596639}
+  - {fileID: 2031120015}
+  showDelay: 9
+  visibleDuration: 8
+  showAnimationDuration: 0.6
+  hideAnimationDuration: 0.5
+  showOvershoot: 1.08
 --- !u!1 &883178256
 GameObject:
   m_ObjectHideFlags: 0
@@ -52405,6 +52413,58 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1026059543}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1026554546
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1026554548}
+  - component: {fileID: 1026554547}
+  m_Layer: 0
+  m_Name: RAY
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1026554547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026554546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c01cd0416263bd4a8e323583fc8205e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ovrCameraRig: {fileID: 1601181438}
+  useLeftHand: 0
+  targetCanvas: {fileID: 1757457775}
+  rayLength: 10
+  rayColor: {r: 0, g: 1, b: 1, a: 0.8}
+  rayHoverColor: {r: 0, g: 1, b: 0, a: 1}
+  rayWidth: 0.01
+  hoverScaleMultiplier: 1.1
+--- !u!4 &1026554548
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026554546}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.2715533, y: -2.5239856, z: -17.862007}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1027209792
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -55164,7 +55224,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1118923892}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1834682427}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: GoToMainMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1118923890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55183,7 +55255,7 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
-  handRayInteractor: {fileID: 0}
+  handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   score: 0
 --- !u!65 &1118923891
@@ -55646,8 +55718,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb858b2d616856438a507e8b2d91f9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countdownText: {fileID: 0}
-  textFormat: "silah de\u011Fi\u015Fimi i\xE7in son {0} kill."
+  countdownText: {fileID: 1138728819}
+  textFormat: 'Gun Change After: {0} Kill'
 --- !u!114 &1138728819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60535,7 +60607,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1286688575}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1834682427}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: RestartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1286688573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60554,7 +60638,7 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
-  handRayInteractor: {fileID: 0}
+  handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   score: 0
 --- !u!65 &1286688574
@@ -70420,58 +70504,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1592491199}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1593532944
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1593532946}
-  - component: {fileID: 1593532945}
-  m_Layer: 0
-  m_Name: 'HandRaySystem '
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1593532945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1593532944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c01cd0416263bd4a8e323583fc8205e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ovrCameraRig: {fileID: 1601181438}
-  useLeftHand: 0
-  targetCanvas: {fileID: 0}
-  rayLength: 10
-  rayColor: {r: 0, g: 1, b: 1, a: 0.8}
-  rayHoverColor: {r: 0, g: 1, b: 0, a: 1}
-  rayWidth: 0.01
-  hoverScaleMultiplier: 1.1
---- !u!4 &1593532946
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1593532944}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.2024963, y: 26.32342, z: -23.254095}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1596535760
 GameObject:
   m_ObjectHideFlags: 0
@@ -84291,7 +84323,7 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 2087939525}
   backgroundMusic: {fileID: 0}
-  handRayInteractor: {fileID: 1593532945}
+  handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
   score: 0
 --- !u!4 &1834682428
@@ -86821,7 +86853,7 @@ MonoBehaviour:
   rightSlotImage: {fileID: 552055532}
   rightButton: {fileID: 1745138283}
   warningLabel: {fileID: 752648652}
-  warningText: WEAPON LINE
+  allUnlockedText: YOU CAN SCROLL THE GUNS
   transitionDuration: 0.25
   scaleCurve:
     serializedVersion: 2
@@ -86850,6 +86882,65 @@ MonoBehaviour:
   useLeftJoystick: 1
   joystickThreshold: 0.5
   joystickNeutralDeadzone: 0.2
+  toggleWithXButton: 1
+  popDuration: 0.2
+  popOpenCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.6
+      value: 1.12
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  popCloseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &1917262747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96900,9 +96991,9 @@ SceneRoots:
   - {fileID: 1337488465}
   - {fileID: 1166169232}
   - {fileID: 1686065798}
-  - {fileID: 1593532946}
   - {fileID: 1935032101}
   - {fileID: 1992075211}
   - {fileID: 1172596643}
   - {fileID: 2031120019}
   - {fileID: 879791455}
+  - {fileID: 1026554548}

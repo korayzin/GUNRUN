@@ -35,7 +35,8 @@ public class HolographicWeaponHUD : MonoBehaviour
 
     [Header("Warning (Top-Left)")]
     [SerializeField] private TextMeshProUGUI warningLabel;
-    [SerializeField] private string warningText = "HEAVY MODE ANY DESTRUCTOR";
+    [Tooltip("Tüm silahlar açıldığında (9/9) gösterilir. Aksi halde 'GUN REMAIN X' kullanılır.")]
+    [SerializeField] private string allUnlockedText = "YOU CAN SCROLL THE GUNS";
 
     [Header("Animation")]
     [SerializeField] private float transitionDuration = 0.25f;
@@ -108,11 +109,9 @@ public class HolographicWeaponHUD : MonoBehaviour
         if (leftButton != null) leftButton.onClick.AddListener(OnLeftClick);
         if (rightButton != null) rightButton.onClick.AddListener(OnRightClick);
 
-        if (warningLabel != null && !string.IsNullOrEmpty(warningText))
-            warningLabel.text = warningText;
-
         RefreshDisplay(instant: true);
         UpdateButtonInteractable();
+        UpdateWarningText();
     }
 
     private void LateUpdate()
@@ -139,6 +138,7 @@ public class HolographicWeaponHUD : MonoBehaviour
         _lastIndex = newIndex;
         RefreshDisplay(instant: false, fromIndex: prevIndex, toIndex: newIndex);
         UpdateButtonInteractable();
+        UpdateWarningText();
     }
 
     private void Update()
@@ -154,6 +154,7 @@ public class HolographicWeaponHUD : MonoBehaviour
             _lastIndex = idx;
             RefreshDisplay(instant: false, fromIndex: prev, toIndex: idx);
             UpdateButtonInteractable();
+            UpdateWarningText();
         }
 
         if (useLeftJoystick && weaponManager.AllWeaponsUnlocked)
@@ -262,6 +263,23 @@ public class HolographicWeaponHUD : MonoBehaviour
         bool canManual = weaponManager != null && weaponManager.AllWeaponsUnlocked;
         if (leftButton != null) leftButton.interactable = canManual;
         if (rightButton != null) rightButton.interactable = canManual;
+    }
+
+    private void UpdateWarningText()
+    {
+        if (warningLabel == null) return;
+        if (weaponManager == null)
+        {
+            warningLabel.text = "GUN REMAIN 9";
+            return;
+        }
+        if (weaponManager.AllWeaponsUnlocked)
+        {
+            warningLabel.text = allUnlockedText;
+            return;
+        }
+        int remaining = 8 - weaponManager.CurrentWeaponIndex;
+        warningLabel.text = "GUN REMAIN " + remaining;
     }
 
     private void RefreshDisplay(bool instant, int fromIndex = -1, int toIndex = -1)

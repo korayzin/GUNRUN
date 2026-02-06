@@ -28,6 +28,13 @@ public class WeaponSwitchCountdownUI : MonoBehaviour
             return;
         }
 
+        // 9 silah tamamlandıysa countdown gösterme; joystick ile serbest geçiş var
+        if (wm.AllWeaponsUnlocked)
+        {
+            countdownText.gameObject.SetActive(false);
+            return;
+        }
+
         int currentWeapon = wm.GetCurrentWeaponIndex();
         int killCount = wm.GetEnemyKillCount();
         int threshold = GetThresholdForNextWeapon(wm, currentWeapon);
