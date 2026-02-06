@@ -5180,6 +5180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f603ccb526f7a4949b5a51a818444912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitHapticStrength: 0.4
+  hitHapticDuration: 0.06
   firstWeapon: {fileID: 828508232}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 1735730324613644644}
@@ -5208,13 +5210,13 @@ MonoBehaviour:
   vfxEighth: {fileID: 0}
   vfxNinth: {fileID: 0}
   killsToSecond: 4
-  killsToThird: 8
-  killsToFourth: 12
-  killsToFifth: 16
-  killsToSixth: 20
-  killsToSeventh: 24
-  killsToEighth: 28
-  killsToNinth: 32
+  killsToThird: 12
+  killsToFourth: 20
+  killsToFifth: 32
+  killsToSixth: 48
+  killsToSeventh: 68
+  killsToEighth: 82
+  killsToNinth: 102
   vfxDelay: 0
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
