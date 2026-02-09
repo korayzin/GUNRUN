@@ -43,6 +43,12 @@ public class GunFire : MonoBehaviour
     public bool isBaretta = false;
     public bool isLeftHanded = false;
 
+    [Header("Dual Shot (altlı üstlü 2 mermi)")]
+    [Tooltip("Açıkken her atışta 2 mermi atar (üst + alt), yine 1 mermi harcanır.")]
+    public bool useDualShotVertical = false;
+    [Tooltip("İki mermi arasındaki dikey mesafe (barrel.up yönünde).")]
+    public float dualShotSpacing = 0.04f;
+
     //[Header("Magic System")]
     //public bool isMagicalGun = false; 
     //private bool isMagicTouching = false;
@@ -50,19 +56,50 @@ public class GunFire : MonoBehaviour
     //public float rotationSpeed = 5f; 
 
     private Quaternion originalRotation;
+    private Quaternion bulletPrefabRotation;
+    private bool isOutOfAmmo = false;
 
     void Start()
     {
         currentAmmo = maxAmmo;
         UpdateAmmoDisplay();
-        EnemyHealth.OnEnemyKilled += Reload;
+        // Artik dusman oldugunde otomatik reload yok - mermi bitince oyun biter
 
         originalRotation = transform.localRotation;
+        
+        // Prefab'ın rotasyonunu sakla (prefab asset'inin rotasyonunu almak için geçici olarak instantiate edip destroy ediyoruz)
+        if (bulletPrefab != null)
+        {
+            GameObject tempPrefab = Instantiate(bulletPrefab);
+            bulletPrefabRotation = tempPrefab.transform.rotation;
+            Destroy(tempPrefab);
+        }
+        else
+        {
+            bulletPrefabRotation = Quaternion.identity;
+        }
     }
 
     void Update()
     {
+        // Mermi/enerji bitti mi kontrolü (LastGun için de çalışsın; flameSpray varken trigger atılmaz ama ammo 0 olunca oyun biter)
+        if (currentAmmo <= 0 && !isOutOfAmmo)
+        {
+            bool partnerHasAmmo = isBaretta && FindPartnerBaretta() != null && FindPartnerBaretta().GetCurrentAmmo() > 0;
+            if (!partnerHasAmmo)
+            {
+                isOutOfAmmo = true;
+                if (GameManager.Instance != null)
+                    GameManager.Instance.GameOver(null);
+            }
+        }
+
         if (!canFire) return;
+
+        // LastGun: ateş püskürtme bu silahta LastGunFlameSpray tarafından yönetilir, mermi atma.
+        var flameSpray = GetComponent<LastGunFlameSpray>();
+        if (flameSpray != null && flameSpray.enabled)
+            return;
 
         if (ammoUI != null)
         {
@@ -106,10 +143,37 @@ public class GunFire : MonoBehaviour
             }
         }
 
-        if (currentAmmo <= 0)
+    }
+
+    // Diğer Baretta silahını bul (sol ise sağı, sağ ise solu)
+    private GunFire FindPartnerBaretta()
+    {
+        GunFire[] allGuns = FindObjectsOfType<GunFire>();
+        foreach (GunFire gun in allGuns)
         {
-            Reload();
+            // Aktif, Baretta ve farklı el (partner)
+            if (gun != this && gun.isBaretta && gun.gameObject.activeInHierarchy && gun.isLeftHanded != this.isLeftHanded)
+            {
+                return gun;
+            }
         }
+        return null;
+    }
+
+    // Mevcut mermi sayısını döndür
+    public int GetCurrentAmmo()
+    {
+        return currentAmmo;
+    }
+
+    /// <summary>
+    /// Alternatif giriş (örn. LastGun A tuşu) ile tek atış. Bu silahın bulletPrefab'ını kullanır.
+    /// </summary>
+    public bool TryFire()
+    {
+        if (!canFire || currentAmmo <= 0) return false;
+        StartCoroutine(FireWithCooldown());
+        return true;
     }
 
     private IEnumerator FireWithCooldown()
@@ -117,7 +181,7 @@ public class GunFire : MonoBehaviour
         canFire = false;
         Fire();
         StartCoroutine(HapticFeedback());
-        currentAmmo -= useDualBarrel ? 5 : 1;
+        currentAmmo -= 1;
         UpdateAmmoDisplay();
 
         yield return new WaitForSeconds(fireCooldown);
@@ -138,7 +202,7 @@ public class GunFire : MonoBehaviour
         {
             Fire();
             StartCoroutine(HapticFeedback());
-            currentAmmo -= useDualBarrel ? 5 : 1;
+            currentAmmo -= 1;
             UpdateAmmoDisplay();
 
             yield return new WaitForSeconds(fireCooldown);
@@ -158,7 +222,16 @@ public class GunFire : MonoBehaviour
 
     public void Fire()
     {
-        FireFromBarrel(barrel1, targetDirection1);
+        if (useDualShotVertical && barrel1 != null && targetDirection1 != null)
+        {
+            float half = dualShotSpacing * 0.5f;
+            FireFromBarrel(barrel1, targetDirection1, half);
+            FireFromBarrel(barrel1, targetDirection1, -half);
+        }
+        else
+        {
+            FireFromBarrel(barrel1, targetDirection1);
+        }
 
         if (useDualBarrel)
         {
@@ -177,20 +250,40 @@ public class GunFire : MonoBehaviour
         {
             ps.Play();
         }
+
+        // WeaponManager üzerinden ateş sesini çal ve hangi el ile ateş edildiğini kaydet (isabet haptic için)
+        if (WeaponManager.Instance != null)
+        {
+            WeaponManager.Instance.PlayFireSound();
+            WeaponManager.Instance.SetLastFiringController((int)(isLeftHanded ? OVRInput.Controller.LTouch : OVRInput.Controller.RTouch));
+        }
     }
 
     private void FireFromBarrel(Transform barrel, Transform target)
     {
-        if (barrel == null || target == null) return; 
+        FireFromBarrel(barrel, target, 0f);
+    }
 
-        GameObject spawnedBullet = Instantiate(bulletPrefab, barrel.position, Quaternion.LookRotation(target.position - barrel.position));
-        spawnedBullet.GetComponent<Rigidbody>().velocity = velocity * (target.position - barrel.position).normalized;
+    private void FireFromBarrel(Transform barrel, Transform target, float verticalOffset)
+    {
+        if (barrel == null || target == null) return;
+
+        Vector3 spawnPos = barrel.position + (verticalOffset != 0f ? barrel.up * verticalOffset : Vector3.zero);
+
+        // Prefab'ın rotasyonunu baz alarak hesapla
+        Quaternion lookRotation = Quaternion.LookRotation(target.position - barrel.position);
+        Quaternion finalRotation = lookRotation * bulletPrefabRotation;
+
+        GameObject spawnedBullet = Instantiate(bulletPrefab, spawnPos, finalRotation);
+        Vector3 targetDirection = (target.position - barrel.position).normalized;
+        spawnedBullet.GetComponent<Rigidbody>().velocity = velocity * targetDirection;
 
         Bullet bulletScript = spawnedBullet.GetComponent<Bullet>();
         if (bulletScript != null)
         {
             bulletScript.hitSound = bulletHitSound;
             bulletScript.damageEffectPrefab = damageEffectPrefab;
+            bulletScript.SetMovementDirection(targetDirection);
         }
 
         if (audioSource != null)
@@ -218,6 +311,11 @@ public class GunFire : MonoBehaviour
     public void Reload()
     {
         currentAmmo = maxAmmo;
+        isOutOfAmmo = false; // Yenilendiğinde flag'i sıfırla
+        
+        // Debug log ekle
+        Debug.Log($"[Reload] {gameObject.name}: Mermi {currentAmmo}/{maxAmmo} olarak yenilendi. ammoText null mu? {ammoText == null}");
+        
         UpdateAmmoDisplay();
     }
 
@@ -226,6 +324,24 @@ public class GunFire : MonoBehaviour
         if (ammoText != null)
         {
             ammoText.text = currentAmmo.ToString();
+            
+            // Son 3 mermide kırmızı, son 5 mermide turuncu, diğer durumlarda beyaz
+            if (currentAmmo <= 3)
+            {
+                ammoText.color = Color.red;
+            }
+            else if (currentAmmo <= 5)
+            {
+                ammoText.color = new Color(1f, 0.5f, 0f); // Turuncu
+            }
+            else
+            {
+                ammoText.color = Color.white;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[UpdateAmmoDisplay] {gameObject.name}: ammoText null! Mermi sayısı güncellenemedi.");
         }
     }
 

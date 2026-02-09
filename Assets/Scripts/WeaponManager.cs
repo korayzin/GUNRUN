@@ -4,6 +4,15 @@ using UnityEngine.UI;
 
 public class WeaponManager : MonoBehaviour
 {
+    public static WeaponManager Instance { get; private set; }
+
+    [Header("Haptic - İsabet (düşmana vurulduğunda)")]
+    [Tooltip("İsabet haptic şiddeti (0-1)")]
+    [Range(0f, 1f)]
+    public float hitHapticStrength = 0.4f;
+    [Tooltip("İsabet haptic süresi (saniye)")]
+    public float hitHapticDuration = 0.06f;
+
     [Header("Weapons")]
     public GameObject firstWeapon;
     public GameObject secondWeapon;
@@ -40,6 +49,9 @@ public class WeaponManager : MonoBehaviour
     private int currentWeapon = 0;
     private int enemyKillCount = 0;
     private bool isSwitchingWeapon = false;
+    private int _lastFiringController = -1; // 0 = sol, 1 = sağ, -1 = bilinmiyor (OVRInput.Controller enum değeri)
+    /// <summary>Bir kez 9. silaha ulaşıldığında true olur; joystick ile tüm silahlar arasında gezinmeye izin verir.</summary>
+    private bool _allWeaponsUnlockedPermanent = false;
 
     [Header("Weapon Switch Settings")]
     public int killsToSecond = 10;
@@ -64,8 +76,73 @@ public class WeaponManager : MonoBehaviour
     public string[] weaponDisplayNames = new string[9];
 
     public int CurrentWeaponIndex => currentWeapon;
-    public bool AllWeaponsUnlocked => currentWeapon == 8;
+    /// <summary>9. silah açıldıysa true; joystick ile 1-9 arası tüm silahlara kaydırma açılır.</summary>
+    public bool AllWeaponsUnlocked => _allWeaponsUnlockedPermanent;
     public event System.Action<int> OnWeaponChanged;
+
+    public int GetCurrentWeaponIndex() => currentWeapon;
+    public int GetEnemyKillCount() => enemyKillCount;
+
+    public void PlayFireSound()
+    {
+        // Ses çalma mantığını buraya ekleyebilirsin (örn. AudioSource.PlayClipAtPoint)
+    }
+
+    public void PlayHitSound()
+    {
+        // Ses çalma mantığını buraya ekleyebilirsin
+    }
+
+    /// <summary>Hangi kontrolcüyle ateş edildiğini kaydeder (isabet haptic için).</summary>
+    public void SetLastFiringController(int controllerMaskOrIndex)
+    {
+        _lastFiringController = controllerMaskOrIndex;
+    }
+
+    /// <summary>Düşmana isabet ettiğinde kontrolcülere haptic verir. Son ateş eden el biliniyorsa sadece o, değilse her iki el.</summary>
+    public void TriggerHitHaptic()
+    {
+        StartCoroutine(HitHapticRoutine());
+    }
+
+    private IEnumerator HitHapticRoutine()
+    {
+        float freq = 1f;
+        float amp = Mathf.Clamp01(hitHapticStrength);
+        float dur = Mathf.Max(0.02f, hitHapticDuration);
+        bool left = (_lastFiringController == (int)OVRInput.Controller.LTouch);
+        bool right = (_lastFiringController == (int)OVRInput.Controller.RTouch);
+        if (_lastFiringController < 0)
+        {
+            left = true;
+            right = true;
+        }
+        if (left)
+            OVRInput.SetControllerVibration(freq, amp, OVRInput.Controller.LTouch);
+        if (right)
+            OVRInput.SetControllerVibration(freq, amp, OVRInput.Controller.RTouch);
+        yield return new WaitForSeconds(dur);
+        if (left)
+            OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.LTouch);
+        if (right)
+            OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.RTouch);
+    }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
 
     private void Start()
     {
@@ -88,6 +165,7 @@ public class WeaponManager : MonoBehaviour
         currentWeapon = 0;
         enemyKillCount = 0;
         isSwitchingWeapon = false;
+        _allWeaponsUnlockedPermanent = false;
     }
 
     private void OnEnable()
@@ -143,9 +221,11 @@ public class WeaponManager : MonoBehaviour
     public void CheckWeaponSwitch()
     {
         if (isSwitchingWeapon)
-        {
             return;
-        }
+
+        // 9 silah tamamlandıysa kill ile otomatik silah değişimi çalışmasın; sadece joystick ile seçilen silah kullanılsın
+        if (_allWeaponsUnlockedPermanent)
+            return;
 
         // First -> Second
         if (currentWeapon == 0 && enemyKillCount >= killsToSecond)
@@ -226,6 +306,11 @@ public class WeaponManager : MonoBehaviour
         // Sixth -> Seventh
         else if (currentWeapon == 5 && enemyKillCount >= killsToSeventh)
         {
+            if (seventhWeapon == null)
+            {
+                Debug.LogError("WeaponManager: Seventh weapon atanmamış! Inspector'da WeaponManager > Seventh Weapon slot'una silahı atayın.");
+                return;
+            }
             isSwitchingWeapon = true;
             if (sixthWeapon != null)
             {
@@ -265,6 +350,7 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(eighthWeapon, ninthWeapon, vfxEighth, vfxNinth));
             currentWeapon = 8;
+            _allWeaponsUnlockedPermanent = true; // Joystick ile tüm silahlar arasında gezinme açıldı
             HandleBarettaSwitch(ninthWeapon);
             Debug.Log($"Eighth weapon kapatıldı, Ninth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -274,36 +360,19 @@ public class WeaponManager : MonoBehaviour
 
     private void HandleBarettaSwitch(GameObject newWeapon)
     {
+        if (newWeapon == null) return;
+
         GunFire gunFire = newWeapon.GetComponent<GunFire>();
         if (gunFire != null && gunFire.isBaretta)
         {
             gunFire.isLeftHanded = false;
 
-            if (!gunFire.isAutomatic)
+            // Sadece sol el kopyası kapatılsın; oyuncuya verdiğimiz silah (yeni geçilen) görünür ve kullanılabilir kalsın.
+            // Önceki kod tüm Renderer/Collider kapatıyordu → seventh gun gibi silahlar "spawn olmuyor" gibi görünüyordu.
+            if (gunFire.isLeftHanded)
             {
-                // Ateş etmesini engelle
-                gunFire.canFire = false;
-
-                // Tüm Renderer bileşenlerini kapat (silahın görünürlüğünü kaldır)
-                Renderer[] renderers = newWeapon.GetComponentsInChildren<Renderer>();
-                foreach (Renderer renderer in renderers)
-                {
-                    renderer.enabled = false;
-                }
-
-                // Tüm Collider bileşenlerini devre dışı bırak (silahla etkileşim olmasın)
-                Collider[] colliders = newWeapon.GetComponentsInChildren<Collider>();
-                foreach (Collider collider in colliders)
-                {
-                    collider.enabled = false;
-                }
-
-                // Eğer silah sol eldeyse, GameObject'i tamamen kapat
-                if (gunFire.isLeftHanded)
-                {
-                    newWeapon.SetActive(false);
-                    Debug.Log($"{newWeapon.name} sol eldeydi, tamamen devre dışı bırakıldı.");
-                }
+                newWeapon.SetActive(false);
+                Debug.Log($"{newWeapon.name} sol eldeydi, tamamen devre dışı bırakıldı.");
             }
         }
     }
@@ -316,6 +385,16 @@ public class WeaponManager : MonoBehaviour
 
     private IEnumerator SwitchWeaponWithVFX(GameObject currentWeaponObj, GameObject nextWeaponObj, GameObject currentWeaponVFX, GameObject nextWeaponVFX)
     {
+        // Yeni silah null ise coroutine'i güvenli şekilde bitir (seventh weapon atanmamış olabilir)
+        if (nextWeaponObj == null)
+        {
+            Debug.LogError("WeaponManager: Geçilecek silah (nextWeaponObj) atanmamış! Inspector'da ilgili weapon slot'unu kontrol edin.");
+            UpdateWeaponUI();
+            isSwitchingWeapon = false;
+            OnWeaponChanged?.Invoke(currentWeapon);
+            yield break;
+        }
+
         // Önceki silah zaten CheckWeaponSwitch'te kapatıldı, burada sadece VFX'i kapat
         if (currentWeaponVFX != null)
         {
@@ -360,19 +439,19 @@ public class WeaponManager : MonoBehaviour
 
     public void NextWeaponManual()
     {
-        if (currentWeapon != 8) return;
+        if (!_allWeaponsUnlockedPermanent) return;
         SelectWeaponByIndex((currentWeapon + 1) % 9);
     }
 
     public void PreviousWeaponManual()
     {
-        if (currentWeapon != 8) return;
+        if (!_allWeaponsUnlockedPermanent) return;
         SelectWeaponByIndex((currentWeapon - 1 + 9) % 9);
     }
 
     public void SelectWeaponByIndex(int index)
     {
-        if (currentWeapon != 8) return;
+        if (!_allWeaponsUnlockedPermanent) return;
         if (index < 0 || index > 8) return;
         SetWeaponByIndex(index);
     }

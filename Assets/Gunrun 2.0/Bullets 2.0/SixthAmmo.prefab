@@ -1,0 +1,202 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6276730728250124569
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      propertyPath: m_Name
+      value: SixthAmmo
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 57299948388540749}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1916902168721234505}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6976912245661853602}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7159303464895028072}
+  m_SourcePrefab: {fileID: 100100000, guid: c8a85f1fd02665e4c8f9826f937110fc, type: 3}
+--- !u!1 &6618607577627202632 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c8a85f1fd02665e4c8f9826f937110fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 6276730728250124569}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &57299948388540749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6618607577627202632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bef4c87dd49b70443a9cb1cb8fbe05a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 25
+  speed: 10
+  hitSound: {fileID: 0}
+  damageEffectPrefab: {fileID: 0}
+--- !u!136 &1916902168721234505
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6618607577627202632}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.18888196
+  m_Height: 0.9972545
+  m_Direction: 1
+  m_Center: {x: -0.00066816807, y: 0.0008073302, z: 0.0003260375}
+--- !u!54 &6976912245661853602
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6618607577627202632}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 1
+--- !u!114 &7159303464895028072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6618607577627202632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7b6f25fb4c9138499d14e27e3666329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableRotation: 1
+  rotationSpeed: 30
+  enableAura: 1
+  auraRadius: 0.12
+  auraWidth: 0.03
+  auraColor: {r: 0.4, g: 0.8, b: 1, a: 0.6}
+  auraPulseSpeed: 2
+  auraPulseAmount: 0.2
+  enableEnergyLines: 1
+  energyLineCount: 8
+  energyLineLength: 0.15
+  energyLineWidth: 0.01
+  energyLineColor: {r: 0.6, g: 0.9, b: 1, a: 0.9}
+  energyFlowSpeed: 3
+  energyRotationSpeed: 90
+  enableGlow: 0
+  glowIntensity: 2
+  glowColor: {r: 0.3, g: 0.7, b: 1, a: 1}
+  glowPulseSpeed: 3
+  glowPulseAmount: 0.03
+  enableParticles: 1
+  particleRate: 30
+  particleSize: 0.02
+  particleColor: {r: 0.5, g: 0.85, b: 1, a: 0.8}
+  enableTrail: 1
+  trailTime: 0.4
+  trailMainWidth: 0.025
+  trailGlowWidth: 0.05
+  trailCoreWidth: 0.01
+  trailMainColor: {r: 0.2, g: 0.6, b: 1, a: 0.8}
+  trailGlowColor: {r: 0.1, g: 0.4, b: 0.9, a: 0.3}
+  trailCoreColor: {r: 0.6, g: 0.9, b: 1, a: 1}

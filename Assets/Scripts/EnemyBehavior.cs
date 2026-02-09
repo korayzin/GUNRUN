@@ -6,42 +6,14 @@ using UnityEngine.AI;
 public class EnemyBehavior : MonoBehaviour
 {
     public NavMeshAgent agent;
-    public float speed = 1f; 
-    private int killCount = 0; 
-
-    [Header("Speed Increases")]
-    public float speedIncrease1 = 1.5f; 
-    public float speedIncrease2 = 2f;
+    public float speed = 3f; // Stage bazlı hız, spawn anında atanır
 
     [SerializeField] private List<Collider> colliders;
-
-
-    private void OnEnable()
-    {
-        EnemyHealth.OnEnemyKilled += OnEnemyKilled; 
-    }
-
-    private void OnDisable()
-    {
-        EnemyHealth.OnEnemyKilled -= OnEnemyKilled; 
-    }   
-
-    private void OnEnemyKilled()
-    {
-        killCount++; 
-
-        if (killCount == 3)
-        {
-            speed = speedIncrease1;
-            Debug.Log("H�z artt�: 3. d��man� �ld�rd�n.");
-        }
-       
-        else if (killCount == 6)
-        {
-            speed = speedIncrease2;
-            Debug.Log("H�z artt�: 6. d��man� �ld�rd�n.");
-        }
-    }
+    
+    // Slow mekanizması
+    private float slowMultiplier = 1f;
+    private bool isSlowed = false;
+    private float originalSpeed;
 
     public void Stop()
     {
@@ -54,6 +26,28 @@ public class EnemyBehavior : MonoBehaviour
         {
             collider.enabled = false;
         }
+    }
+    
+    // Slow mekanizması metodları
+    public void ApplySlow(float multiplier)
+    {
+        if (!isSlowed)
+        {
+            originalSpeed = speed;
+        }
+        slowMultiplier = multiplier;
+        isSlowed = true;
+    }
+    
+    public void RemoveSlow()
+    {
+        slowMultiplier = 1f;
+        isSlowed = false;
+    }
+    
+    public bool IsSlowed()
+    {
+        return isSlowed;
     }
 
     private void Update()
@@ -75,7 +69,7 @@ public class EnemyBehavior : MonoBehaviour
 
         // Hedefe git
         agent.SetDestination(targetPosition);
-        agent.speed = speed;
+        agent.speed = speed * slowMultiplier; // Slow multiplier uygula
 
         // Debug bilgisi (sadece arada)
         if (Time.frameCount % 300 == 0)

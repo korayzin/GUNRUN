@@ -1,0 +1,112 @@
+================================================================================
+                    FIFTHGUN LASER KURULUM TALİMATLARI
+================================================================================
+
+Bu dosya, FifthGun silahına laser ışını özelliğini eklemek için gerekli 
+adımları içerir.
+
+================================================================================
+ADIM 1: UNITY EDITOR'DA PREFAB'I AÇIN
+================================================================================
+
+1. Project panelinde şu yolu takip edin:
+   Assets/Gunrun 2.0/Prefabs 2.0/P_GameObject/FifthGun.prefab
+
+2. Prefab'a çift tıklayarak Prefab Mode'a girin
+   (veya prefab'ı Hierarchy'ye sürükleyin)
+
+================================================================================
+ADIM 2: FIFTHGUNLASER SCRIPTİNİ EKLEYİN
+================================================================================
+
+1. FifthGun objesini seçin (en üstteki parent obje)
+
+2. Inspector'da "Add Component" butonuna tıklayın
+
+3. "FifthGunLaser" yazın ve scripti ekleyin
+
+================================================================================
+ADIM 3: SCRIPT AYARLARINI YAPIN
+================================================================================
+
+Inspector'da FifthGunLaser componentinde şu alanları doldurun:
+
+[Laser Settings]
+- Laser Spawn Point: "Laser" child objesini sürükleyin
+  (FifthGun > Laser - zaten alt kısımda mevcut)
+- Laser Range: 100 (varsayılan)
+- Laser Damage: 9999 (instant kill)
+- Laser Duration: 1 (1 saniye görünür)
+- Max Laser Shots: Kaç kez ateşlenebileceği (0 = sınırsız)
+
+[Visual Settings]
+- Laser Line Prefab: Assets/Gunrun 2.0/Prefabs 2.0/P_VFX/LaserBeam.prefab
+  (opsiyonel - boş bırakırsanız runtime'da oluşturulur)
+- Laser Color: Cyan (0, 0.8, 1, 1) - varsayılan
+- Laser Start Width: 0.08
+- Laser End Width: 0.05
+
+[Light Settings] - YENİ!
+- Emit Light: true (laser etrafına ışık saçılsın mı)
+- Light Color: Cyan (0, 0.8, 1, 1) - ışık rengi
+- Light Intensity: 3 (ışık şiddeti)
+- Light Range: 5 (ışık menzili)
+- Light Count: 5 (laser boyunca kaç ışık)
+
+[Audio Settings]
+- Laser Fire Sound: (Opsiyonel) İstediğiniz bir laser ses efekti
+- Audio Source: Mevcut AudioSource'u atayabilirsiniz
+
+[Haptic Feedback]
+- Haptic Strength: 1 (güçlü titreşim)
+- Haptic Duration: 0.3
+
+[Layer Settings]
+- Raycast Layer Mask: Everything (varsayılan) veya Enemy layer'ı
+
+================================================================================
+ADIM 4: PREFAB'I KAYDEDIN
+================================================================================
+
+1. Prefab Mode'dayken Ctrl+S ile kaydedin
+   veya
+2. Hierarchy'deki objeye sağ tıklayıp "Prefab > Apply All" seçin
+
+================================================================================
+KULLANIM
+================================================================================
+
+- Oyun içinde sağ kontrolcüdeki A tuşuna basarak laser'ı ateşleyin
+- Sol kontrolcüdeki X tuşu da çalışır
+- Laser atış sayısı Inspector'dan ayarlanır (Max Laser Shots)
+  - 0 = Sınırsız atış
+  - 1+ = Belirtilen sayıda atış hakkı
+- Laser, yolu üzerindeki TÜM düşmanları anında öldürür
+- Laser etrafında neon ışık efekti oluşur
+
+================================================================================
+NOTLAR
+================================================================================
+
+- GunFire scripti hala normal ateş etme için çalışır
+- Laser kullanıldıktan sonra normal ateş etmeye devam edebilirsiniz
+- Laser'ın çıkış noktası silahın alt kısmındaki "Laser" objesidir
+- Görsel efekt 1 saniye boyunca ekranda kalır ve yavaşça söner
+
+================================================================================
+SORUN GİDERME
+================================================================================
+
+1. Laser çalışmıyorsa:
+   - A tuşunun doğru algılandığından emin olun
+   - Console'da "LASER ATEŞLENDİ!" mesajını kontrol edin
+
+2. Düşmanlar ölmüyorsa:
+   - Düşmanların EnemyHealth componenti olduğundan emin olun
+   - Raycast Layer Mask'ın düşman layer'ını içerdiğini kontrol edin
+
+3. Görsel efekt yoksa:
+   - LaserLinePrefab atanmamışsa runtime'da oluşturulur
+   - Laser Color'ın alpha değerinin 1 olduğundan emin olun
+
+================================================================================

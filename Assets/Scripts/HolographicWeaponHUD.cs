@@ -7,11 +7,13 @@ public class HolographicWeaponHUD : MonoBehaviour
 {
     [Header("Anchoring")]
     [SerializeField] private Transform leftHandAnchor;
-    [Tooltip("World Space canvas scale. Keep small (0.005-0.02) so HUD stays wrist-sized.")]
+    [Tooltip("Sahnede verdiğin Transform (position/rotation/scale) oyunda da kullanılsın. Açıksa aşağıdaki offset/rotation/scale yok sayılır.")]
+    [SerializeField] private bool useSceneTransform = true;
+    [Tooltip("World Space canvas scale. Keep small (0.005-0.02) so HUD stays wrist-sized. Sadece Use Scene Transform kapalıyken kullanılır.")]
     [SerializeField] private float hudScale = 0.01f;
-    [Tooltip("Local position offset from hand anchor (bilek üzerinde konum).")]
+    [Tooltip("Local position offset from hand anchor (bilek üzerinde konum). Sadece Use Scene Transform kapalıyken kullanılır.")]
     [SerializeField] private Vector3 localPositionOffset = new Vector3(0.02f, 0f, 0.06f);
-    [Tooltip("Local rotation: bileği saran eğimli ekran (X: yukarı eğim, Y: yön, Z: bilek etrafında kavrama).")]
+    [Tooltip("Local rotation: bileği saran eğimli ekran. Sadece Use Scene Transform kapalıyken kullanılır.")]
     [SerializeField] private Vector3 localRotationEuler = new Vector3(-50f, 12f, -55f);
 
     [Header("Weapon Manager & Data")]
@@ -33,7 +35,8 @@ public class HolographicWeaponHUD : MonoBehaviour
 
     [Header("Warning (Top-Left)")]
     [SerializeField] private TextMeshProUGUI warningLabel;
-    [SerializeField] private string warningText = "HEAVY MODE ANY DESTRUCTOR";
+    [Tooltip("Tüm silahlar açıldığında (9/9) gösterilir. Aksi halde 'GUN REMAIN X' kullanılır.")]
+    [SerializeField] private string allUnlockedText = "YOU CAN SCROLL THE GUNS";
 
     [Header("Animation")]
     [SerializeField] private float transitionDuration = 0.25f;
@@ -47,9 +50,25 @@ public class HolographicWeaponHUD : MonoBehaviour
     [Tooltip("Tekrar tetik için joystick bu değere dönmeli (neutral).")]
     [SerializeField] private float joystickNeutralDeadzone = 0.2f;
 
+    [Header("Sol Kontrolcü X ile Aç/Kapa (Pop)")]
+    [Tooltip("Sol VR kontrolcüsü X tuşu ile HUD açılıp kapanır.")]
+    [SerializeField] private bool toggleWithXButton = true;
+    [Tooltip("Pop animasyon süresi (saniye).")]
+    [SerializeField] private float popDuration = 0.2f;
+    [Tooltip("Açılışta hafif overshoot (pop) için eğri. 1 üzeri değer = hafif büyüyüp geri gelir.")]
+    [SerializeField] private AnimationCurve popOpenCurve = new AnimationCurve(
+        new Keyframe(0f, 0f), new Keyframe(0.6f, 1.12f), new Keyframe(1f, 1f));
+    [Tooltip("Kapanış animasyon eğrisi.")]
+    [SerializeField] private AnimationCurve popCloseCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
+
     private int _lastIndex = -1;
     private bool _isAnimating;
     private bool _joystickNeutral = true;
+    private bool _isHudVisible = true;
+    private bool _isPopAnimating;
+    private Vector3 _baseScale;
+    private Canvas _canvas;
+    private CanvasGroup _canvasGroup;
 
     private void Start()
     {
@@ -65,11 +84,20 @@ public class HolographicWeaponHUD : MonoBehaviour
         }
         if (leftHandAnchor != null)
         {
-            transform.SetParent(leftHandAnchor, false);
-            transform.localPosition = localPositionOffset;
-            transform.localRotation = Quaternion.Euler(localRotationEuler);
-            transform.localScale = Vector3.one * hudScale;
+            // Parent değişince world pozisyonu korumak için true kullan (sahne değerleri bozulmasın)
+            transform.SetParent(leftHandAnchor, true);
+            if (!useSceneTransform)
+            {
+                transform.localPosition = localPositionOffset;
+                transform.localRotation = Quaternion.Euler(localRotationEuler);
+                transform.localScale = Vector3.one * hudScale;
+            }
         }
+
+        _baseScale = transform.localScale;
+        _canvas = GetComponent<Canvas>();
+        _canvasGroup = GetComponent<CanvasGroup>();
+        if (_canvasGroup == null) _canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
         EnsureSpritesFromWeaponManager();
         if (weaponManager != null)
@@ -81,20 +109,20 @@ public class HolographicWeaponHUD : MonoBehaviour
         if (leftButton != null) leftButton.onClick.AddListener(OnLeftClick);
         if (rightButton != null) rightButton.onClick.AddListener(OnRightClick);
 
-        if (warningLabel != null && !string.IsNullOrEmpty(warningText))
-            warningLabel.text = warningText;
-
         RefreshDisplay(instant: true);
         UpdateButtonInteractable();
+        UpdateWarningText();
     }
 
     private void LateUpdate()
     {
+        if (_isPopAnimating) return;
+        if (useSceneTransform) return;
         if (leftHandAnchor == null) return;
         if (transform.parent != leftHandAnchor) return;
         transform.localPosition = localPositionOffset;
         transform.localRotation = Quaternion.Euler(localRotationEuler);
-        transform.localScale = Vector3.one * hudScale;
+        transform.localScale = _isHudVisible ? Vector3.one * hudScale : Vector3.zero;
     }
 
     private void OnDestroy()
@@ -110,10 +138,14 @@ public class HolographicWeaponHUD : MonoBehaviour
         _lastIndex = newIndex;
         RefreshDisplay(instant: false, fromIndex: prevIndex, toIndex: newIndex);
         UpdateButtonInteractable();
+        UpdateWarningText();
     }
 
     private void Update()
     {
+        if (toggleWithXButton && !_isPopAnimating && OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.LTouch))
+            ToggleHUD();
+
         if (weaponManager == null) return;
         int idx = weaponManager.CurrentWeaponIndex;
         if (_lastIndex != idx && !_isAnimating)
@@ -122,10 +154,45 @@ public class HolographicWeaponHUD : MonoBehaviour
             _lastIndex = idx;
             RefreshDisplay(instant: false, fromIndex: prev, toIndex: idx);
             UpdateButtonInteractable();
+            UpdateWarningText();
         }
 
         if (useLeftJoystick && weaponManager.AllWeaponsUnlocked)
             PollLeftJoystickWeaponSwitch();
+    }
+
+    /// <summary>Sol kontrolcü X ile çağrılır; HUD açık/kapalı durumunu pop animasyonu ile değiştirir.</summary>
+    public void ToggleHUD()
+    {
+        if (_isPopAnimating) return;
+        _isHudVisible = !_isHudVisible;
+        StartCoroutine(PopAnimation());
+    }
+
+    private IEnumerator PopAnimation()
+    {
+        _isPopAnimating = true;
+        float elapsed = 0f;
+        Vector3 startScale = transform.localScale;
+        Vector3 endScale = _isHudVisible ? _baseScale : Vector3.zero;
+
+        if (_canvasGroup != null)
+        {
+            _canvasGroup.blocksRaycasts = _isHudVisible;
+            _canvasGroup.interactable = _isHudVisible;
+        }
+
+        while (elapsed < popDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / popDuration);
+            float curveT = _isHudVisible ? popOpenCurve.Evaluate(t) : popCloseCurve.Evaluate(t);
+            transform.localScale = Vector3.LerpUnclamped(startScale, endScale, curveT);
+            yield return null;
+        }
+
+        transform.localScale = endScale;
+        _isPopAnimating = false;
     }
 
     private void PollLeftJoystickWeaponSwitch()
@@ -196,6 +263,23 @@ public class HolographicWeaponHUD : MonoBehaviour
         bool canManual = weaponManager != null && weaponManager.AllWeaponsUnlocked;
         if (leftButton != null) leftButton.interactable = canManual;
         if (rightButton != null) rightButton.interactable = canManual;
+    }
+
+    private void UpdateWarningText()
+    {
+        if (warningLabel == null) return;
+        if (weaponManager == null)
+        {
+            warningLabel.text = "GUN REMAIN 9";
+            return;
+        }
+        if (weaponManager.AllWeaponsUnlocked)
+        {
+            warningLabel.text = allUnlockedText;
+            return;
+        }
+        int remaining = 8 - weaponManager.CurrentWeaponIndex;
+        warningLabel.text = "GUN REMAIN " + remaining;
     }
 
     private void RefreshDisplay(bool instant, int fromIndex = -1, int toIndex = -1)

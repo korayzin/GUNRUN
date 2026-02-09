@@ -25,14 +25,58 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public GameObject tur1Enemy;
     public GameObject tur2Enemy;
     public GameObject tur3Enemy;
+    [Tooltip("4. düşman - Stage 2'den itibaren nadiren spawn olur. Prefab'ı Inspector'dan atayın.")]
+    public GameObject tur4Enemy;
+
+    [Header("Damage Feedback Prefabs")]
+    [Tooltip("Tek collider sistemli yeni düşmanlar için genel floating text")]
+    public GameObject floatingTextPrefab;
 
     [Header("Spawn Settings")]
-    public float enemySpawnInterval = 2f;
-    public float delayBeforeFirstSpawn = 5f;
+    [Tooltip("Portallar açıldıktan sonra ilk düşman spawn'ı için bekleme süresi")]
+    public float delayBeforeFirstSpawn = 2f;
+    [Tooltip("Düşmanların portalın ne kadar yukarısından spawn olacağı (portalın ortasına hizalamak için)")]
+    public float spawnHeightOffset = 1.5f;
 
-    [Header("Stage Score Thresholds")]
-    public int stage2ScoreThreshold = 200;
-    public int stage3ScoreThreshold = 500;
+    [Header("Stage Kill Thresholds (Silah değişimiyle senkron)")]
+    [Tooltip("Stage 2 başlangıcı - Silah 4 ile senkron")]
+    public int stage2KillThreshold = 24;
+    [Tooltip("Stage 3 başlangıcı - Silah 7 ile senkron")]
+    public int stage3KillThreshold = 54;
+
+    [Header("Spawn Intervals per Stage")]
+    public float stage1SpawnInterval = 2.5f;
+    public float stage2SpawnInterval = 2.0f;
+    public float stage3SpawnInterval = 1.5f;
+
+    [Header("Enemy Speed per Stage")]
+    public float stage1EnemySpeed = 3.0f;
+    public float stage2EnemySpeed = 3.5f;
+    public float stage3EnemySpeed = 4.0f;
+
+    [Header("Enemy HP (Constant per Type)")]
+    public float tur1HP = 40f;
+    public float tur2HP = 80f;
+    public float tur3HP = 150f;
+    public float tur4HP = 200f;
+
+    [Header("Enemy Score Values")]
+    public int tur1Score = 25;
+    public int tur2Score = 50;
+    public int tur3Score = 100;
+    public int tur4Score = 150;
+
+    [Header("Portal Spawn Animation")]
+    [Tooltip("Oyun başladıktan kaç saniye sonra portallar açılsın")]
+    public float portalSpawnStartDelay = 7.5f;
+    [Tooltip("Portal açılma animasyon süresi")]
+    public float portalSpawnDuration = 1.5f;
+    [Tooltip("Portallar arası açılma gecikmesi")]
+    public float portalSpawnDelay = 0.3f;
+    [Tooltip("Açılırken dönme miktarı (derece)")]
+    public float portalSpawnRotation = 360f;
+    [Tooltip("Overshoot (bounce) efekti için")]
+    public float portalOvershoot = 1.1f;
 
     private List<string> portals = new List<string> { "A", "B", "C" };
     private Dictionary<string, GameObject> portalPrefabs;
@@ -41,6 +85,17 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     private bool isGameOver = false;
     private int currentStage = 1;
+    private int totalKillCount = 0;
+
+    void OnEnable()
+    {
+        EnemyHealth.OnEnemyKilled += OnEnemyKilledForStage;
+    }
+
+    void OnDisable()
+    {
+        EnemyHealth.OnEnemyKilled -= OnEnemyKilledForStage;
+    }
 
     void Start()
     {
@@ -61,44 +116,166 @@ public class AdvancedPortalSpawner : MonoBehaviour
             { "C", portalPrefabC }
         };
 
-        SpawnPortals();
+        // Portalları ve düşmanları gecikmeli başlat
+        StartCoroutine(StartGameSequence());
+    }
+
+    IEnumerator StartGameSequence()
+    {
+        // Portallar için bekle
+        yield return new WaitForSeconds(portalSpawnStartDelay);
+        
+        // Portalları animasyonla spawn et
+        yield return StartCoroutine(SpawnPortalsWithAnimation());
+        
+        // Portallar açıldıktan sonra düşman spawn'ı başlat
         StartCoroutine(SpawnEnemiesContinuously());
     }
 
-    void Update()
+    void OnEnemyKilledForStage()
     {
-        if (isGameOver) return;
+        totalKillCount++;
+        UpdateStage();
+    }
 
-        int score = GameManager.Instance.score;
-
-        if (currentStage == 1 && score >= stage2ScoreThreshold)
+    void UpdateStage()
+    {
+        if (currentStage == 1 && totalKillCount >= stage2KillThreshold)
         {
-            Debug.LogError("[STAGE] Stage 2'ye ge�ildi!");
             currentStage = 2;
+            Debug.Log($"[STAGE] Stage 2'ye geçildi! Kill: {totalKillCount}, Spawn Interval: {GetSpawnInterval()}s, Enemy Speed: {GetEnemySpeed()}");
         }
-        else if (currentStage == 2 && score >= stage3ScoreThreshold)
+        else if (currentStage == 2 && totalKillCount >= stage3KillThreshold)
         {
-            Debug.LogError("[STAGE] Stage 3'e ge�ildi!");
             currentStage = 3;
+            Debug.Log($"[STAGE] Stage 3'e geçildi! Kill: {totalKillCount}, Spawn Interval: {GetSpawnInterval()}s, Enemy Speed: {GetEnemySpeed()}");
         }
     }
 
-    void SpawnPortals()
+    float GetSpawnInterval() => currentStage switch
     {
+        1 => stage1SpawnInterval,
+        2 => stage2SpawnInterval,
+        _ => stage3SpawnInterval
+    };
+
+    float GetEnemySpeed() => currentStage switch
+    {
+        1 => stage1EnemySpeed,
+        2 => stage2EnemySpeed,
+        _ => stage3EnemySpeed
+    };
+
+    IEnumerator SpawnPortalsWithAnimation()
+    {
+        // Portal A
         if (portalPrefabA != null)
         {
-            Instantiate(portalPrefabA, portalAPosition, portalARotation);
+            GameObject portalA = Instantiate(portalPrefabA, portalAPosition, portalARotation);
+            StartCoroutine(AnimatePortalSpawn(portalA, portalARotation));
         }
         
+        yield return new WaitForSeconds(portalSpawnDelay);
+        
+        // Portal B
         if (portalPrefabB != null)
         {
-            Instantiate(portalPrefabB, portalBPosition, portalBRotation);
+            GameObject portalB = Instantiate(portalPrefabB, portalBPosition, portalBRotation);
+            StartCoroutine(AnimatePortalSpawn(portalB, portalBRotation));
         }
         
+        yield return new WaitForSeconds(portalSpawnDelay);
+        
+        // Portal C
         if (portalPrefabC != null)
         {
-            Instantiate(portalPrefabC, portalCPosition, portalCRotation);
+            GameObject portalC = Instantiate(portalPrefabC, portalCPosition, portalCRotation);
+            StartCoroutine(AnimatePortalSpawn(portalC, portalCRotation));
         }
+    }
+
+    IEnumerator AnimatePortalSpawn(GameObject portal, Quaternion targetRotation)
+    {
+        if (portal == null) yield break;
+
+        Transform portalTransform = portal.transform;
+        Vector3 targetScale = portalTransform.localScale;
+        
+        // Başlangıç: sıfır scale
+        portalTransform.localScale = Vector3.zero;
+        
+        float elapsed = 0f;
+        float startRotationY = targetRotation.eulerAngles.y - portalSpawnRotation;
+        
+        while (elapsed < portalSpawnDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / portalSpawnDuration;
+            
+            // Elastic/Bounce easing fonksiyonu
+            float easedT = EaseOutBack(t, portalOvershoot);
+            
+            // Scale animasyonu (sıfırdan hedefe)
+            portalTransform.localScale = Vector3.LerpUnclamped(Vector3.zero, targetScale, easedT);
+            
+            // Dönme animasyonu
+            float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, EaseOutCubic(t));
+            portalTransform.rotation = Quaternion.Euler(
+                targetRotation.eulerAngles.x,
+                currentRotationY,
+                targetRotation.eulerAngles.z
+            );
+            
+            yield return null;
+        }
+        
+        // Son değerleri garanti et
+        portalTransform.localScale = targetScale;
+        portalTransform.rotation = targetRotation;
+        
+        // Pulse efekti (tatlı bir son dokunuş)
+        yield return StartCoroutine(PulseEffect(portalTransform, targetScale));
+    }
+
+    IEnumerator PulseEffect(Transform portalTransform, Vector3 baseScale)
+    {
+        float pulseDuration = 0.2f;
+        float pulseAmount = 1.05f;
+        
+        // Büyü
+        float elapsed = 0f;
+        while (elapsed < pulseDuration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / (pulseDuration / 2f);
+            portalTransform.localScale = Vector3.Lerp(baseScale, baseScale * pulseAmount, t);
+            yield return null;
+        }
+        
+        // Küçül
+        elapsed = 0f;
+        while (elapsed < pulseDuration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / (pulseDuration / 2f);
+            portalTransform.localScale = Vector3.Lerp(baseScale * pulseAmount, baseScale, t);
+            yield return null;
+        }
+        
+        portalTransform.localScale = baseScale;
+    }
+
+    // Easing fonksiyonları
+    float EaseOutBack(float t, float overshoot = 1.70158f)
+    {
+        float c1 = overshoot;
+        float c3 = c1 + 1f;
+        return 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
+    }
+
+    float EaseOutCubic(float t)
+    {
+        return 1f - Mathf.Pow(1f - t, 3f);
     }
 
     IEnumerator SpawnEnemiesContinuously()
@@ -110,12 +287,22 @@ public class AdvancedPortalSpawner : MonoBehaviour
             GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
             string portal = GetPreferredPortalForEnemy(enemyPrefab);
             Vector3 spawnPos = GetPortalPosition(portal);
+            
+            // Spawn yüksekliğini ayarla (portalın ortasına hizalama)
+            spawnPos.y += spawnHeightOffset;
 
-            GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+            // Düşmanı oyuncuya bakacak şekilde spawn et (portaldan dönerek çıkmasını engeller)
+            Vector3 directionToPlayer = Camera.main.transform.position - spawnPos;
+            directionToPlayer.y = 0; // Y eksenini sabitle, sadece yatay düzlemde dönsün
+            Quaternion spawnRotation = directionToPlayer != Vector3.zero 
+                ? Quaternion.LookRotation(directionToPlayer) 
+                : Quaternion.identity;
+
+            GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
             enemy.tag = "Enemy";
 
-            // Enemy'ye gerekli componentleri ekle (eğer yoksa)
-            SetupEnemyComponents(enemy, spawnPos);
+            // Enemy'ye gerekli componentleri ekle (eğer yoksa) - prefab referansıyla birlikte
+            SetupEnemyComponents(enemy, spawnPos, enemyPrefab);
 
             if (!consecutivePortalCounts.ContainsKey(portal))
                 consecutivePortalCounts[portal] = 0;
@@ -126,9 +313,10 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
             lastEnemyPerPortal[portal] = enemyPrefab;
 
-            Debug.LogError($"[SPAWN] {enemyPrefab.name} t�r� {portal} portal�ndan spawn oldu. Pozisyon: {spawnPos}");
+            Debug.Log($"[SPAWN] Stage {currentStage} | {enemyPrefab.name} | Portal {portal} | Speed: {GetEnemySpeed()} | Kill: {totalKillCount}");
 
-            yield return new WaitForSeconds(enemySpawnInterval);
+            // DİNAMİK spawn interval - stage'e göre değişir
+            yield return new WaitForSeconds(GetSpawnInterval());
         }
     }
 
@@ -138,28 +326,38 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
         if (stage == 1)
         {
-            pool.AddRange(Enumerable.Repeat(tur1Enemy, 5));
-            pool.AddRange(Enumerable.Repeat(tur2Enemy, 5));
+            // Stage 1: %80 tur1, %20 tur2, tur3/tur4 yok (Öğrenme fazı)
+            pool.AddRange(Enumerable.Repeat(tur1Enemy, 8));
+            pool.AddRange(Enumerable.Repeat(tur2Enemy, 2));
         }
         else if (stage == 2)
         {
-            pool.AddRange(Enumerable.Repeat(tur1Enemy, 4));
+            // Stage 2: tur1/tur2/tur3 ağırlıklı, tur4 nadiren (biraz daha sonra gelir)
+            pool.AddRange(Enumerable.Repeat(tur1Enemy, 5));
             pool.AddRange(Enumerable.Repeat(tur2Enemy, 4));
-            pool.AddRange(Enumerable.Repeat(tur3Enemy, 2));
+            pool.AddRange(Enumerable.Repeat(tur3Enemy, 1));
+            if (tur4Enemy != null)
+                pool.Add(tur4Enemy); // Tek giriş = nadir
         }
         else
         {
+            // Stage 3: tur4 hâlâ nadir, diğerleri yoğun
             pool.AddRange(Enumerable.Repeat(tur1Enemy, 3));
-            pool.AddRange(Enumerable.Repeat(tur2Enemy, 3));
-            pool.AddRange(Enumerable.Repeat(tur3Enemy, 4));
+            pool.AddRange(Enumerable.Repeat(tur2Enemy, 5));
+            pool.AddRange(Enumerable.Repeat(tur3Enemy, 2));
+            if (tur4Enemy != null)
+            {
+                pool.Add(tur4Enemy);
+                pool.Add(tur4Enemy); // Stage 3'te biraz daha sık ama yine nadir
+            }
         }
 
         return pool[Random.Range(0, pool.Count)];
     }
 
-    private void SetupEnemyComponents(GameObject enemy, Vector3 spawnPos)
+    private void SetupEnemyComponents(GameObject enemy, Vector3 spawnPos, GameObject prefab)
     {
-        Debug.Log($"[SETUP] 🔧 Component setup başlıyor: {enemy.name}");
+        Debug.Log($"[SETUP] Component setup başlıyor: {enemy.name}");
 
         // 1. NavMeshAgent ekle/kontrol et
         UnityEngine.AI.NavMeshAgent agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
@@ -168,21 +366,20 @@ public class AdvancedPortalSpawner : MonoBehaviour
             agent = enemy.AddComponent<UnityEngine.AI.NavMeshAgent>();
             agent.radius = 0.04f;
             agent.height = 0f;
-            agent.speed = 3.5f;
             agent.acceleration = 8f;
             agent.angularSpeed = 120f;
             agent.stoppingDistance = 2f;
             agent.autoBraking = true;
             agent.autoRepath = true;
-            Debug.Log($"[SETUP] ✅ NavMeshAgent eklendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height}, Speed: {agent.speed})");
         }
         else
         {
-            // Var olan agent'in ayarlarını da güncelle
             agent.radius = 0.04f;
             agent.height = 0f;
-            Debug.Log($"[SETUP] ℹ️ NavMeshAgent ayarları güncellendi: {enemy.name} (Radius: {agent.radius}, Height: {agent.height})");
         }
+        
+        // Stage bazlı hız ataması
+        agent.speed = GetEnemySpeed();
 
         // NavMeshAgent'ı doğru pozisyona warp et
         agent.enabled = true;
@@ -193,32 +390,55 @@ public class AdvancedPortalSpawner : MonoBehaviour
         if (enemyBehavior == null)
         {
             enemyBehavior = enemy.AddComponent<EnemyBehavior>();
-            enemyBehavior.speed = 3.5f;
-            enemyBehavior.agent = agent; // Agent referansını set et
-            Debug.Log($"[SETUP] ✅ EnemyBehavior eklendi: {enemy.name}");
+            enemyBehavior.agent = agent;
         }
         else
         {
-            enemyBehavior.agent = agent; // Var olan script'e agent referansı ver
-            Debug.Log($"[SETUP] ℹ️ EnemyBehavior zaten var: {enemy.name}");
+            enemyBehavior.agent = agent;
         }
+        // Stage bazlı hız ataması
+        enemyBehavior.speed = GetEnemySpeed();
 
-        // 3. EnemyHealth script'i ekle/kontrol et
+        // 3. EnemyHealth script'i ekle/kontrol et - TİP BAZLI HP VE SKOR
         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
         if (enemyHealth == null)
         {
             enemyHealth = enemy.AddComponent<EnemyHealth>();
-            enemyHealth.totalHealth = 100f;
             enemyHealth.headshotMultiplier = 2f;
             enemyHealth.bodyMultiplier = 1f;
             enemyHealth.legsMultiplier = 0.7f;
-            enemyHealth.scoreValue = 50;
-            Debug.Log($"[SETUP] ✅ EnemyHealth eklendi: {enemy.name}");
+        }
+        
+        // Düşman tipine göre HP ve skor ataması (SABİT değerler)
+        if (prefab == tur1Enemy)
+        {
+            enemyHealth.totalHealth = tur1HP;
+            enemyHealth.scoreValue = tur1Score;
+        }
+        else if (prefab == tur2Enemy)
+        {
+            enemyHealth.totalHealth = tur2HP;
+            enemyHealth.scoreValue = tur2Score;
+        }
+        else if (prefab == tur3Enemy)
+        {
+            enemyHealth.totalHealth = tur3HP;
+            enemyHealth.scoreValue = tur3Score;
+        }
+        else if (prefab == tur4Enemy)
+        {
+            enemyHealth.totalHealth = tur4HP;
+            enemyHealth.scoreValue = tur4Score;
         }
         else
         {
-            Debug.Log($"[SETUP] ℹ️ EnemyHealth zaten var: {enemy.name}");
+            enemyHealth.totalHealth = tur3HP;
+            enemyHealth.scoreValue = tur3Score;
         }
+        
+        // Floating text prefab'ını ata
+        if (floatingTextPrefab != null && enemyHealth.floatingTextPrefab == null)
+            enemyHealth.floatingTextPrefab = floatingTextPrefab;
 
         // 4. Rigidbody ekle/kontrol et (kinematic olarak)
         Rigidbody rb = enemy.GetComponent<Rigidbody>();
@@ -227,49 +447,26 @@ public class AdvancedPortalSpawner : MonoBehaviour
             rb = enemy.AddComponent<Rigidbody>();
             rb.useGravity = false;
             rb.isKinematic = true;
-            Debug.Log($"[SETUP] ✅ Rigidbody eklendi: {enemy.name}");
         }
 
-        // 5. Collider kontrolü - Sadece trigger ayarı yap (kullanıcı manuel ekleyecek)
+        // 5. Collider kontrolü - Sadece trigger ayarı yap
         Collider col = enemy.GetComponent<Collider>();
         if (col != null)
         {
-            // Var olan collider'ı trigger yap
             col.isTrigger = true;
-            Debug.Log($"[SETUP] ℹ️ Collider trigger yapıldı: {enemy.name}");
-        }
-        else
-        {
-            Debug.LogWarning($"[SETUP] ⚠️ {enemy.name}'de collider bulunamadı! Prefab'a collider ekleyin!");
         }
 
         // 6. Animasyon başlat ve loop yap
         Animator animator = enemy.GetComponent<Animator>();
-        if (animator != null)
+        if (animator != null && animator.runtimeAnimatorController != null)
         {
-            if (animator.runtimeAnimatorController != null)
-            {
-                animator.updateMode = AnimatorUpdateMode.Normal;
-                animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                animator.enabled = true;
-
-                // State adını kullanarak animasyonu başlat
-                string stateName = "mixamo_com";
-                animator.Play(stateName, 0, 0f);
-                
-                Debug.Log($"[SETUP] ✅ Animasyon başlatıldı: {enemy.name} - State: {stateName}, Controller: {animator.runtimeAnimatorController.name}");
-            }
-            else
-            {
-                Debug.LogWarning($"[SETUP] ⚠️ AnimatorController atanmamış: {enemy.name}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"[SETUP] ⚠️ Animator component bulunamadı: {enemy.name}");
+            animator.updateMode = AnimatorUpdateMode.Normal;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            animator.enabled = true;
+            animator.Play("mixamo_com", 0, 0f);
         }
 
-        Debug.Log($"[SETUP] 🎉 Enemy tamamen hazır: {enemy.name} at {spawnPos}");
+        Debug.Log($"[SETUP] Enemy hazır: {enemy.name} | HP: {enemyHealth.totalHealth} | Speed: {enemyBehavior.speed} | Score: {enemyHealth.scoreValue}");
     }
 
     string GetPreferredPortalForEnemy(GameObject enemy)

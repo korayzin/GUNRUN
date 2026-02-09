@@ -72,12 +72,12 @@ public class UIBulletCollision : MonoBehaviour
 
             countdownText.text = "GO!";
             yield return new WaitForSeconds(0.5f);
-            SceneManager.LoadScene("MainGame");
+            SceneManager.LoadScene("Koray");
         }
         else
         {
             yield return new WaitForSeconds(5f);
-            SceneManager.LoadScene("MainGame");
+            SceneManager.LoadScene("Koray");
         }
     }
 
