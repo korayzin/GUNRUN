@@ -3473,6 +3473,51 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1.9882125, z: 1}
   m_Center: {x: 0, y: 0.4941065, z: 0}
+--- !u!1 &74005711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 74005713}
+  - component: {fileID: 74005712}
+  m_Layer: 0
+  m_Name: GameBalanceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &74005712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74005711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d953989cfdefb04ab37d72e44d5fb81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  balance: {fileID: 11400000, guid: b4906c8d7436d6043936f69bedd2fc23, type: 2}
+--- !u!4 &74005713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74005711}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.9473036, y: -3.0048919, z: -14.257631}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &76180693 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8e7bf42e5bcb3ce4180974d80d53936b,
@@ -5223,15 +5268,15 @@ MonoBehaviour:
   activeUIImageScale: 0.8
   inactiveUIImageScale: 0.6
   weaponDisplayNames:
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Weapon_1
+  - Weapon_2
+  - Weapon_3
+  - Weapon_4
+  - Weapon_5
+  - Weapon_6
+  - Weapon_7
+  - Weapon_8
+  - Weapon_9
 --- !u!4 &108028052
 Transform:
   m_ObjectHideFlags: 0
@@ -45017,7 +45062,7 @@ MonoBehaviour:
   hapticStrength: 0.5
   bulletHitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
-  maxAmmo: 30
+  maxAmmo: 25
   ammoText: {fileID: 1981389842}
   ammoUI: {fileID: 0}
   useDualBarrel: 1
@@ -45026,6 +45071,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 1
   isLeftHanded: 0
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!1 &829110778
@@ -60497,6 +60543,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 1
   isLeftHanded: 1
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!1 &1281940627
@@ -95914,6 +95961,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 0
   isLeftHanded: 0
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!114 &2443542293831071708
@@ -96704,6 +96752,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 1
   isLeftHanded: 0
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!1001 &6999571474490654985
@@ -97219,3 +97268,4 @@ SceneRoots:
   - {fileID: 815147440}
   - {fileID: 879791455}
   - {fileID: 1026554548}
+  - {fileID: 74005713}

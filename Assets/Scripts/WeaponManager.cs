@@ -54,14 +54,15 @@ public class WeaponManager : MonoBehaviour
     private bool _allWeaponsUnlockedPermanent = false;
 
     [Header("Weapon Switch Settings")]
-    public int killsToSecond = 10;
-    public int killsToThird = 22;
-    public int killsToFourth = 36;
-    public int killsToFifth = 52;
-    public int killsToSixth = 70;
-    public int killsToSeventh = 90;
-    public int killsToEighth = 112;
-    public int killsToNinth = 136;
+    [Tooltip("Fallback when GameBalanceManager is not present. GameBalanceManager.GetKillToUnlock tek kaynaktır.")]
+    public int killsToSecond = 4;
+    public int killsToThird = 12;
+    public int killsToFourth = 20;
+    public int killsToFifth = 32;
+    public int killsToSixth = 48;
+    public int killsToSeventh = 68;
+    public int killsToEighth = 82;
+    public int killsToNinth = 102;
     public float vfxDelay = 0.5f;
 
     [Header("Weapon Scale Settings")]
@@ -166,6 +167,28 @@ public class WeaponManager : MonoBehaviour
         enemyKillCount = 0;
         isSwitchingWeapon = false;
         _allWeaponsUnlockedPermanent = false;
+
+        SetWeaponBalanceIndices();
+    }
+
+    private void SetWeaponBalanceIndices()
+    {
+        if (firstWeapon != null)  SetGunFireBalanceIndex(firstWeapon, 0);
+        if (secondWeapon != null) SetGunFireBalanceIndex(secondWeapon, 1);
+        if (thirdWeapon != null)  SetGunFireBalanceIndex(thirdWeapon, 2);
+        if (fourthWeapon != null) SetGunFireBalanceIndex(fourthWeapon, 3);
+        if (fifthWeapon != null) SetGunFireBalanceIndex(fifthWeapon, 4);
+        if (sixthWeapon != null) SetGunFireBalanceIndex(sixthWeapon, 5);
+        if (seventhWeapon != null) SetGunFireBalanceIndex(seventhWeapon, 6);
+        if (eighthWeapon != null) SetGunFireBalanceIndex(eighthWeapon, 7);
+        if (ninthWeapon != null) SetGunFireBalanceIndex(ninthWeapon, 8);
+    }
+
+    private void SetGunFireBalanceIndex(GameObject weaponObj, int index)
+    {
+        var gunFire = weaponObj.GetComponent<GunFire>();
+        if (gunFire != null)
+            gunFire.SetWeaponBalanceIndex(index);
     }
 
     private void OnEnable()
@@ -218,6 +241,14 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
+    /// <summary>Kill count required to unlock the next weapon (index 1..8). From GameBalanceManager or fallback fields.</summary>
+    private int GetKillsRequiredForNextWeapon(int nextWeaponIndex)
+    {
+        if (GameBalanceManager.Instance != null && nextWeaponIndex >= 1 && nextWeaponIndex <= 8)
+            return GameBalanceManager.Instance.GetKillToUnlock(nextWeaponIndex);
+        switch (nextWeaponIndex) { case 1: return killsToSecond; case 2: return killsToThird; case 3: return killsToFourth; case 4: return killsToFifth; case 5: return killsToSixth; case 6: return killsToSeventh; case 7: return killsToEighth; case 8: return killsToNinth; default: return 999; }
+    }
+
     public void CheckWeaponSwitch()
     {
         if (isSwitchingWeapon)
@@ -227,8 +258,9 @@ public class WeaponManager : MonoBehaviour
         if (_allWeaponsUnlockedPermanent)
             return;
 
+        int killsForSecond = GetKillsRequiredForNextWeapon(1);
         // First -> Second
-        if (currentWeapon == 0 && enemyKillCount >= killsToSecond)
+        if (currentWeapon == 0 && enemyKillCount >= killsForSecond)
         {
             isSwitchingWeapon = true;
             DisableAllBarettaWeapons();
@@ -244,7 +276,7 @@ public class WeaponManager : MonoBehaviour
             Debug.Log($"First weapon kapatıldı, Second weapon açıldı ({enemyKillCount} kill).");
         }
         // Second -> Third
-        else if (currentWeapon == 1 && enemyKillCount >= killsToThird)
+        else if (currentWeapon == 1 && enemyKillCount >= GetKillsRequiredForNextWeapon(2))
         {
             isSwitchingWeapon = true;
             if (secondWeapon != null)
@@ -259,7 +291,7 @@ public class WeaponManager : MonoBehaviour
             Debug.Log($"Second weapon kapatıldı, Third weapon açıldı ({enemyKillCount} kill).");
         }
         // Third -> Fourth
-        else if (currentWeapon == 2 && enemyKillCount >= killsToFourth)
+        else if (currentWeapon == 2 && enemyKillCount >= GetKillsRequiredForNextWeapon(3))
         {
             isSwitchingWeapon = true;
             if (thirdWeapon != null)
@@ -274,7 +306,7 @@ public class WeaponManager : MonoBehaviour
             Debug.Log($"Third weapon kapatıldı, Fourth weapon açıldı ({enemyKillCount} kill).");
         }
         // Fourth -> Fifth
-        else if (currentWeapon == 3 && enemyKillCount >= killsToFifth)
+        else if (currentWeapon == 3 && enemyKillCount >= GetKillsRequiredForNextWeapon(4))
         {
             isSwitchingWeapon = true;
             if (fourthWeapon != null)
@@ -289,7 +321,7 @@ public class WeaponManager : MonoBehaviour
             Debug.Log($"Fourth weapon kapatıldı, Fifth weapon açıldı ({enemyKillCount} kill).");
         }
         // Fifth -> Sixth
-        else if (currentWeapon == 4 && enemyKillCount >= killsToSixth)
+        else if (currentWeapon == 4 && enemyKillCount >= GetKillsRequiredForNextWeapon(5))
         {
             isSwitchingWeapon = true;
             if (fifthWeapon != null)
@@ -304,7 +336,7 @@ public class WeaponManager : MonoBehaviour
             Debug.Log($"Fifth weapon kapatıldı, Sixth weapon açıldı ({enemyKillCount} kill).");
         }
         // Sixth -> Seventh
-        else if (currentWeapon == 5 && enemyKillCount >= killsToSeventh)
+        else if (currentWeapon == 5 && enemyKillCount >= GetKillsRequiredForNextWeapon(6))
         {
             if (seventhWeapon == null)
             {
@@ -324,7 +356,7 @@ public class WeaponManager : MonoBehaviour
             Debug.Log($"Sixth weapon kapatıldı, Seventh weapon açıldı ({enemyKillCount} kill).");
         }
         // Seventh -> Eighth
-        else if (currentWeapon == 6 && enemyKillCount >= killsToEighth)
+        else if (currentWeapon == 6 && enemyKillCount >= GetKillsRequiredForNextWeapon(7))
         {
             isSwitchingWeapon = true;
             if (seventhWeapon != null)
@@ -339,7 +371,7 @@ public class WeaponManager : MonoBehaviour
             Debug.Log($"Seventh weapon kapatıldı, Eighth weapon açıldı ({enemyKillCount} kill).");
         }
         // Eighth -> Ninth
-        else if (currentWeapon == 7 && enemyKillCount >= killsToNinth)
+        else if (currentWeapon == 7 && enemyKillCount >= GetKillsRequiredForNextWeapon(8))
         {
             isSwitchingWeapon = true;
             if (eighthWeapon != null)

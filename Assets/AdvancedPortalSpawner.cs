@@ -38,29 +38,29 @@ public class AdvancedPortalSpawner : MonoBehaviour
     [Tooltip("Düşmanların portalın ne kadar yukarısından spawn olacağı (portalın ortasına hizalamak için)")]
     public float spawnHeightOffset = 1.5f;
 
-    [Header("Stage Kill Thresholds (Silah değişimiyle senkron)")]
-    [Tooltip("Stage 2 başlangıcı - Silah 4 ile senkron")]
-    public int stage2KillThreshold = 24;
-    [Tooltip("Stage 3 başlangıcı - Silah 7 ile senkron")]
-    public int stage3KillThreshold = 54;
+    [Header("Stage (from GameBalanceManager when present; else fallbacks)")]
+    [Tooltip("Stage 2 başlangıcı - fallback when no balance")]
+    public int stage2KillThreshold = 36;
+    [Tooltip("Stage 3 başlangıcı - fallback when no balance")]
+    public int stage3KillThreshold = 90;
 
-    [Header("Spawn Intervals per Stage")]
+    [Header("Spawn Intervals per Stage (fallback when no balance)")]
     public float stage1SpawnInterval = 2.5f;
     public float stage2SpawnInterval = 2.0f;
-    public float stage3SpawnInterval = 1.5f;
+    public float stage3SpawnInterval = 1.4f;
 
-    [Header("Enemy Speed per Stage")]
+    [Header("Enemy Speed per Stage (fallback when no balance)")]
     public float stage1EnemySpeed = 3.0f;
     public float stage2EnemySpeed = 3.5f;
     public float stage3EnemySpeed = 4.0f;
 
-    [Header("Enemy HP (Constant per Type)")]
-    public float tur1HP = 40f;
-    public float tur2HP = 80f;
-    public float tur3HP = 150f;
-    public float tur4HP = 200f;
+    [Header("Enemy HP fallback (when no GameBalanceManager)")]
+    public float tur1HP = 100f;
+    public float tur2HP = 150f;
+    public float tur3HP = 200f;
+    public float tur4HP = 0f;
 
-    [Header("Enemy Score Values")]
+    [Header("Enemy Score fallback (when no balance)")]
     public int tur1Score = 25;
     public int tur2Score = 50;
     public int tur3Score = 100;
@@ -86,6 +86,9 @@ public class AdvancedPortalSpawner : MonoBehaviour
     private bool isGameOver = false;
     private int currentStage = 1;
     private int totalKillCount = 0;
+
+    [Header("Bag system (12 slots, refill when < 1)")]
+    private List<GameObject> spawnBag = new List<GameObject>();
 
     void OnEnable()
     {
@@ -140,31 +143,40 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     void UpdateStage()
     {
-        if (currentStage == 1 && totalKillCount >= stage2KillThreshold)
+        int newStage = currentStage;
+        if (GameBalanceManager.Instance != null)
         {
-            currentStage = 2;
-            Debug.Log($"[STAGE] Stage 2'ye geçildi! Kill: {totalKillCount}, Spawn Interval: {GetSpawnInterval()}s, Enemy Speed: {GetEnemySpeed()}");
+            if (GameBalanceManager.Instance.UseScoreForStage && GameManager.Instance != null)
+                newStage = GameBalanceManager.Instance.GetStageFromScore(GameManager.Instance.score);
+            else
+                newStage = GameBalanceManager.Instance.GetStageFromKill(totalKillCount);
         }
-        else if (currentStage == 2 && totalKillCount >= stage3KillThreshold)
+        else
         {
-            currentStage = 3;
-            Debug.Log($"[STAGE] Stage 3'e geçildi! Kill: {totalKillCount}, Spawn Interval: {GetSpawnInterval()}s, Enemy Speed: {GetEnemySpeed()}");
+            if (currentStage == 1 && totalKillCount >= stage2KillThreshold) newStage = 2;
+            else if (currentStage == 2 && totalKillCount >= stage3KillThreshold) newStage = 3;
+        }
+        if (newStage != currentStage)
+        {
+            currentStage = newStage;
+            RefillSpawnBag();
+            Debug.Log($"[STAGE] Stage {currentStage}'e geçildi! Kill: {totalKillCount}, Spawn Interval: {GetSpawnInterval()}s, Enemy Speed: {GetEnemySpeed()}");
         }
     }
 
-    float GetSpawnInterval() => currentStage switch
+    float GetSpawnInterval()
     {
-        1 => stage1SpawnInterval,
-        2 => stage2SpawnInterval,
-        _ => stage3SpawnInterval
-    };
+        if (GameBalanceManager.Instance != null)
+            return GameBalanceManager.Instance.GetSpawnInterval(currentStage);
+        return currentStage switch { 1 => stage1SpawnInterval, 2 => stage2SpawnInterval, _ => stage3SpawnInterval };
+    }
 
-    float GetEnemySpeed() => currentStage switch
+    float GetEnemySpeed()
     {
-        1 => stage1EnemySpeed,
-        2 => stage2EnemySpeed,
-        _ => stage3EnemySpeed
-    };
+        if (GameBalanceManager.Instance != null)
+            return GameBalanceManager.Instance.GetEnemySpeed(currentStage);
+        return currentStage switch { 1 => stage1EnemySpeed, 2 => stage2EnemySpeed, _ => stage3EnemySpeed };
+    }
 
     IEnumerator SpawnPortalsWithAnimation()
     {
@@ -320,39 +332,79 @@ public class AdvancedPortalSpawner : MonoBehaviour
         }
     }
 
-    GameObject GetRandomEnemyForStage(int stage)
+    void RefillSpawnBag()
     {
-        List<GameObject> pool = new List<GameObject>();
-
-        if (stage == 1)
+        spawnBag.Clear();
+        int bagSize = 12;
+        int w = 70, m = 25, s = 5, t = 0;
+        if (GameBalanceManager.Instance != null)
         {
-            // Stage 1: %80 tur1, %20 tur2, tur3/tur4 yok (Öğrenme fazı)
-            pool.AddRange(Enumerable.Repeat(tur1Enemy, 8));
-            pool.AddRange(Enumerable.Repeat(tur2Enemy, 2));
-        }
-        else if (stage == 2)
-        {
-            // Stage 2: tur1/tur2/tur3 ağırlıklı, tur4 nadiren (biraz daha sonra gelir)
-            pool.AddRange(Enumerable.Repeat(tur1Enemy, 5));
-            pool.AddRange(Enumerable.Repeat(tur2Enemy, 4));
-            pool.AddRange(Enumerable.Repeat(tur3Enemy, 1));
-            if (tur4Enemy != null)
-                pool.Add(tur4Enemy); // Tek giriş = nadir
+            bagSize = GameBalanceManager.Instance.BagSize;
+            GameBalanceManager.Instance.GetEnemySpawnWeights(currentStage, out w, out m, out s, out t);
         }
         else
         {
-            // Stage 3: tur4 hâlâ nadir, diğerleri yoğun
-            pool.AddRange(Enumerable.Repeat(tur1Enemy, 3));
-            pool.AddRange(Enumerable.Repeat(tur2Enemy, 5));
-            pool.AddRange(Enumerable.Repeat(tur3Enemy, 2));
-            if (tur4Enemy != null)
-            {
-                pool.Add(tur4Enemy);
-                pool.Add(tur4Enemy); // Stage 3'te biraz daha sık ama yine nadir
-            }
+            if (currentStage == 2) { w = 50; m = 30; s = 15; t = 5; }
+            else if (currentStage == 3) { w = 10; m = 20; s = 45; t = 25; }
+        }
+        int total = w + m + s + t;
+        if (total <= 0) total = 100;
+        int weak = Mathf.Max(0, (w * bagSize) / total);
+        int medium = Mathf.Max(0, (m * bagSize) / total);
+        int strong = Mathf.Max(0, (s * bagSize) / total);
+        int tank = Mathf.Max(0, (t * bagSize) / total);
+        int filled = weak + medium + strong + tank;
+        while (filled < bagSize && (weak + medium + strong + tank) > 0)
+        {
+            if (weak > 0) { weak++; filled++; } else if (medium > 0) { medium++; filled++; } else if (strong > 0) { strong++; filled++; } else if (tank > 0) { tank++; filled++; }
         }
 
-        return pool[Random.Range(0, pool.Count)];
+        if (tur1Enemy != null) spawnBag.AddRange(Enumerable.Repeat(tur1Enemy, weak));
+        if (tur2Enemy != null) spawnBag.AddRange(Enumerable.Repeat(tur2Enemy, medium));
+        if (tur3Enemy != null) spawnBag.AddRange(Enumerable.Repeat(tur3Enemy, strong));
+        if (tur4Enemy != null) spawnBag.AddRange(Enumerable.Repeat(tur4Enemy, tank));
+
+        for (int i = spawnBag.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            var tmp = spawnBag[i];
+            spawnBag[i] = spawnBag[j];
+            spawnBag[j] = tmp;
+        }
+    }
+
+    GameObject GetRandomEnemyForStage(int stage)
+    {
+        int refillThreshold = 1;
+        if (GameBalanceManager.Instance != null)
+            refillThreshold = GameBalanceManager.Instance.BagRefillWhenSlotsBelow;
+        if (spawnBag.Count < refillThreshold)
+            RefillSpawnBag();
+
+        if (spawnBag.Count > 0)
+        {
+            int idx = Random.Range(0, spawnBag.Count);
+            GameObject chosen = spawnBag[idx];
+            spawnBag.RemoveAt(idx);
+            return chosen;
+        }
+
+        List<GameObject> pool = new List<GameObject>();
+        if (GameBalanceManager.Instance != null)
+        {
+            GameBalanceManager.Instance.GetEnemySpawnWeights(stage, out int w, out int m, out int s, out int t);
+            if (tur1Enemy != null) pool.AddRange(Enumerable.Repeat(tur1Enemy, w));
+            if (tur2Enemy != null) pool.AddRange(Enumerable.Repeat(tur2Enemy, m));
+            if (tur3Enemy != null) pool.AddRange(Enumerable.Repeat(tur3Enemy, s));
+            if (tur4Enemy != null) pool.AddRange(Enumerable.Repeat(tur4Enemy, t));
+        }
+        else
+        {
+            if (stage == 1) { pool.AddRange(Enumerable.Repeat(tur1Enemy, 8)); pool.AddRange(Enumerable.Repeat(tur2Enemy, 2)); }
+            else if (stage == 2) { pool.AddRange(Enumerable.Repeat(tur1Enemy, 5)); pool.AddRange(Enumerable.Repeat(tur2Enemy, 4)); pool.AddRange(Enumerable.Repeat(tur3Enemy, 1)); if (tur4Enemy != null) pool.Add(tur4Enemy); }
+            else { pool.AddRange(Enumerable.Repeat(tur1Enemy, 3)); pool.AddRange(Enumerable.Repeat(tur2Enemy, 5)); pool.AddRange(Enumerable.Repeat(tur3Enemy, 2)); if (tur4Enemy != null) { pool.Add(tur4Enemy); pool.Add(tur4Enemy); } }
+        }
+        return pool.Count > 0 ? pool[Random.Range(0, pool.Count)] : (tur1Enemy != null ? tur1Enemy : tur2Enemy);
     }
 
     private void SetupEnemyComponents(GameObject enemy, Vector3 spawnPos, GameObject prefab)
@@ -409,31 +461,20 @@ public class AdvancedPortalSpawner : MonoBehaviour
             enemyHealth.legsMultiplier = 0.7f;
         }
         
-        // Düşman tipine göre HP ve skor ataması (SABİT değerler)
-        if (prefab == tur1Enemy)
+        // Düşman tipine göre HP ve skor: GameBalanceManager'dan (stage + type) veya fallback
+        int enemyType = GetEnemyTypeIndex(prefab);
+        if (GameBalanceManager.Instance != null)
         {
-            enemyHealth.totalHealth = tur1HP;
-            enemyHealth.scoreValue = tur1Score;
-        }
-        else if (prefab == tur2Enemy)
-        {
-            enemyHealth.totalHealth = tur2HP;
-            enemyHealth.scoreValue = tur2Score;
-        }
-        else if (prefab == tur3Enemy)
-        {
-            enemyHealth.totalHealth = tur3HP;
-            enemyHealth.scoreValue = tur3Score;
-        }
-        else if (prefab == tur4Enemy)
-        {
-            enemyHealth.totalHealth = tur4HP;
-            enemyHealth.scoreValue = tur4Score;
+            enemyHealth.totalHealth = GameBalanceManager.Instance.GetEnemyHP(currentStage, enemyType);
+            enemyHealth.scoreValue = GameBalanceManager.Instance.GetEnemyScore(currentStage, enemyType);
         }
         else
         {
-            enemyHealth.totalHealth = tur3HP;
-            enemyHealth.scoreValue = tur3Score;
+            if (prefab == tur1Enemy) { enemyHealth.totalHealth = tur1HP; enemyHealth.scoreValue = tur1Score; }
+            else if (prefab == tur2Enemy) { enemyHealth.totalHealth = tur2HP; enemyHealth.scoreValue = tur2Score; }
+            else if (prefab == tur3Enemy) { enemyHealth.totalHealth = tur3HP; enemyHealth.scoreValue = tur3Score; }
+            else if (prefab == tur4Enemy) { enemyHealth.totalHealth = tur4HP; enemyHealth.scoreValue = tur4Score; }
+            else { enemyHealth.totalHealth = tur3HP; enemyHealth.scoreValue = tur3Score; }
         }
         
         // Floating text prefab'ını ata
@@ -469,6 +510,15 @@ public class AdvancedPortalSpawner : MonoBehaviour
         Debug.Log($"[SETUP] Enemy hazır: {enemy.name} | HP: {enemyHealth.totalHealth} | Speed: {enemyBehavior.speed} | Score: {enemyHealth.scoreValue}");
     }
 
+    int GetEnemyTypeIndex(GameObject prefab)
+    {
+        if (prefab == tur1Enemy) return 0;
+        if (prefab == tur2Enemy) return 1;
+        if (prefab == tur3Enemy) return 2;
+        if (prefab == tur4Enemy) return 3;
+        return 2;
+    }
+
     string GetPreferredPortalForEnemy(GameObject enemy)
     {
         List<string> validPortals = new();
@@ -490,7 +540,23 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
         if (validPortals.Count > 0)
         {
-            return validPortals[Random.Range(0, validPortals.Count)];
+            Vector3 weights = GameBalanceManager.Instance != null ? GameBalanceManager.Instance.GetPortalWeights() : new Vector3(33f, 33f, 33f);
+            float totalWeight = 0f;
+            foreach (string p in validPortals)
+            {
+                if (p == "A") totalWeight += weights.x;
+                else if (p == "B") totalWeight += weights.y;
+                else if (p == "C") totalWeight += weights.z;
+            }
+            if (totalWeight <= 0f) return validPortals[Random.Range(0, validPortals.Count)];
+            float r = Random.Range(0f, totalWeight);
+            foreach (string p in validPortals)
+            {
+                float w = p == "A" ? weights.x : (p == "B" ? weights.y : weights.z);
+                if (r < w) return p;
+                r -= w;
+            }
+            return validPortals[validPortals.Count - 1];
         }
 
         Debug.LogWarning($"[PORTAL OVERRIDE] {enemy.name} i�in kural d��� portal se�imi yap�l�yor.");
