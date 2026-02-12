@@ -9,13 +9,11 @@ public class UserNameButtonHit : MonoBehaviour
 {
     public enum Action
     {
-        Sample1,
-        Sample2,
-        Sample3,
+        Random,
         Confirm
     }
 
-    public Action action = Action.Sample1;
+    public Action action = Action.Random;
 
     private void Awake()
     {

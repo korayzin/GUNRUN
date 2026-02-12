@@ -4,8 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// UserName sahnesi: Sadece Physics.Raycast ile butonlara tıklanır (fare veya VR tetikleyici).
-/// Örnek buton = isim yazar, Devam = onaylar ve sonraki sahneye geçer.
+/// UserName sahnesi: Sadece VR tetikleyici ile Physics.Raycast + tek ray. Butonlar runtime'da BoxCollider + UserNameButtonHit ile kurulur.
 /// </summary>
 public class UserNameController : MonoBehaviour
 {
@@ -17,52 +16,191 @@ public class UserNameController : MonoBehaviour
     [Header("Sonraki sahne")]
     [SerializeField] private string nextSceneName = "UI";
 
+    [Header("Cihaz başına bir kez")]
+    [Tooltip("Açık: Daha önce isim kaydedildiyse bu sahne atlanır (cihaz başına 1 kez). Kapalı: Bu sahne her seferinde gösterilir.")]
+    [SerializeField] private bool showOnlyOncePerDevice = true;
+
     [Header("İsim girişi")]
     [SerializeField] private TMP_InputField nameInputTMP;
     [SerializeField] private InputField nameInputLegacy;
 
     [Header("Butonlar")]
-    [SerializeField] private Button sampleButton1;
-    [SerializeField] private Button sampleButton2;
-    [SerializeField] private Button sampleButton3;
+    [Tooltip("Üzerinde 'Random' yazan buton - basınca rastgele harf/sayı ismi üretir (4-6 karakter).")]
+    [SerializeField] private Button randomButton;
     [SerializeField] private Button confirmButton;
-
-    [Header("Örnek isimler (sırayla 1-2-3)")]
-    [SerializeField] private string[] sampleNames = new string[] { "Sürat", "Nişancı", "Keskin" };
 
     [Header("Raycast - Elinden çıkan ray")]
     [Tooltip("Elimden çıkan rayin başlangıç noktası. OVR'da laser/pointer kullanan objeyi buraya sürükle. Boşsa otomatik RightHandAnchor aranır.")]
     [SerializeField] private Transform rayOrigin;
     [Tooltip("Ray atılacak katman (varsayılan = tümü)")]
     [SerializeField] private LayerMask raycastLayers = -1;
+    [Tooltip("Ray görsel çizgisi (VR'da nereye baktığını gösterir)")]
+    [SerializeField] private LineRenderer rayLine;
 
     private Camera _mainCam;
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt(UserNameSetKey, 0) == 1)
+        if (showOnlyOncePerDevice && PlayerPrefs.GetInt(UserNameSetKey, 0) == 1)
         {
             LoadNextScene();
             return;
         }
 
-        if (sampleNames == null || sampleNames.Length < 3)
-            sampleNames = new string[] { "Sürat", "Nişancı", "Keskin" };
-
-        sampleButton1?.onClick.AddListener(OnSample1Click);
-        sampleButton2?.onClick.AddListener(OnSample2Click);
-        sampleButton3?.onClick.AddListener(OnSample3Click);
+        randomButton?.onClick.AddListener(OnRandomClick);
         confirmButton?.onClick.AddListener(OnConfirmClick);
 
         _mainCam = Camera.main;
         if (rayOrigin == null)
             rayOrigin = FindHandRayOrigin();
-        if (rayOrigin == null)
-            rayOrigin = _mainCam != null ? _mainCam.transform : transform;
 
         Canvas can = GetComponentInParent<Canvas>();
         if (can != null && can.renderMode == RenderMode.WorldSpace && _mainCam != null)
             can.worldCamera = _mainCam;
+
+        SetupButtonColliders();
+        SetupInputFieldCollider();
+        if (rayOrigin != null)
+        {
+            SetupRayLine();
+            DisableOtherRays();
+        }
+    }
+
+    private void SetupRayLine()
+    {
+        if (rayLine != null) return;
+        rayLine = GetComponentInChildren<LineRenderer>();
+        if (rayLine != null) return;
+        if (rayOrigin == null) return;
+        var go = new GameObject("UserNameRayLine");
+        go.transform.SetParent(rayOrigin);
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localRotation = Quaternion.identity;
+        go.transform.localScale = Vector3.one;
+        rayLine = go.AddComponent<LineRenderer>();
+        rayLine.positionCount = 2;
+        rayLine.useWorldSpace = true;
+        rayLine.startWidth = 0.004f;
+        rayLine.endWidth = 0.001f;
+        rayLine.material = new Material(Shader.Find("Sprites/Default"));
+        rayLine.startColor = new Color(0.2f, 0.8f, 1f, 0.9f);
+        rayLine.endColor = new Color(0.2f, 0.8f, 1f, 0.3f);
+    }
+
+    /// <summary>
+    /// Sahnede bizim ray dışındaki tüm LineRenderer'ları kapat (tek ray kalsın).
+    /// </summary>
+    private void DisableOtherRays()
+    {
+        var all = Object.FindObjectsOfType<LineRenderer>(true);
+        foreach (var lr in all)
+        {
+            if (lr == rayLine) continue;
+            lr.enabled = false;
+        }
+    }
+
+    /// <summary>
+    /// Her butona BoxCollider + UserNameButtonHit ekler - ray'in çarpabileceği 3D hedef oluşturur.
+    /// </summary>
+    private void SetupButtonColliders()
+    {
+        SetupButton(randomButton, UserNameButtonHit.Action.Random);
+        SetupButton(confirmButton, UserNameButtonHit.Action.Confirm);
+    }
+
+    private void SetupButton(Button btn, UserNameButtonHit.Action action)
+    {
+        if (btn == null) return;
+        var go = btn.gameObject;
+
+        var hit = go.GetComponent<UserNameButtonHit>();
+        if (hit == null)
+        {
+            hit = go.AddComponent<UserNameButtonHit>();
+            hit.action = action;
+        }
+
+        var col = go.GetComponent<BoxCollider>();
+        if (col == null)
+            col = go.AddComponent<BoxCollider>();
+
+        var rt = go.GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            Vector3[] corners = new Vector3[4];
+            rt.GetWorldCorners(corners);
+            Vector3 worldSize = corners[2] - corners[0];
+            Vector3 scale = rt.lossyScale;
+            float lx = Mathf.Abs(worldSize.x) / (Mathf.Abs(scale.x) > 0.0001f ? Mathf.Abs(scale.x) : 1f);
+            float ly = Mathf.Abs(worldSize.y) / (Mathf.Abs(scale.y) > 0.0001f ? Mathf.Abs(scale.y) : 1f);
+            Vector3 localCenter = rt.InverseTransformPoint((corners[0] + corners[2]) * 0.5f);
+            col.size = new Vector3(lx, ly, Mathf.Max(lx, ly) * 0.15f);
+            col.center = localCenter;
+        }
+        else
+        {
+            col.size = new Vector3(0.2f, 0.05f, 0.05f);
+        }
+        col.isTrigger = true;
+    }
+
+    /// <summary>
+    /// İsim input alanına BoxCollider ekler - ray ile tıklanınca klavye açılır.
+    /// </summary>
+    private void SetupInputFieldCollider()
+    {
+        var go = nameInputTMP != null ? nameInputTMP.gameObject : (nameInputLegacy != null ? nameInputLegacy.gameObject : null);
+        if (go == null) return;
+
+        var col = go.GetComponent<BoxCollider>();
+        if (col == null)
+            col = go.AddComponent<BoxCollider>();
+
+        var rt = go.GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            Vector3[] corners = new Vector3[4];
+            rt.GetWorldCorners(corners);
+            Vector3 worldSize = corners[2] - corners[0];
+            Vector3 scale = rt.lossyScale;
+            float lx = Mathf.Abs(worldSize.x) / (Mathf.Abs(scale.x) > 0.0001f ? Mathf.Abs(scale.x) : 1f);
+            float ly = Mathf.Abs(worldSize.y) / (Mathf.Abs(scale.y) > 0.0001f ? Mathf.Abs(scale.y) : 1f);
+            Vector3 localCenter = rt.InverseTransformPoint((corners[0] + corners[2]) * 0.5f);
+            col.size = new Vector3(lx, ly, Mathf.Max(lx, ly) * 0.15f);
+            col.center = localCenter;
+        }
+        else
+        {
+            col.size = new Vector3(0.3f, 0.05f, 0.05f);
+        }
+        col.isTrigger = true;
+    }
+
+    private void FocusNameInputAndShowKeyboard()
+    {
+        if (nameInputTMP != null)
+        {
+            nameInputTMP.ActivateInputField();
+            nameInputTMP.Select();
+        }
+        else if (nameInputLegacy != null)
+        {
+            nameInputLegacy.ActivateInputField();
+            nameInputLegacy.Select();
+        }
+    }
+
+    private bool IsNameInputHit(Collider col)
+    {
+        if (col == null) return false;
+        var go = col.gameObject;
+        if (nameInputTMP != null && (go == nameInputTMP.gameObject || go.transform.IsChildOf(nameInputTMP.transform)))
+            return true;
+        if (nameInputLegacy != null && (go == nameInputLegacy.gameObject || go.transform.IsChildOf(nameInputLegacy.transform)))
+            return true;
+        return false;
     }
 
     private Transform FindHandRayOrigin()
@@ -71,15 +209,15 @@ public class UserNameController : MonoBehaviour
         {
             var ovrRig = Object.FindObjectOfType<OVRCameraRig>();
             if (ovrRig == null) return null;
-            Transform t = ovrRig.transform.Find("RightControllerAnchor");
-            if (t != null) return t;
-            t = ovrRig.transform.Find("TrackingSpace/RightHandAnchor");
+            if (ovrRig.rightHandAnchor != null) return ovrRig.rightHandAnchor;
+            if (ovrRig.rightControllerAnchor != null) return ovrRig.rightControllerAnchor;
+            Transform t = ovrRig.transform.Find("TrackingSpace/RightHandAnchor");
             if (t != null) return t;
             t = ovrRig.transform.Find("RightHandAnchor");
             if (t != null) return t;
-            t = ovrRig.transform.Find("LeftControllerAnchor");
+            t = ovrRig.transform.Find("TrackingSpace/RightControllerAnchor");
             if (t != null) return t;
-            t = ovrRig.transform.Find("TrackingSpace/LeftHandAnchor");
+            t = ovrRig.transform.Find("RightControllerAnchor");
             if (t != null) return t;
             foreach (Transform child in ovrRig.GetComponentsInChildren<Transform>(true))
             {
@@ -91,47 +229,53 @@ public class UserNameController : MonoBehaviour
         return null;
     }
 
-    public void OnSample1Click() => SetSampleName(0);
-    public void OnSample2Click() => SetSampleName(1);
-    public void OnSample3Click() => SetSampleName(2);
+    public void OnRandomClick()
+    {
+        string name = GenerateRandomName();
+        if (nameInputTMP != null)
+            nameInputTMP.text = name;
+        else if (nameInputLegacy != null)
+            nameInputLegacy.text = name;
+    }
+
     public void OnConfirmClick() => OnConfirm();
+
+    /// <summary>
+    /// Anlamsız rastgele isim: 4-6 karakter, sadece harf ve rakam.
+    /// </summary>
+    private static string GenerateRandomName()
+    {
+        const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+        int length = Random.Range(4, 7);
+        var sb = new System.Text.StringBuilder(length);
+        for (int i = 0; i < length; i++)
+            sb.Append(chars[Random.Range(0, chars.Length)]);
+        return sb.ToString();
+    }
 
     private void Update()
     {
+        if (rayOrigin == null) return;
+
+        Ray ray = new Ray(rayOrigin.position, rayOrigin.forward);
+
+        if (Physics.Raycast(ray, out RaycastHit previewHit, RayDistance, raycastLayers))
+            UpdateRayVisual(ray, previewHit.distance);
+        else
+            UpdateRayVisual(ray, RayDistance);
+
         bool trigger = false;
-
-        if (Input.GetMouseButtonDown(0))
-            trigger = true;
-
-        if (!trigger && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-            trigger = true;
-
-        if (!trigger)
+        try
         {
-            try
-            {
-                if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-                    trigger = true;
-            }
-            catch (System.Exception) { }
+            trigger = OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger);
         }
+        catch (System.Exception) { }
 
         if (!trigger) return;
-
-        Ray ray;
-        if (_mainCam != null && Input.GetMouseButtonDown(0))
-            ray = _mainCam.ScreenPointToRay(Input.mousePosition);
-        else if (rayOrigin != null)
-            ray = new Ray(rayOrigin.position, rayOrigin.forward);
-        else if (_mainCam != null)
-            ray = new Ray(_mainCam.transform.position, _mainCam.transform.forward);
-        else
-            return;
-
         if (!Physics.Raycast(ray, out RaycastHit hit, RayDistance, raycastLayers))
             return;
 
-        UserNameButtonHit target = hit.collider.GetComponent<UserNameButtonHit>();
+        var target = hit.collider.GetComponent<UserNameButtonHit>();
         if (target == null)
             target = hit.collider.GetComponentInParent<UserNameButtonHit>();
 
@@ -139,22 +283,22 @@ public class UserNameController : MonoBehaviour
         {
             switch (target.action)
             {
-                case UserNameButtonHit.Action.Sample1: SetSampleName(0); break;
-                case UserNameButtonHit.Action.Sample2: SetSampleName(1); break;
-                case UserNameButtonHit.Action.Sample3: SetSampleName(2); break;
-                case UserNameButtonHit.Action.Confirm:  OnConfirm(); break;
+                case UserNameButtonHit.Action.Random:  OnRandomClick(); break;
+                case UserNameButtonHit.Action.Confirm: OnConfirm(); break;
             }
+            return;
         }
+
+        if (IsNameInputHit(hit.collider))
+            FocusNameInputAndShowKeyboard();
     }
 
-    private void SetSampleName(int index)
+    private void UpdateRayVisual(Ray ray, float length)
     {
-        if (sampleNames == null || index < 0 || index >= sampleNames.Length) return;
-        string name = sampleNames[index];
-        if (nameInputTMP != null)
-            nameInputTMP.text = name;
-        else if (nameInputLegacy != null)
-            nameInputLegacy.text = name;
+        if (rayLine == null) return;
+        rayLine.enabled = true;
+        rayLine.SetPosition(0, ray.origin);
+        rayLine.SetPosition(1, ray.origin + ray.direction * length);
     }
 
     private string GetInputText()
@@ -170,7 +314,7 @@ public class UserNameController : MonoBehaviour
     {
         string name = GetInputText().Trim();
         if (string.IsNullOrEmpty(name))
-            name = sampleNames != null && sampleNames.Length > 0 ? sampleNames[0] : "Player";
+            name = GenerateRandomName();
         if (name.Length > MaxNameLength)
             name = name.Substring(0, MaxNameLength);
 

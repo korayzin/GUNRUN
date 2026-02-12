@@ -101,14 +101,10 @@ public static class UserNameSceneSetup
         GameObject inputGo = CreateInputField(canvasTransform, 0, -140, 450, 48);
         Undo.RegisterCreatedObjectUndo(inputGo, "UserName UI");
 
-        GameObject sample1 = CreateButtonWithCollider(canvasTransform, "SampleButton_Surat", "Sürat", 0, -220, 300, 44, UserNameButtonHit.Action.Sample1);
-        GameObject sample2 = CreateButtonWithCollider(canvasTransform, "SampleButton_Nisanci", "Nişancı", 0, -275, 300, 44, UserNameButtonHit.Action.Sample2);
-        GameObject sample3 = CreateButtonWithCollider(canvasTransform, "SampleButton_Keskin", "Keskin", 0, -330, 300, 44, UserNameButtonHit.Action.Sample3);
-        Undo.RegisterCreatedObjectUndo(sample1, "UserName UI");
-        Undo.RegisterCreatedObjectUndo(sample2, "UserName UI");
-        Undo.RegisterCreatedObjectUndo(sample3, "UserName UI");
+        GameObject randomGo = CreateButtonWithCollider(canvasTransform, "RandomButton", "Random", 0, -220, 300, 44, UserNameButtonHit.Action.Random);
+        Undo.RegisterCreatedObjectUndo(randomGo, "UserName UI");
 
-        GameObject confirmGo = CreateButtonWithCollider(canvasTransform, "ConfirmButton", "Devam", 0, -410, 320, 52, UserNameButtonHit.Action.Confirm);
+        GameObject confirmGo = CreateButtonWithCollider(canvasTransform, "ConfirmButton", "Devam", 0, -330, 320, 52, UserNameButtonHit.Action.Confirm);
         Undo.RegisterCreatedObjectUndo(confirmGo, "UserName UI");
 
         GameObject controllerGo = new GameObject("UserNameController");
@@ -120,25 +116,12 @@ public static class UserNameSceneSetup
 
         so.FindProperty("nextSceneName").stringValue = "UI";
         so.FindProperty("nameInputLegacy").objectReferenceValue = inputGo.GetComponent<InputField>();
-        so.FindProperty("sampleButton1").objectReferenceValue = sample1.GetComponent<Button>();
-        so.FindProperty("sampleButton2").objectReferenceValue = sample2.GetComponent<Button>();
-        so.FindProperty("sampleButton3").objectReferenceValue = sample3.GetComponent<Button>();
+        so.FindProperty("randomButton").objectReferenceValue = randomGo.GetComponent<Button>();
         so.FindProperty("confirmButton").objectReferenceValue = confirmGo.GetComponent<Button>();
-
-        SerializedProperty sampleNames = so.FindProperty("sampleNames");
-        if (sampleNames != null && sampleNames.isArray && sampleNames.arraySize < 3)
-        {
-            sampleNames.arraySize = 3;
-            sampleNames.GetArrayElementAtIndex(0).stringValue = "Sürat";
-            sampleNames.GetArrayElementAtIndex(1).stringValue = "Nişancı";
-            sampleNames.GetArrayElementAtIndex(2).stringValue = "Keskin";
-        }
 
         so.ApplyModifiedPropertiesWithoutUndo();
 
-        UnityEventTools.AddPersistentListener(sample1.GetComponent<Button>().onClick, (UnityAction)controller.OnSample1Click);
-        UnityEventTools.AddPersistentListener(sample2.GetComponent<Button>().onClick, (UnityAction)controller.OnSample2Click);
-        UnityEventTools.AddPersistentListener(sample3.GetComponent<Button>().onClick, (UnityAction)controller.OnSample3Click);
+        UnityEventTools.AddPersistentListener(randomGo.GetComponent<Button>().onClick, (UnityAction)controller.OnRandomClick);
         UnityEventTools.AddPersistentListener(confirmGo.GetComponent<Button>().onClick, (UnityAction)controller.OnConfirmClick);
     }
 
