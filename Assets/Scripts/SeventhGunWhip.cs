@@ -531,6 +531,7 @@ public class SeventhGunWhip : MonoBehaviour
         // World Space Canvas
         whipCanvas = whipUIContainer.AddComponent<Canvas>();
         whipCanvas.renderMode = RenderMode.WorldSpace;
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(whipCanvas);
         
         RectTransform canvasRect = whipCanvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(batteryWidth + 1f, batteryHeight + 0.5f);

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Meta.XR.MRUtilityKit;
 
 public class Bullet : MonoBehaviour
 {
@@ -89,6 +90,20 @@ public class Bullet : MonoBehaviour
         {
             Debug.Log("Target Board'a hasar verildi: " + damage);
             boardHealth.TakeDamage(damage, other.ClosestPoint(transform.position));
+            Destroy(gameObject);
+            return;
+        }
+
+        // Destructible mesh (MRUK room) - mermi segment'e çarptığında kırsın
+        DestructibleMeshComponent destructibleMesh = other.GetComponentInParent<DestructibleMeshComponent>();
+        if (destructibleMesh != null && other.gameObject != destructibleMesh.ReservedSegment)
+        {
+            destructibleMesh.DestroySegment(other.gameObject);
+            if (WeaponManager.Instance != null)
+            {
+                WeaponManager.Instance.PlayHitSound();
+                WeaponManager.Instance.TriggerHitHaptic();
+            }
             Destroy(gameObject);
         }
     }

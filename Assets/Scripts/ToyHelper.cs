@@ -791,6 +791,7 @@ public class ToyHelper : MonoBehaviour
 
         cooldownCanvas = cooldownUIContainer.AddComponent<Canvas>();
         cooldownCanvas.renderMode = RenderMode.WorldSpace;
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(cooldownCanvas);
         RectTransform rect = cooldownUIContainer.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(2, 2);
         rect.localScale = Vector3.one * cooldownUISize * 0.01f;

@@ -1054,6 +1054,7 @@ public class FifthGunLaser : MonoBehaviour
         // World Space Canvas
         chargeCanvas = chargeUIContainer.AddComponent<Canvas>();
         chargeCanvas.renderMode = RenderMode.WorldSpace;
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(chargeCanvas);
         
         RectTransform canvasRect = chargeCanvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(2, 2);

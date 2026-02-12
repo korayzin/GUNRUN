@@ -481,6 +481,7 @@ public class LastGunFlameSpray : MonoBehaviour
 
         sprayCanvas = uiContainer.AddComponent<Canvas>();
         sprayCanvas.renderMode = RenderMode.WorldSpace;
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(sprayCanvas);
 
         RectTransform canvasRect = uiContainer.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(2, 2);
