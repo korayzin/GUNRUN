@@ -126,23 +126,7 @@ public class UserNameController : MonoBehaviour
         if (col == null)
             col = go.AddComponent<BoxCollider>();
 
-        var rt = go.GetComponent<RectTransform>();
-        if (rt != null)
-        {
-            Vector3[] corners = new Vector3[4];
-            rt.GetWorldCorners(corners);
-            Vector3 worldSize = corners[2] - corners[0];
-            Vector3 scale = rt.lossyScale;
-            float lx = Mathf.Abs(worldSize.x) / (Mathf.Abs(scale.x) > 0.0001f ? Mathf.Abs(scale.x) : 1f);
-            float ly = Mathf.Abs(worldSize.y) / (Mathf.Abs(scale.y) > 0.0001f ? Mathf.Abs(scale.y) : 1f);
-            Vector3 localCenter = rt.InverseTransformPoint((corners[0] + corners[2]) * 0.5f);
-            col.size = new Vector3(lx, ly, Mathf.Max(lx, ly) * 0.15f);
-            col.center = localCenter;
-        }
-        else
-        {
-            col.size = new Vector3(0.2f, 0.05f, 0.05f);
-        }
+        // Collider boyutu/merkezi sahnedeki sizin ayarlarınız kullanılır; kod ile üzerine yazılmaz.
         col.isTrigger = true;
     }
 
@@ -158,23 +142,7 @@ public class UserNameController : MonoBehaviour
         if (col == null)
             col = go.AddComponent<BoxCollider>();
 
-        var rt = go.GetComponent<RectTransform>();
-        if (rt != null)
-        {
-            Vector3[] corners = new Vector3[4];
-            rt.GetWorldCorners(corners);
-            Vector3 worldSize = corners[2] - corners[0];
-            Vector3 scale = rt.lossyScale;
-            float lx = Mathf.Abs(worldSize.x) / (Mathf.Abs(scale.x) > 0.0001f ? Mathf.Abs(scale.x) : 1f);
-            float ly = Mathf.Abs(worldSize.y) / (Mathf.Abs(scale.y) > 0.0001f ? Mathf.Abs(scale.y) : 1f);
-            Vector3 localCenter = rt.InverseTransformPoint((corners[0] + corners[2]) * 0.5f);
-            col.size = new Vector3(lx, ly, Mathf.Max(lx, ly) * 0.15f);
-            col.center = localCenter;
-        }
-        else
-        {
-            col.size = new Vector3(0.3f, 0.05f, 0.05f);
-        }
+        // Collider boyutu/merkezi sahnedeki sizin ayarlarınız kullanılır; kod ile üzerine yazılmaz.
         col.isTrigger = true;
     }
 
