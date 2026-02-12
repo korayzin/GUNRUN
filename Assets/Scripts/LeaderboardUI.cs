@@ -21,6 +21,8 @@ public class LeaderboardUI : MonoBehaviour
     public Button addTestPlayersButton;
     public Button clearTestPlayersButton;
     
+    private bool isLoadingLeaderboard = false; // Çift yükleme engellemesi
+    
     private void Start()
     {
         if (refreshButton != null)
@@ -275,9 +277,18 @@ public class LeaderboardUI : MonoBehaviour
         Debug.Log($"📊 leaderboardContent: {(leaderboardContent != null ? leaderboardContent.name : "NULL")}");
         Debug.Log($"📊 leaderboardPanel: {(leaderboardPanel != null ? leaderboardPanel.name : "NULL")}");
         
+        // Çift yükleme engellemesi - zaten yükleniyorsa yeni istek başlatma
+        if (isLoadingLeaderboard)
+        {
+            Debug.Log("⚠️ LoadLeaderboard zaten çalışıyor, çift çağrı engellendi.");
+            return;
+        }
+        isLoadingLeaderboard = true;
+        
         // Instance kontrolü
         if (FirebaseLeaderboardManager.Instance == null)
         {
+            isLoadingLeaderboard = false;
             Debug.LogError("❌ FirebaseLeaderboardManager Instance bulunamadı! Scene'de FirebaseLeaderboardManager GameObject'i var mı kontrol et.");
             if (loadingText != null)
             {
@@ -324,6 +335,7 @@ public class LeaderboardUI : MonoBehaviour
             }
             
             DisplayLeaderboard(entries);
+            isLoadingLeaderboard = false; // Yükleme tamamlandı
             
             if (loadingText != null)
             {
@@ -372,6 +384,9 @@ public class LeaderboardUI : MonoBehaviour
             Debug.LogError($"❌ LEADERBOARD CONTENT YOK! Unity'de LeaderboardUI'a Content'i ata!");
             return;
         }
+
+        // Çift göstermeyi önlemek için her zaman önce temizle
+        ClearLeaderboard();
 
         // Loading text'i gizle
         if (loadingText != null)
