@@ -211,6 +211,8 @@ public class SeventhGunWhip : MonoBehaviour
         coreObj.transform.SetParent(whipContainer.transform);
         whipCore = coreObj.AddComponent<LineRenderer>();
         SetupWhipRenderer(whipCore, coreWidth, coreColor, 2);
+
+        UICameraStackSetup.SetLayerRecursivelyToUI(whipContainer);
         
         // Başlangıçta kapalı
         SetWhipVisible(false);

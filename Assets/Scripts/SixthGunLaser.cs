@@ -212,6 +212,8 @@ public class SixthGunLaser : MonoBehaviour
             laserLight.range = lightRange;
             laserLight.shadows = LightShadows.None;
         }
+
+        UICameraStackSetup.SetLayerRecursivelyToUI(laserContainer);
     }
 
     private void SetupLaser(LineRenderer line, float width, Color color, int sortingOrder)

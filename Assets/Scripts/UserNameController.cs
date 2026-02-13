@@ -28,6 +28,8 @@ public class UserNameController : MonoBehaviour
     [Tooltip("Üzerinde 'Random' yazan buton - basınca rastgele harf/sayı ismi üretir (4-6 karakter).")]
     [SerializeField] private Button randomButton;
     [SerializeField] private Button confirmButton;
+    [Tooltip("Kapalı: OVRInputModule/GraphicRaycaster kullanıyorsanız collider eklenmez. Açık: Physics.Raycast için BoxCollider eklenir.")]
+    [SerializeField] private bool setupButtonCollidersAtRuntime = true;
 
     [Header("Raycast - Elinden çıkan ray")]
     [Tooltip("Elimden çıkan rayin başlangıç noktası. OVR'da laser/pointer kullanan objeyi buraya sürükle. Boşsa otomatik RightHandAnchor aranır.")]
@@ -58,8 +60,11 @@ public class UserNameController : MonoBehaviour
         if (can != null && can.renderMode == RenderMode.WorldSpace && _mainCam != null)
             can.worldCamera = _mainCam;
 
-        SetupButtonColliders();
-        SetupInputFieldCollider();
+        if (setupButtonCollidersAtRuntime)
+        {
+            SetupButtonColliders();
+            SetupInputFieldCollider();
+        }
         if (rayOrigin != null)
         {
             SetupRayLine();

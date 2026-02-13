@@ -99,6 +99,7 @@ public class Bullet : MonoBehaviour
         if (destructibleMesh != null && other.gameObject != destructibleMesh.ReservedSegment)
         {
             destructibleMesh.DestroySegment(other.gameObject);
+            DestructibleMeshHint.NotifyWallDestroyed(); // Duvar ipuçlarını ilk kırılmada kaldır
             if (WeaponManager.Instance != null)
             {
                 WeaponManager.Instance.PlayHitSound();

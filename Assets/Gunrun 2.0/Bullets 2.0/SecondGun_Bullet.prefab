@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5805866456877282310}
   - component: {fileID: 2700469245972759108}
   - component: {fileID: 5486784748580091409}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: SecondGun_Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

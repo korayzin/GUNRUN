@@ -23,6 +23,8 @@ public class HandRayUIInteractor : MonoBehaviour
     [Header("Ray Ayarları")]
     [Tooltip("Ray'in maksimum uzunluğu")]
     public float rayLength = 10f;
+    [Tooltip("Ekran koordinatı offset (piksel) - gerekirse ince ayar için")]
+    public Vector2 screenOffset = Vector2.zero;
     
     [Tooltip("Ray rengi (normal)")]
     public Color rayColor = new Color(0f, 1f, 1f, 0.8f); // Cyan
@@ -36,6 +38,10 @@ public class HandRayUIInteractor : MonoBehaviour
     [Header("Hover Efekti")]
     [Tooltip("Hover durumunda buton scale çarpanı")]
     public float hoverScaleMultiplier = 1.1f;
+
+    [Header("Başlangıç")]
+    [Tooltip("UI menüsü için ray baştan açık olsun")]
+    public bool startWithRayEnabled = false;
 
     // Private değişkenler
     private LineRenderer lineRenderer;
@@ -91,8 +97,15 @@ public class HandRayUIInteractor : MonoBehaviour
             }
         }
 
-        // Başlangıçta ray kapalı
-        DisableRay();
+        // Başlangıçta ray durumu
+        if (startWithRayEnabled)
+        {
+            EnableRay();
+        }
+        else
+        {
+            DisableRay();
+        }
     }
 
     private void SetupLineRenderer()
@@ -136,64 +149,95 @@ public class HandRayUIInteractor : MonoBehaviour
         lineRenderer.SetPosition(1, endPos);
     }
 
+    /// <summary>
+    /// El ray'inin canvas düzlemiyle kesişim noktasını döndürür.
+    /// </summary>
+    private Vector3 GetRayCanvasIntersection(Vector3 rayOrigin, Vector3 rayDir)
+    {
+        if (targetCanvas == null) return rayOrigin + rayDir * rayLength;
+
+        Transform canvasTransform = targetCanvas.transform;
+        Vector3 planePoint = canvasTransform.position;
+        Vector3 planeNormal = canvasTransform.forward;
+
+        float denom = Vector3.Dot(planeNormal, rayDir);
+        if (Mathf.Abs(denom) < 0.0001f)
+            return rayOrigin + rayDir * rayLength;
+
+        float t = Vector3.Dot(planePoint - rayOrigin, planeNormal) / denom;
+        if (t < 0) return rayOrigin + rayDir * rayLength;
+
+        return rayOrigin + rayDir * Mathf.Min(t, rayLength);
+    }
+
     private void PerformUIRaycast()
     {
         if (eventSystem == null) return;
 
-        // El pozisyonundan ekran koordinatı hesapla
         Vector3 handPos = handAnchor.position;
         Vector3 handForward = handAnchor.forward;
-        
-        // Ray'in bir noktasını ekran koordinatına çevir
-        Vector3 worldPoint = handPos + handForward * rayLength;
-        Vector3 screenPoint = Camera.main.WorldToScreenPoint(worldPoint);
+        Vector3 worldPoint = GetRayCanvasIntersection(handPos, handForward);
 
-        // PointerEventData oluştur
-        if (pointerEventData == null)
+        // GraphicRaycaster canvas.worldCamera kullanır - aynı kamerayı kullanmalıyız
+        Camera raycastCam = targetCanvas != null && targetCanvas.worldCamera != null
+            ? targetCanvas.worldCamera : Camera.main;
+        if (raycastCam == null) return;
+
+        Vector3 sp = raycastCam.WorldToScreenPoint(worldPoint);
+        Vector2 screenPoint = new Vector2(sp.x + screenOffset.x, sp.y + screenOffset.y);
+
+        // RectTransform ile doğrudan kontrol - GraphicRaycaster World Space'ta offset verebiliyor
+        Button hitButton = FindButtonViaRectTransform(screenPoint, raycastCam);
+        if (hitButton == null)
         {
-            pointerEventData = new PointerEventData(eventSystem);
-        }
-        pointerEventData.position = new Vector2(screenPoint.x, screenPoint.y);
-
-        // Raycast yap
-        raycastResults.Clear();
-        graphicRaycaster.Raycast(pointerEventData, raycastResults);
-
-        // Sonuçları işle
-        if (raycastResults.Count > 0)
-        {
-            // İlk sonuçta buton var mı kontrol et
-            Button hitButton = raycastResults[0].gameObject.GetComponent<Button>();
-            
-            // Eğer buton yoksa parent'larda ara
-            if (hitButton == null)
+            if (pointerEventData == null) pointerEventData = new PointerEventData(eventSystem);
+            pointerEventData.position = new Vector2(screenPoint.x, screenPoint.y);
+            raycastResults.Clear();
+            graphicRaycaster.Raycast(pointerEventData, raycastResults);
+            if (raycastResults.Count > 0)
             {
-                hitButton = raycastResults[0].gameObject.GetComponentInParent<Button>();
+                hitButton = raycastResults[0].gameObject.GetComponent<Button>();
+                if (hitButton == null) hitButton = raycastResults[0].gameObject.GetComponentInParent<Button>();
             }
+        }
 
-            if (hitButton != null && hitButton != currentHoveredButton)
+        if (hitButton != null && hitButton != currentHoveredButton)
+        {
+            ClearHoverEffect();
+            currentHoveredButton = hitButton;
+            var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
+            if (animator != null)
+                animator.OnHoverEnter();
+            else
             {
-                // Önceki hover'ı temizle
-                ClearHoverEffect();
-                
-                // Yeni hover efekti uygula
-                currentHoveredButton = hitButton;
                 originalButtonScale = currentHoveredButton.transform.localScale;
                 currentHoveredButton.transform.localScale = originalButtonScale * hoverScaleMultiplier;
-                
-                // Ray rengini değiştir
-                lineRenderer.startColor = rayHoverColor;
-                lineRenderer.endColor = rayHoverColor;
             }
-            else if (hitButton == null)
-            {
-                ClearHoverEffect();
-            }
+            lineRenderer.startColor = rayHoverColor;
+            lineRenderer.endColor = rayHoverColor;
         }
-        else
+        else if (hitButton == null)
         {
             ClearHoverEffect();
         }
+    }
+
+    /// <summary>
+    /// GraphicRaycaster başarısız olursa RectTransform ile doğrudan buton kontrolü.
+    /// </summary>
+    private Button FindButtonViaRectTransform(Vector2 screenPoint, Camera cam)
+    {
+        if (targetCanvas == null || cam == null) return null;
+
+        foreach (var btn in targetCanvas.GetComponentsInChildren<Button>(true))
+        {
+            if (!btn.interactable || !btn.gameObject.activeInHierarchy) continue;
+
+            RectTransform rect = btn.GetComponent<RectTransform>();
+            if (rect != null && RectTransformUtility.RectangleContainsScreenPoint(rect, screenPoint, cam))
+                return btn;
+        }
+        return null;
     }
 
     private void HandleInput()
@@ -206,6 +250,10 @@ public class HandRayUIInteractor : MonoBehaviour
         {
             Debug.Log($"[HandRayUIInteractor] Buton tıklandı: {currentHoveredButton.gameObject.name}");
             
+            var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
+            if (animator != null)
+                animator.OnPressed();
+            
             // Butonu tıkla
             currentHoveredButton.onClick.Invoke();
         }
@@ -215,7 +263,11 @@ public class HandRayUIInteractor : MonoBehaviour
     {
         if (currentHoveredButton != null)
         {
-            currentHoveredButton.transform.localScale = originalButtonScale;
+            var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
+            if (animator != null)
+                animator.OnHoverExit();
+            else
+                currentHoveredButton.transform.localScale = originalButtonScale;
             currentHoveredButton = null;
         }
         

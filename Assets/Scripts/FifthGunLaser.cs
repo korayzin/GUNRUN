@@ -255,6 +255,8 @@ public class FifthGunLaser : MonoBehaviour
         chargeLight.color = lightningColor;
         chargeLight.intensity = 0f;
         chargeLight.range = lightRange;
+
+        UICameraStackSetup.SetLayerRecursivelyToUI(chargeEffectContainer);
         
         // Charge UI oluştur
         if (showChargeUI)
@@ -558,6 +560,8 @@ public class FifthGunLaser : MonoBehaviour
         {
             CreateSpark(origin, power, container.transform);
         }
+
+        UICameraStackSetup.SetLayerRecursivelyToUI(container);
         
         // ==================== ANİMASYON ====================
         float duration = 0.5f + power * 0.5f; // Charge'a göre süre

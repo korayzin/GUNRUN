@@ -151,6 +151,16 @@ public class UICameraStackSetup : MonoBehaviour
             SetLayerRecursively(child.gameObject, layer);
     }
 
+    /// <summary>
+    /// Verilen GameObject ve tüm child'larını UI layer'a (passthrough'ta görünür) alır.
+    /// Silah ikincil efektleri (lazer, alev, whip vb.) runtime'da oluşturulduktan sonra çağrılabilir.
+    /// </summary>
+    public static void SetLayerRecursivelyToUI(GameObject go)
+    {
+        if (go == null) return;
+        SetLayerRecursively(go, UILayer);
+    }
+
     private void SetupUICamera()
     {
         // Ana kamerayı bul (CenterEyeAnchor veya Camera.main)

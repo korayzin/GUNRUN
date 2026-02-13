@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4158414413661110820}
   - component: {fileID: 5787243021770160404}
   - component: {fileID: 1060101234721668567}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: FirstGun_Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

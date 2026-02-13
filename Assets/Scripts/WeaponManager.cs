@@ -84,8 +84,12 @@ public class WeaponManager : MonoBehaviour
     public int GetCurrentWeaponIndex() => currentWeapon;
     public int GetEnemyKillCount() => enemyKillCount;
 
+    /// <summary>Oyuncu oyun başladıktan sonra en az bir kez ateş ettiyse true (DestructibleMeshHint ipucu için kullanılır).</summary>
+    public static bool HasPlayerFiredSinceLevelLoad { get; private set; }
+
     public void PlayFireSound()
     {
+        HasPlayerFiredSinceLevelLoad = true;
         // Ses çalma mantığını buraya ekleyebilirsin (örn. AudioSource.PlayClipAtPoint)
     }
 
