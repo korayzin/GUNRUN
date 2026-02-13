@@ -52891,10 +52891,12 @@ MonoBehaviour:
   useLeftHand: 0
   targetCanvas: {fileID: 1757457775}
   rayLength: 10
+  screenOffset: {x: 0, y: 0}
   rayColor: {r: 0, g: 1, b: 1, a: 0.8}
   rayHoverColor: {r: 0, g: 1, b: 0, a: 1}
   rayWidth: 0.01
   hoverScaleMultiplier: 1.1
+  startWithRayEnabled: 0
 --- !u!4 &1026554548
 Transform:
   m_ObjectHideFlags: 0
@@ -87679,15 +87681,15 @@ MonoBehaviour:
   localRotationEuler: {x: -50, y: 12, z: -55}
   weaponManager: {fileID: 108028051}
   weaponIcons:
-  - {fileID: 21300000, guid: 3f55409be30e949498d2cd8ed13194b9, type: 3}
-  - {fileID: 21300000, guid: 4172206869060b54ca27ccf665278ffd, type: 3}
-  - {fileID: 21300000, guid: 04448439553735e418af777743feb662, type: 3}
-  - {fileID: 21300000, guid: 9bca3c166413b304591f5bba1161e501, type: 3}
-  - {fileID: 21300000, guid: 0793b941ed5987a4b88e7a006d17b83b, type: 3}
-  - {fileID: 21300000, guid: 1519a721ee0f71747b281f277840d172, type: 3}
-  - {fileID: 21300000, guid: 2f1ca9b34457be841bb4f7cb1a067555, type: 3}
-  - {fileID: 21300000, guid: 8c5dcef7d0a93fc488f7b8b90759eeb7, type: 3}
-  - {fileID: 21300000, guid: d6e0d4d3e74ec084983dc486f3605fd6, type: 3}
+  - {fileID: 21300000, guid: 3fc912d4eb0a45a419628c21a914ab31, type: 3}
+  - {fileID: 21300000, guid: eee591b33c5a7bd46b16e1425ee11ef6, type: 3}
+  - {fileID: 21300000, guid: 4b926dc9b36184b44915391a6efaedc1, type: 3}
+  - {fileID: 21300000, guid: b85e14879909aec49988f5db758c51c7, type: 3}
+  - {fileID: 21300000, guid: 53199fe5e09efd44e875fee181839a39, type: 3}
+  - {fileID: 21300000, guid: a9b3a4588849af84ba2cfa29f176b4e0, type: 3}
+  - {fileID: 21300000, guid: a4c7ca3b053ba9647bd8f763d0e97d78, type: 3}
+  - {fileID: 21300000, guid: 51dbf5cd14e21b94e98163b4a3d44033, type: 3}
+  - {fileID: 21300000, guid: 534e3eb0c52c31c46aedff3f7c6d0d4a, type: 3}
   centerWeaponImage: {fileID: 2096398952}
   centerWeaponName: {fileID: 840673678}
   leftSlotImage: {fileID: 576607448}

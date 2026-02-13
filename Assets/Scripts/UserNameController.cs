@@ -39,7 +39,16 @@ public class UserNameController : MonoBehaviour
     [Tooltip("Ray görsel çizgisi (VR'da nereye baktığını gösterir)")]
     [SerializeField] private LineRenderer rayLine;
 
+    [Header("Ray Görsel (HandRayUIInteractor ile aynı)")]
+    [Tooltip("Ray rengi (normal)")]
+    [SerializeField] private Color rayColor = new Color(0f, 1f, 1f, 0.8f);
+    [Tooltip("Ray rengi (hover durumunda)")]
+    [SerializeField] private Color rayHoverColor = new Color(0f, 1f, 0f, 1f);
+    [Tooltip("Ray kalınlığı")]
+    [SerializeField] private float rayWidth = 0.01f;
+
     private Camera _mainCam;
+    private Button _currentHoveredButton;
 
     private void Start()
     {
@@ -74,23 +83,32 @@ public class UserNameController : MonoBehaviour
 
     private void SetupRayLine()
     {
-        if (rayLine != null) return;
-        rayLine = GetComponentInChildren<LineRenderer>();
-        if (rayLine != null) return;
-        if (rayOrigin == null) return;
-        var go = new GameObject("UserNameRayLine");
-        go.transform.SetParent(rayOrigin);
-        go.transform.localPosition = Vector3.zero;
-        go.transform.localRotation = Quaternion.identity;
-        go.transform.localScale = Vector3.one;
-        rayLine = go.AddComponent<LineRenderer>();
+        if (rayLine == null)
+        {
+            rayLine = GetComponentInChildren<LineRenderer>();
+            if (rayLine == null && rayOrigin != null)
+            {
+                var go = new GameObject("UserNameRayLine");
+                go.transform.SetParent(rayOrigin);
+                go.transform.localPosition = Vector3.zero;
+                go.transform.localRotation = Quaternion.identity;
+                go.transform.localScale = Vector3.one;
+                rayLine = go.AddComponent<LineRenderer>();
+            }
+        }
+        if (rayLine == null) return;
+
         rayLine.positionCount = 2;
         rayLine.useWorldSpace = true;
-        rayLine.startWidth = 0.004f;
-        rayLine.endWidth = 0.001f;
-        rayLine.material = new Material(Shader.Find("Sprites/Default"));
-        rayLine.startColor = new Color(0.2f, 0.8f, 1f, 0.9f);
-        rayLine.endColor = new Color(0.2f, 0.8f, 1f, 0.3f);
+        rayLine.startWidth = rayWidth;
+        rayLine.endWidth = rayWidth * 0.5f;
+
+        var shader = Shader.Find("Unlit/Color");
+        if (shader == null) shader = Shader.Find("Sprites/Default");
+        rayLine.material = new Material(shader);
+        rayLine.material.color = rayColor;
+        rayLine.startColor = rayColor;
+        rayLine.endColor = rayColor;
     }
 
     /// <summary>
@@ -231,11 +249,19 @@ public class UserNameController : MonoBehaviour
         if (rayOrigin == null) return;
 
         Ray ray = new Ray(rayOrigin.position, rayOrigin.forward);
+        float hitDistance = RayDistance;
+        Button hitButton = null;
+        Collider hitCollider = null;
 
         if (Physics.Raycast(ray, out RaycastHit previewHit, RayDistance, raycastLayers))
-            UpdateRayVisual(ray, previewHit.distance);
-        else
-            UpdateRayVisual(ray, RayDistance);
+        {
+            hitDistance = previewHit.distance;
+            hitCollider = previewHit.collider;
+            hitButton = GetButtonFromCollider(hitCollider);
+        }
+
+        UpdateRayVisual(ray, hitDistance);
+        UpdateHoverState(hitButton);
 
         bool trigger = false;
         try
@@ -245,15 +271,19 @@ public class UserNameController : MonoBehaviour
         catch (System.Exception) { }
 
         if (!trigger) return;
-        if (!Physics.Raycast(ray, out RaycastHit hit, RayDistance, raycastLayers))
-            return;
+        if (hitCollider == null) return;
 
-        var target = hit.collider.GetComponent<UserNameButtonHit>();
+        var target = hitCollider.GetComponent<UserNameButtonHit>();
         if (target == null)
-            target = hit.collider.GetComponentInParent<UserNameButtonHit>();
+            target = hitCollider.GetComponentInParent<UserNameButtonHit>();
 
         if (target != null)
         {
+            if (hitButton != null)
+            {
+                var animator = hitButton.GetComponent<ButtonRayAnimator>();
+                if (animator != null) animator.OnPressed();
+            }
             switch (target.action)
             {
                 case UserNameButtonHit.Action.Random:  OnRandomClick(); break;
@@ -262,8 +292,59 @@ public class UserNameController : MonoBehaviour
             return;
         }
 
-        if (IsNameInputHit(hit.collider))
+        if (IsNameInputHit(hitCollider))
             FocusNameInputAndShowKeyboard();
+    }
+
+    private Button GetButtonFromCollider(Collider col)
+    {
+        if (col == null) return null;
+        var btn = col.GetComponent<Button>();
+        if (btn != null) return btn;
+        return col.GetComponentInParent<Button>();
+    }
+
+    private void UpdateHoverState(Button hitButton)
+    {
+        if (hitButton == _currentHoveredButton) return;
+
+        ClearHoverEffect();
+        _currentHoveredButton = hitButton;
+
+        if (_currentHoveredButton != null)
+        {
+            var animator = _currentHoveredButton.GetComponent<ButtonRayAnimator>();
+            if (animator != null)
+                animator.OnHoverEnter();
+            SetRayColor(rayHoverColor);
+        }
+        else
+        {
+            SetRayColor(rayColor);
+        }
+    }
+
+    private void ClearHoverEffect()
+    {
+        if (_currentHoveredButton != null)
+        {
+            var animator = _currentHoveredButton.GetComponent<ButtonRayAnimator>();
+            if (animator != null)
+                animator.OnHoverExit();
+            _currentHoveredButton = null;
+        }
+        SetRayColor(rayColor);
+    }
+
+    private void SetRayColor(Color color)
+    {
+        if (rayLine != null)
+        {
+            rayLine.startColor = color;
+            rayLine.endColor = color;
+            if (rayLine.material != null)
+                rayLine.material.color = color;
+        }
     }
 
     private void UpdateRayVisual(Ray ray, float length)
