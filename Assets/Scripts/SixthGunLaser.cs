@@ -212,6 +212,8 @@ public class SixthGunLaser : MonoBehaviour
             laserLight.range = lightRange;
             laserLight.shadows = LightShadows.None;
         }
+
+        UICameraStackSetup.SetLayerRecursivelyToUI(laserContainer);
     }
 
     private void SetupLaser(LineRenderer line, float width, Color color, int sortingOrder)
@@ -528,6 +530,7 @@ public class SixthGunLaser : MonoBehaviour
         // World Space Canvas
         energyBarCanvas = energyBarContainer.AddComponent<Canvas>();
         energyBarCanvas.renderMode = RenderMode.WorldSpace;
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(energyBarCanvas);
         
         RectTransform canvasRect = energyBarCanvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(2, 2);

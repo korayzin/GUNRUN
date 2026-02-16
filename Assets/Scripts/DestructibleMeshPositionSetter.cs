@@ -1,11 +1,39 @@
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
 
+/// <summary>
+/// MRUK tarafından spawn edilen DestructibleMesh'in pozisyonunu ayarlar.
+/// Mesh, MRUK room.GlobalMeshAnchor altında spawn olduğu için sahnedeki Destructible GameObject'i
+/// değiştirmek etkili olmaz. Bu script mesh'i reparent ederek veya oyuncu pozisyonuna göre konumlandırarak çözer.
+/// </summary>
 public class DestructibleMeshPositionSetter : MonoBehaviour
 {
+    public enum PositionMode
+    {
+        /// <summary>Sabit pozisyon kullan (targetPosition)</summary>
+        FixedPosition,
+        /// <summary>Oyuncu (OVRCameraRig CenterEye) pozisyonuna göre konumlandır - room oyuncunun etrafında olur</summary>
+        UsePlayerPosition,
+        /// <summary>Bu GameObject'in world pozisyonunu kullan - Destructible'ı sahnede taşıyarak kontrol edebilirsin</summary>
+        UseThisTransformPosition
+    }
+
+    [SerializeField] private DestructibleGlobalMeshSpawner destructibleGlobalMeshSpawner;
+    [Tooltip("PositionMode: FixedPosition kullanıldığında hedef pozisyon")]
     [SerializeField] private Vector3 targetPosition = Vector3.zero;
     [SerializeField] private bool useLocalPosition = true;
-    [SerializeField] private DestructibleGlobalMeshSpawner destructibleGlobalMeshSpawner;
+    [Tooltip("Mesh'i bu GameObject'in child'ı yap - böylece Destructible'ı sahnede taşıyarak room pozisyonunu kontrol edebilirsin")]
+    [SerializeField] private bool reparentToThis = true;
+    [Tooltip("PositionMode: UsePlayerPosition kullanıldığında oyuncudan offset (örn. zemin hizası için)")]
+    [SerializeField] private Vector3 playerOffset = Vector3.zero;
+    [SerializeField] private PositionMode positionMode = PositionMode.UsePlayerPosition;
+
+    private OVRCameraRig _cameraRig;
+
+    private void Awake()
+    {
+        _cameraRig = FindObjectOfType<OVRCameraRig>();
+    }
 
     private void OnEnable()
     {
@@ -25,20 +53,50 @@ public class DestructibleMeshPositionSetter : MonoBehaviour
 
     private void OnDestructibleMeshCreated(DestructibleMeshComponent destructibleMeshComponent)
     {
-        if (destructibleMeshComponent != null)
+        if (destructibleMeshComponent == null) return;
+
+        Transform meshTransform = destructibleMeshComponent.transform;
+
+        // 1. Reparent: Mesh'i bu GameObject'in child'ı yap - böylece sahnedeki Destructible pozisyonu room'u kontrol eder
+        if (reparentToThis)
         {
-            Transform meshTransform = destructibleMeshComponent.transform;
-            
-            if (useLocalPosition)
-            {
-                meshTransform.localPosition = targetPosition;
-            }
-            else
-            {
-                meshTransform.position = targetPosition;
-            }
-            
-            Debug.Log($"DestructibleMesh pozisyonu ayarlandı: {targetPosition}");
+            meshTransform.SetParent(transform, true); // worldPositionStays = true
+        }
+
+        // 2. Hedef pozisyonu hesapla (world space)
+        Vector3 targetWorld = GetTargetPosition();
+
+        // 3. Pozisyonu uygula
+        if (reparentToThis && useLocalPosition)
+        {
+            meshTransform.localPosition = transform.InverseTransformPoint(targetWorld);
+        }
+        else
+        {
+            meshTransform.position = targetWorld;
+        }
+
+        Debug.Log($"[DestructibleMeshPositionSetter] Room pozisyonu ayarlandı: mode={positionMode}, target={targetWorld}");
+    }
+
+    private Vector3 GetTargetPosition()
+    {
+        switch (positionMode)
+        {
+            case PositionMode.UsePlayerPosition:
+                if (_cameraRig != null && _cameraRig.centerEyeAnchor != null)
+                {
+                    return _cameraRig.centerEyeAnchor.position + playerOffset;
+                }
+                Debug.LogWarning("[DestructibleMeshPositionSetter] OVRCameraRig bulunamadı, origin kullanılıyor.");
+                return playerOffset;
+
+            case PositionMode.UseThisTransformPosition:
+                return transform.position + targetPosition;
+
+            case PositionMode.FixedPosition:
+            default:
+                return targetPosition;
         }
     }
 }

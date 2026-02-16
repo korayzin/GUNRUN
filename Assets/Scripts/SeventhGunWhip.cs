@@ -211,6 +211,8 @@ public class SeventhGunWhip : MonoBehaviour
         coreObj.transform.SetParent(whipContainer.transform);
         whipCore = coreObj.AddComponent<LineRenderer>();
         SetupWhipRenderer(whipCore, coreWidth, coreColor, 2);
+
+        UICameraStackSetup.SetLayerRecursivelyToUI(whipContainer);
         
         // Başlangıçta kapalı
         SetWhipVisible(false);
@@ -531,6 +533,7 @@ public class SeventhGunWhip : MonoBehaviour
         // World Space Canvas
         whipCanvas = whipUIContainer.AddComponent<Canvas>();
         whipCanvas.renderMode = RenderMode.WorldSpace;
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(whipCanvas);
         
         RectTransform canvasRect = whipCanvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(batteryWidth + 1f, batteryHeight + 0.5f);

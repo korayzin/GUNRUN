@@ -361,9 +361,18 @@ public class HolographicWeaponHUD : MonoBehaviour
 
     private string GetWeaponName(int index)
     {
-        if (weaponManager == null || weaponManager.weaponDisplayNames == null) return "";
-        if (index < 0 || index >= weaponManager.weaponDisplayNames.Length) return "";
-        string s = weaponManager.weaponDisplayNames[index];
-        return string.IsNullOrEmpty(s) ? $"Weapon {index + 1}" : s;
+        if (index < 0 || index > 8) return "";
+        if (GameBalanceManager.Instance != null)
+        {
+            var data = GameBalanceManager.Instance.GetWeaponData(index);
+            if (!string.IsNullOrEmpty(data.weaponName))
+                return data.weaponName;
+        }
+        if (weaponManager != null && weaponManager.weaponDisplayNames != null && index < weaponManager.weaponDisplayNames.Length)
+        {
+            string s = weaponManager.weaponDisplayNames[index];
+            if (!string.IsNullOrEmpty(s)) return s;
+        }
+        return $"Weapon {index + 1}";
     }
 }

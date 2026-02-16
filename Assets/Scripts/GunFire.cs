@@ -43,6 +43,10 @@ public class GunFire : MonoBehaviour
     public bool isBaretta = false;
     public bool isLeftHanded = false;
 
+    [Header("Balance (per-weapon from GameBalanceManager)")]
+    [Tooltip("0=FirstGun, 8=LastGun. Set by WeaponManager or Inspector.")]
+    [SerializeField] private int weaponBalanceIndex = 0;
+
     [Header("Dual Shot (altlı üstlü 2 mermi)")]
     [Tooltip("Açıkken her atışta 2 mermi atar (üst + alt), yine 1 mermi harcanır.")]
     public bool useDualShotVertical = false;
@@ -59,15 +63,31 @@ public class GunFire : MonoBehaviour
     private Quaternion bulletPrefabRotation;
     private bool isOutOfAmmo = false;
 
-    void Start()
+    public void SetWeaponBalanceIndex(int index)
     {
+        weaponBalanceIndex = Mathf.Clamp(index, 0, 8);
+        ApplyBalanceFromManager();
+    }
+
+    private void ApplyBalanceFromManager()
+    {
+        if (GameBalanceManager.Instance == null) return;
+        var data = GameBalanceManager.Instance.GetWeaponData(weaponBalanceIndex);
+        velocity = data.bulletVelocity;
+        maxAmmo = data.maxAmmo;
+        fireCooldown = data.fireCooldown;
         currentAmmo = maxAmmo;
         UpdateAmmoDisplay();
-        // Artik dusman oldugunde otomatik reload yok - mermi bitince oyun biter
+    }
 
+    void Start()
+    {
+        ApplyBalanceFromManager();
+        if (GameBalanceManager.Instance == null)
+            currentAmmo = maxAmmo;
+        UpdateAmmoDisplay();
         originalRotation = transform.localRotation;
-        
-        // Prefab'ın rotasyonunu sakla (prefab asset'inin rotasyonunu almak için geçici olarak instantiate edip destroy ediyoruz)
+
         if (bulletPrefab != null)
         {
             GameObject tempPrefab = Instantiate(bulletPrefab);
@@ -75,9 +95,7 @@ public class GunFire : MonoBehaviour
             Destroy(tempPrefab);
         }
         else
-        {
             bulletPrefabRotation = Quaternion.identity;
-        }
     }
 
     void Update()
@@ -281,6 +299,8 @@ public class GunFire : MonoBehaviour
         Bullet bulletScript = spawnedBullet.GetComponent<Bullet>();
         if (bulletScript != null)
         {
+            if (GameBalanceManager.Instance != null)
+                bulletScript.damage = GameBalanceManager.Instance.GetWeaponData(weaponBalanceIndex).damage;
             bulletScript.hitSound = bulletHitSound;
             bulletScript.damageEffectPrefab = damageEffectPrefab;
             bulletScript.SetMovementDirection(targetDirection);

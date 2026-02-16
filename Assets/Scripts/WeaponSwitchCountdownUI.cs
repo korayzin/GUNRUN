@@ -53,9 +53,13 @@ public class WeaponSwitchCountdownUI : MonoBehaviour
         countdownText.text = string.Format(textFormat, numberPart);
     }
 
-    /// <summary> Mevcut silahtan sonrakine geçiş için gereken toplam kill eşiğini döndürür; son silahta -1. </summary>
+    /// <summary> Mevcut silahtan sonrakine geçiş için gereken toplam kill eşiğini döndürür; son silahta -1. GameBalanceManager varsa oradan, yoksa WeaponManager fallback. </summary>
     private static int GetThresholdForNextWeapon(WeaponManager wm, int currentWeapon)
     {
+        int nextIndex = currentWeapon + 1;
+        if (nextIndex > 8) return -1; // 9. silah, sonraki yok
+        if (GameBalanceManager.Instance != null)
+            return GameBalanceManager.Instance.GetKillToUnlock(nextIndex);
         switch (currentWeapon)
         {
             case 0: return wm.killsToSecond;
@@ -66,7 +70,7 @@ public class WeaponSwitchCountdownUI : MonoBehaviour
             case 5: return wm.killsToSeventh;
             case 6: return wm.killsToEighth;
             case 7: return wm.killsToNinth;
-            default: return -1; // 8 = 9. silah, sonraki yok
+            default: return -1;
         }
     }
 }

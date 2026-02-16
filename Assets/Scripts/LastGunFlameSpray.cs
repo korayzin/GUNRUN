@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Meta.XR.MRUtilityKit;
 
 /// <summary>
 /// LastGun için ateş püskürtme (flame thrower) mekanizması.
@@ -186,6 +187,7 @@ public class LastGunFlameSpray : MonoBehaviour
         anchor.transform.localRotation = Quaternion.identity;
         anchor.transform.localScale = Vector3.one;
         uiPosition = anchor.transform;
+        UICameraStackSetup.SetLayerRecursivelyToUI(anchor);
     }
 
     void Update()
@@ -273,6 +275,7 @@ public class LastGunFlameSpray : MonoBehaviour
         if (vfxParticles != null)
             vfxParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
+        UICameraStackSetup.SetLayerRecursivelyToUI(vfxInstance);
         vfxInstance.SetActive(false);
     }
 
@@ -303,6 +306,7 @@ public class LastGunFlameSpray : MonoBehaviour
         flameLineCore = coreObj.AddComponent<LineRenderer>();
         SetupFlameLine(flameLineCore, flameLineWidthStart, flameLineWidthEnd, flameLineCoreColor, false);
 
+        UICameraStackSetup.SetLayerRecursivelyToUI(flameLineContainer);
         SetFlameLinesVisible(false);
     }
 
@@ -463,6 +467,28 @@ public class LastGunFlameSpray : MonoBehaviour
                 hitEnemiesThisSpray.Add(eh);
             }
         }
+
+        // Duvar (destructible mesh) – tetik basılı tutulurken de kırılsın (Raycast + SphereCast ile koni)
+        float coneRadius = 0.4f;
+        RaycastHit[] wallSphereHits = Physics.SphereCastAll(origin, coneRadius, forward, sprayRange);
+        foreach (RaycastHit hit in wallSphereHits)
+        {
+            if (!hit.collider) continue;
+            if (sprayOrigin != null && hit.collider.transform.IsChildOf(sprayOrigin.root))
+                continue;
+            DestructibleMeshComponent destructibleMesh = hit.collider.GetComponentInParent<DestructibleMeshComponent>();
+            if (destructibleMesh != null && hit.collider.gameObject != destructibleMesh.ReservedSegment)
+            {
+                destructibleMesh.DestroySegment(hit.collider.gameObject);
+                DestructibleMeshHint.NotifyWallDestroyed(); // Duvar ipuçlarını ilk kırılmada kaldır
+                if (WeaponManager.Instance != null)
+                {
+                    WeaponManager.Instance.PlayHitSound();
+                    WeaponManager.Instance.TriggerHitHaptic();
+                }
+                break;
+            }
+        }
     }
 
     private void CreateEnergyUI()
@@ -481,6 +507,7 @@ public class LastGunFlameSpray : MonoBehaviour
 
         sprayCanvas = uiContainer.AddComponent<Canvas>();
         sprayCanvas.renderMode = RenderMode.WorldSpace;
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(sprayCanvas);
 
         RectTransform canvasRect = uiContainer.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(2, 2);

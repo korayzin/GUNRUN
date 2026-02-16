@@ -67,6 +67,8 @@ public class EightAmmoAnimation : MonoBehaviour
         fillObj.transform.localScale = Vector3.one;
         _trailFill = fillObj.AddComponent<TrailRenderer>();
         SetupTrail(_trailFill, fillStartWidth, fillEndWidth, fillColor, fillMat, 1);
+
+        UICameraStackSetup.SetLayerRecursivelyToUI(gameObject);
     }
 
     private void SetupTrail(TrailRenderer trail, float startW, float endW, Color color, Material mat, int order)

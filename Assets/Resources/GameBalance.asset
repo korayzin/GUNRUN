@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 529effe99ca0da248a1c59b8a44a555c, type: 3}
+  m_Name: GameBalance
+  m_EditorClassIdentifier: 
+  killToUnlockPerWeapon: 040000000c000000160000002200000030000000440000005a00000078000000
+  weapons:
+  - weaponName: FirstGun
+    damage: 25
+    bulletVelocity: 100
+    maxAmmo: 30
+    fireCooldown: 0.1
+  - weaponName: SecondGun
+    damage: 30
+    bulletVelocity: 100
+    maxAmmo: 30
+    fireCooldown: 0.2
+  - weaponName: ThirdGun
+    damage: 35
+    bulletVelocity: 100
+    maxAmmo: 10
+    fireCooldown: 0.5
+  - weaponName: FourthGun
+    damage: 50
+    bulletVelocity: 80
+    maxAmmo: 100
+    fireCooldown: 0.05
+  - weaponName: FifthGun
+    damage: 50
+    bulletVelocity: 20
+    maxAmmo: 60
+    fireCooldown: 0.01
+  - weaponName: SixthGun
+    damage: 25
+    bulletVelocity: 15
+    maxAmmo: 25
+    fireCooldown: 0.5
+  - weaponName: SeventhGun
+    damage: 5
+    bulletVelocity: 0
+    maxAmmo: 25
+    fireCooldown: 0.5
+  - weaponName: EightGun
+    damage: 50
+    bulletVelocity: 20
+    maxAmmo: 20
+    fireCooldown: 0.5
+  - weaponName: LastGun
+    damage: 12
+    bulletVelocity: 10
+    maxAmmo: 100
+    fireCooldown: 0.08
+  stage2ScoreThreshold: 1500
+  stage3ScoreThreshold: 8000
+  stage2KillThreshold: 36
+  stage3KillThreshold: 90
+  useScoreForStage: 1
+  stage1SpawnInterval: 2.5
+  stage2SpawnInterval: 2
+  stage3SpawnInterval: 1.4
+  stage1EnemySpeed: 2
+  stage2EnemySpeed: 2.5
+  stage3EnemySpeed: 3
+  enemyHPByStage:
+  - weak: 100
+    medium: 150
+    strong: 200
+    tank: 0
+  - weak: 150
+    medium: 250
+    strong: 350
+    tank: 400
+  - weak: 250
+    medium: 350
+    strong: 500
+    tank: 750
+  enemyScoreByStage:
+  - weak: 25
+    medium: 50
+    strong: 100
+    tank: 150
+  - weak: 25
+    medium: 50
+    strong: 100
+    tank: 150
+  - weak: 25
+    medium: 50
+    strong: 100
+    tank: 150
+  enemySpawnWeights:
+  - weak: 70
+    medium: 25
+    strong: 5
+    tank: 0
+  - weak: 50
+    medium: 30
+    strong: 15
+    tank: 5
+  - weak: 10
+    medium: 20
+    strong: 45
+    tank: 25
+  portalWeights: {x: 33, y: 33, z: 33}
+  bagSize: 12
+  bagRefillWhenSlotsBelow: 1
