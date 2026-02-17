@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 529effe99ca0da248a1c59b8a44a555c, type: 3}
   m_Name: GameBalance
   m_EditorClassIdentifier: 
-  killToUnlockPerWeapon: 040000000c000000160000002200000030000000440000005a00000078000000
+  killToUnlockPerWeapon: 040000000c0000001600000022000000300000003c0000004800000052000000
   weapons:
   - weaponName: FirstGun
     damage: 25
-    bulletVelocity: 100
+    bulletVelocity: 125
     maxAmmo: 30
     fireCooldown: 0.1
   - weaponName: SecondGun
@@ -40,18 +40,18 @@ MonoBehaviour:
     maxAmmo: 60
     fireCooldown: 0.01
   - weaponName: SixthGun
-    damage: 25
-    bulletVelocity: 15
+    damage: 40
+    bulletVelocity: 60
     maxAmmo: 25
     fireCooldown: 0.5
   - weaponName: SeventhGun
-    damage: 5
-    bulletVelocity: 0
+    damage: 200
+    bulletVelocity: 25
     maxAmmo: 25
     fireCooldown: 0.5
   - weaponName: EightGun
-    damage: 50
-    bulletVelocity: 20
+    damage: 90
+    bulletVelocity: 100
     maxAmmo: 20
     fireCooldown: 0.5
   - weaponName: LastGun
@@ -72,8 +72,8 @@ MonoBehaviour:
   stage3EnemySpeed: 3
   enemyHPByStage:
   - weak: 100
-    medium: 150
-    strong: 200
+    medium: 120
+    strong: 140
     tank: 0
   - weak: 150
     medium: 250

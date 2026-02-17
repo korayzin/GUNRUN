@@ -21,6 +21,13 @@ public class WeaponSwitchCountdownUI : MonoBehaviour
     {
         if (countdownText == null) return;
 
+        // Tutorial: Gun Change After sadece 8. diyalog sırasında açılır
+        if (TutorialIntroController.TutorialActive && !TutorialIntroController.TutorialGunChangeAfterVisible)
+        {
+            countdownText.gameObject.SetActive(false);
+            return;
+        }
+
         WeaponManager wm = WeaponManager.Instance;
         if (wm == null)
         {
@@ -38,6 +45,31 @@ public class WeaponSwitchCountdownUI : MonoBehaviour
         int currentWeapon = wm.GetCurrentWeaponIndex();
         int killCount = wm.GetEnemyKillCount();
         int threshold = GetThresholdForNextWeapon(wm, currentWeapon);
+
+        // 5. silah tutorial: 3 kill alana kadar Gun Change After gizli
+        if (TutorialIntroController.TutorialFifthWeaponPhase && !TutorialIntroController.TutorialFifthWeaponGunChangeAfterEnabled && currentWeapon == 4)
+        {
+            countdownText.gameObject.SetActive(false);
+            return;
+        }
+        // 6. silah tutorial: 16. diyaloga kadar Gun Change After gizli
+        if (TutorialIntroController.TutorialSixthWeaponPhase && !TutorialIntroController.TutorialSixthWeaponGunChangeAfterEnabled && currentWeapon == 5)
+        {
+            countdownText.gameObject.SetActive(false);
+            return;
+        }
+        // 7. silah tutorial: 18. diyaloga kadar Gun Change After gizli
+        if (TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled && currentWeapon == 6)
+        {
+            countdownText.gameObject.SetActive(false);
+            return;
+        }
+        // 8. silah tutorial: 20. diyaloga kadar Gun Change After gizli
+        if (TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialEighthWeaponGunChangeAfterEnabled && currentWeapon == 7)
+        {
+            countdownText.gameObject.SetActive(false);
+            return;
+        }
 
         // 9. silahtayken sonraki yok, gizle
         if (threshold < 0)

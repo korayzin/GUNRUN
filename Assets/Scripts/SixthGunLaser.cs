@@ -10,8 +10,12 @@ using TMPro;
 public class SixthGunLaser : MonoBehaviour
 {
     [Header("=== LASER AYARLARI ===")]
-    [Tooltip("Laser çıkış noktası")]
+    [Tooltip("Laser çıkış noktası (sağ el / ana silah)")]
     public Transform laserSpawnPoint;
+    
+    [Tooltip("İkinci laser çıkış noktası (sol el silahı). Boşsa tek laser, doluysa iki laser karşıya doğru gider.")]
+    public Transform laserSpawnPoint2;
+    
     
     [Tooltip("Laser menzili")]
     public float laserRange = 100f;
@@ -95,9 +99,12 @@ public class SixthGunLaser : MonoBehaviour
     private LineRenderer laserMain;
     private LineRenderer laserGlow;
     private LineRenderer laserCore;
+    private LineRenderer laserLeftGlow, laserLeftMain, laserLeftCore;
+    private LineRenderer laserRightGlow, laserRightMain, laserRightCore;
     private Light laserLight;
     private bool isLaserActive = false;
     private GameObject laserContainer;
+    private bool useDualLaser = false;
     
     // Slow sistemi
     private HashSet<EnemyBehavior> slowedEnemies = new HashSet<EnemyBehavior>();
@@ -125,6 +132,19 @@ public class SixthGunLaser : MonoBehaviour
                 laserSpawnPoint = laserChild;
         }
         
+        // İkinci spawn point: Inspector'da atanmamışsa WeaponManager'dan sol el silahını dene
+        if (laserSpawnPoint2 == null && WeaponManager.Instance != null)
+        {
+            GameObject leftHand = WeaponManager.Instance.GetSixthWeaponLeftHand();
+            if (leftHand != null)
+            {
+                Transform t = leftHand.transform.Find("Laser");
+                if (t == null) t = leftHand.transform.Find("Laser (1)");
+                if (t != null) laserSpawnPoint2 = t;
+            }
+        }
+        useDualLaser = (laserSpawnPoint2 != null);
+        
         // Laser container oluştur
         laserContainer = new GameObject("LaserContainer");
         laserContainer.transform.SetParent(transform);
@@ -147,9 +167,30 @@ public class SixthGunLaser : MonoBehaviour
         SetLaserActive(false);
     }
 
+    private void Start()
+    {
+        if (!useDualLaser && laserSpawnPoint2 == null && WeaponManager.Instance != null)
+        {
+            GameObject leftHand = WeaponManager.Instance.GetSixthWeaponLeftHand();
+            if (leftHand != null)
+            {
+                Transform t = leftHand.transform.Find("Laser");
+                if (t == null) t = leftHand.transform.Find("Laser (1)");
+                if (t != null)
+                {
+                    laserSpawnPoint2 = t;
+                    useDualLaser = true;
+                    CreateDualLaserBeams();
+                }
+            }
+        }
+    }
+
     private void Update()
     {
-        // B tuşu kontrolü (OVRInput.Button.Two veya Button.Three)
+        if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSixthWeaponPhase && !TutorialIntroController.TutorialSixthWeaponSecondaryEnabled)
+            return; // 15. diyalog bitmeden ikincil (yavaşlatma) kapalı
+        
         if (OVRInput.GetDown(OVRInput.Button.Two) || OVRInput.GetDown(OVRInput.Button.Three))
         {
             ToggleLaser();
@@ -213,7 +254,41 @@ public class SixthGunLaser : MonoBehaviour
             laserLight.shadows = LightShadows.None;
         }
 
+        if (useDualLaser)
+            CreateDualLaserBeams();
+
         UICameraStackSetup.SetLayerRecursivelyToUI(laserContainer);
+    }
+
+    private void CreateDualLaserBeams()
+    {
+        if (laserContainer == null) return;
+        // Sol el beam (spawn1 -> convergence)
+        GameObject leftGlowObj = new GameObject("LaserLeftGlow");
+        leftGlowObj.transform.SetParent(laserContainer.transform);
+        laserLeftGlow = leftGlowObj.AddComponent<LineRenderer>();
+        SetupLaser(laserLeftGlow, glowWidth, glowColor, 0);
+        GameObject leftMainObj = new GameObject("LaserLeftMain");
+        leftMainObj.transform.SetParent(laserContainer.transform);
+        laserLeftMain = leftMainObj.AddComponent<LineRenderer>();
+        SetupLaser(laserLeftMain, laserWidth, laserColor, 1);
+        GameObject leftCoreObj = new GameObject("LaserLeftCore");
+        leftCoreObj.transform.SetParent(laserContainer.transform);
+        laserLeftCore = leftCoreObj.AddComponent<LineRenderer>();
+        SetupLaser(laserLeftCore, coreWidth, coreColor, 2);
+        // Sağ el beam (spawn2 -> convergence)
+        GameObject rightGlowObj = new GameObject("LaserRightGlow");
+        rightGlowObj.transform.SetParent(laserContainer.transform);
+        laserRightGlow = rightGlowObj.AddComponent<LineRenderer>();
+        SetupLaser(laserRightGlow, glowWidth, glowColor, 0);
+        GameObject rightMainObj = new GameObject("LaserRightMain");
+        rightMainObj.transform.SetParent(laserContainer.transform);
+        laserRightMain = rightMainObj.AddComponent<LineRenderer>();
+        SetupLaser(laserRightMain, laserWidth, laserColor, 1);
+        GameObject rightCoreObj = new GameObject("LaserRightCore");
+        rightCoreObj.transform.SetParent(laserContainer.transform);
+        laserRightCore = rightCoreObj.AddComponent<LineRenderer>();
+        SetupLaser(laserRightCore, coreWidth, coreColor, 2);
     }
 
     private void SetupLaser(LineRenderer line, float width, Color color, int sortingOrder)
@@ -249,32 +324,59 @@ public class SixthGunLaser : MonoBehaviour
     {
         if (laserSpawnPoint == null) return;
         
+        if (useDualLaser && laserSpawnPoint2 != null)
+        {
+            UpdateDualLaser();
+            return;
+        }
+        
         Vector3 startPos = laserSpawnPoint.position;
         Vector3 direction = laserSpawnPoint.forward;
         Vector3 endPos = startPos + direction * laserRange;
         
-        // Raycast ile mesafe kontrolü (opsiyonel, sadece görsel için)
         RaycastHit hit;
         if (Physics.Raycast(startPos, direction, out hit, laserRange))
         {
             endPos = hit.point;
         }
         
-        // Laser pozisyonlarını güncelle
         laserGlow.SetPosition(0, startPos);
         laserGlow.SetPosition(1, endPos);
-        
         laserMain.SetPosition(0, startPos);
         laserMain.SetPosition(1, endPos);
-        
         laserCore.SetPosition(0, startPos);
         laserCore.SetPosition(1, endPos);
         
-        // Işık pozisyonunu güncelle
         if (laserLight != null)
-        {
             laserLight.transform.position = startPos;
-        }
+    }
+
+    private void UpdateDualLaser()
+    {
+        Vector3 p1 = laserSpawnPoint.position;
+        Vector3 p2 = laserSpawnPoint2.position;
+        Vector3 dir1 = laserSpawnPoint.forward;
+        Vector3 dir2 = laserSpawnPoint2.forward;
+        
+        Vector3 end1 = p1 + dir1 * laserRange;
+        Vector3 end2 = p2 + dir2 * laserRange;
+        RaycastHit hit;
+        if (Physics.Raycast(p1, dir1, out hit, laserRange))
+            end1 = hit.point;
+        if (Physics.Raycast(p2, dir2, out hit, laserRange))
+            end2 = hit.point;
+        
+        if (laserLeftGlow != null) { laserLeftGlow.SetPosition(0, p1); laserLeftGlow.SetPosition(1, end1); }
+        if (laserLeftMain != null) { laserLeftMain.SetPosition(0, p1); laserLeftMain.SetPosition(1, end1); }
+        if (laserLeftCore != null) { laserLeftCore.SetPosition(0, p1); laserLeftCore.SetPosition(1, end1); }
+        if (laserRightGlow != null) { laserRightGlow.SetPosition(0, p2); laserRightGlow.SetPosition(1, end2); }
+        if (laserRightMain != null) { laserRightMain.SetPosition(0, p2); laserRightMain.SetPosition(1, end2); }
+        if (laserRightCore != null) { laserRightCore.SetPosition(0, p2); laserRightCore.SetPosition(1, end2); }
+        
+        laserGlow.SetPosition(0, p1); laserGlow.SetPosition(1, p1);
+        laserMain.SetPosition(0, p1); laserMain.SetPosition(1, p1);
+        laserCore.SetPosition(0, p1); laserCore.SetPosition(1, p1);
+        if (laserLight != null) laserLight.transform.position = p1;
     }
 
     private void ToggleLaser()
@@ -296,6 +398,15 @@ public class SixthGunLaser : MonoBehaviour
         if (laserMain != null) laserMain.enabled = active;
         if (laserCore != null) laserCore.enabled = active;
         if (laserLight != null) laserLight.enabled = active;
+        if (useDualLaser)
+        {
+            if (laserLeftGlow != null) laserLeftGlow.enabled = active;
+            if (laserLeftMain != null) laserLeftMain.enabled = active;
+            if (laserLeftCore != null) laserLeftCore.enabled = active;
+            if (laserRightGlow != null) laserRightGlow.enabled = active;
+            if (laserRightMain != null) laserRightMain.enabled = active;
+            if (laserRightCore != null) laserRightCore.enabled = active;
+        }
         
         // Laser kapandığında tüm slow'ları kaldır
         if (!active)
@@ -309,7 +420,6 @@ public class SixthGunLaser : MonoBehaviour
     {
         if (laserSpawnPoint == null) return;
         
-        // Tick rate kontrolü
         slowTickTimer += Time.deltaTime;
         float tickInterval = 1f / slowTickRate;
         
@@ -317,31 +427,26 @@ public class SixthGunLaser : MonoBehaviour
         {
             slowTickTimer = 0f;
             
-            // Raycast ile düşmanları tespit et
-            Vector3 startPos = laserSpawnPoint.position;
-            Vector3 direction = laserSpawnPoint.forward;
-            
-            RaycastHit[] hits = Physics.RaycastAll(startPos, direction, laserRange, raycastLayerMask);
             HashSet<EnemyBehavior> currentHitEnemies = new HashSet<EnemyBehavior>();
             bool hittingAnyEnemy = false;
             
-            foreach (RaycastHit hit in hits)
+            if (useDualLaser && laserSpawnPoint2 != null)
             {
-                // EnemyHealth veya EnemyBehavior component'ini bul
-                EnemyHealth enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
-                if (enemyHealth != null)
-                {
-                    EnemyBehavior enemyBehavior = enemyHealth.GetComponent<EnemyBehavior>();
-                    if (enemyBehavior != null && !currentHitEnemies.Contains(enemyBehavior))
-                    {
-                        currentHitEnemies.Add(enemyBehavior);
-                        ApplySlowToEnemy(enemyBehavior, enemyHealth);
-                        hittingAnyEnemy = true;
-                    }
-                }
+                Vector3 dir1 = laserSpawnPoint.forward;
+                Vector3 dir2 = laserSpawnPoint2.forward;
+                RaycastHit[] hits1 = Physics.RaycastAll(laserSpawnPoint.position, dir1, laserRange, raycastLayerMask);
+                RaycastHit[] hits2 = Physics.RaycastAll(laserSpawnPoint2.position, dir2, laserRange, raycastLayerMask);
+                foreach (RaycastHit hit in hits1) CollectHitEnemy(hit, currentHitEnemies, ref hittingAnyEnemy);
+                foreach (RaycastHit hit in hits2) CollectHitEnemy(hit, currentHitEnemies, ref hittingAnyEnemy);
+            }
+            else
+            {
+                Vector3 startPos = laserSpawnPoint.position;
+                Vector3 direction = laserSpawnPoint.forward;
+                RaycastHit[] hits = Physics.RaycastAll(startPos, direction, laserRange, raycastLayerMask);
+                foreach (RaycastHit hit in hits) CollectHitEnemy(hit, currentHitEnemies, ref hittingAnyEnemy);
             }
             
-            // Düşmana değdirme durumunu güncelle
             isHittingEnemy = hittingAnyEnemy;
             
             // Artık laser'da olmayan düşmanların slow'unu kaldır
@@ -361,6 +466,23 @@ public class SixthGunLaser : MonoBehaviour
         }
     }
     
+    private static bool _tutorialSixthSecondaryUsed;
+
+    private void CollectHitEnemy(RaycastHit hit, HashSet<EnemyBehavior> currentHitEnemies, ref bool hittingAnyEnemy)
+    {
+        EnemyHealth enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            EnemyBehavior enemyBehavior = enemyHealth.GetComponent<EnemyBehavior>();
+            if (enemyBehavior != null && !currentHitEnemies.Contains(enemyBehavior))
+            {
+                currentHitEnemies.Add(enemyBehavior);
+                ApplySlowToEnemy(enemyBehavior, enemyHealth);
+                hittingAnyEnemy = true;
+            }
+        }
+    }
+    
     private void ApplySlowToEnemy(EnemyBehavior enemyBehavior, EnemyHealth enemyHealth)
     {
         if (enemyBehavior == null) return;
@@ -373,6 +495,12 @@ public class SixthGunLaser : MonoBehaviour
         if (enemyHealth != null)
         {
             enemyHealth.ApplyFreezeEffect();
+        }
+        
+        if (TutorialIntroController.TutorialSixthWeaponPhase && TutorialIntroController.TutorialSixthWeaponSecondaryEnabled && !_tutorialSixthSecondaryUsed)
+        {
+            _tutorialSixthSecondaryUsed = true;
+            TutorialIntroController.NotifyTutorialSecondaryUsed(5);
         }
     }
     

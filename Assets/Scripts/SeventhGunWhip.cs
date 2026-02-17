@@ -179,8 +179,11 @@ public class SeventhGunWhip : MonoBehaviour
     
     void Update()
     {
-        // Kırbaç bitti mi kontrol et
-        if (maxWhipShots > 0 && remainingWhipShots <= 0) return;
+        bool tutorialUnlimited = TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled;
+        if (!tutorialUnlimited && maxWhipShots > 0 && remainingWhipShots <= 0) return;
+        
+        if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponSecondaryEnabled)
+            return; // 17. diyalog bitmeden ikincil (kırbaç) kapalı
         
         // Ayrı tuş kontrolü (OVRInput.Button.One veya Button.Three)
         if ((OVRInput.GetDown(OVRInput.Button.One) || OVRInput.GetDown(OVRInput.Button.Three)) && canUseWhip && !isWhipActive)
@@ -264,8 +267,8 @@ public class SeventhGunWhip : MonoBehaviour
     
     void ActivateWhip()
     {
-        // Kırbaç bitti mi kontrol et
-        if (maxWhipShots > 0 && remainingWhipShots <= 0)
+        bool tutorialUnlimited = TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled;
+        if (!tutorialUnlimited && maxWhipShots > 0 && remainingWhipShots <= 0)
         {
             return; // Kırbaç bitti, aktifleştirme
         }
@@ -276,12 +279,15 @@ public class SeventhGunWhip : MonoBehaviour
             return;
         }
         
+        if (tutorialUnlimited)
+            TutorialIntroController.NotifyTutorialSeventhWeaponWhipUsed();
+        
         isWhipActive = true;
         canUseWhip = false;
         hitEnemies.Clear();
         
-        // Atış hakkını düşür
-        if (maxWhipShots > 0)
+        // Atış hakkını düşür (tutorial sınırsız modda düşürme)
+        if (!tutorialUnlimited && maxWhipShots > 0)
         {
             remainingWhipShots--;
             Debug.Log($"⚡ KIRBAÇ! Kalan: {remainingWhipShots}/{maxWhipShots}");
@@ -439,7 +445,7 @@ public class SeventhGunWhip : MonoBehaviour
     void ApplyDamageAndKnockback(EnemyHealth enemyHealth, RaycastHit hit, Vector3 whipTipPos)
     {
         // Hasar ver
-        enemyHealth.TakeDamage(damage, hit.collider);
+        enemyHealth.TakeDamage(damage, hit.collider, fromFlameSpray: false, fromSecondary: true, tutorialWeaponIndex: 6);
         
         // Knockback uygula - düşmanın merkezinden whip tipine doğru
         Vector3 enemyPos = hit.collider.bounds.center;
@@ -627,6 +633,10 @@ public class SeventhGunWhip : MonoBehaviour
     void UpdateWhipUI()
     {
         if (whipUIContainer == null || batterySegments.Count == 0 || countText == null) return;
+        
+        bool tutorialUnlimited = TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled;
+        whipUIContainer.SetActive(!tutorialUnlimited);
+        if (tutorialUnlimited) return;
         
         // Billboard - her zaman kameraya baksın
         if (Camera.main != null)

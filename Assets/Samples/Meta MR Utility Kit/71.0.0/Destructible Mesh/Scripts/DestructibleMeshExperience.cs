@@ -48,31 +48,29 @@ public class DestructibleMeshExperience : MonoBehaviour
         destructibleGlobalMeshSpawner.OnDestructibleMeshCreated.RemoveListener(OnDestructibleMeshCreated);
     }
 
+    /// <summary>false ise trigger ile duvar kırılmaz - sadece mermi kırabilir (oyun modu).</summary>
+    public static bool allowTriggerToBreakWalls = false;
+
     private void Update()
     {
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) ||
-            OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+        if (allowTriggerToBreakWalls &&
+            (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) ||
+             OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger)))
         {
             TryDestroyMeshSegment();
         }
 
-        if (OVRInput.GetDown(OVRInput.Button.One) ||
-            OVRInput.GetDown(OVRInput.Button.Three))
+        if (OVRInput.GetDown(OVRInput.Button.Four, OVRInput.Controller.LTouch))
         {
-            destructibleGlobalMeshSpawner.AddDestructibleGlobalMesh(MRUK.Instance.GetCurrentRoom());
-        }
-
-        if (OVRInput.GetDown(OVRInput.Button.Two) ||
-            OVRInput.GetDown(OVRInput.Button.Four))
-        {
-            destructibleGlobalMeshSpawner.RemoveDestructibleGlobalMesh(MRUK.Instance.GetCurrentRoom());
-        }
-
-        if ((OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger) ||
-             OVRInput.GetDown(OVRInput.Button.SecondaryHandTrigger)) &&
-            _destructibleMeshComponent != null)
-        {
-            SceneDebugger.DebugDestructibleMeshComponent(_destructibleMeshComponent);
+            if (_destructibleMeshComponent != null)
+            {
+                destructibleGlobalMeshSpawner.RemoveDestructibleGlobalMesh(MRUK.Instance.GetCurrentRoom());
+                _destructibleMeshComponent = null;
+            }
+            else
+            {
+                destructibleGlobalMeshSpawner.AddDestructibleGlobalMesh(MRUK.Instance.GetCurrentRoom());
+            }
         }
     }
 

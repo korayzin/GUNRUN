@@ -186,36 +186,38 @@ public class FifthGunLaser : MonoBehaviour
     private RectTransform progressDotRect;
     private Image minChargeMarkerImage;
     
+    private bool _tutorialUnlimitedApplied;
+
     void Start()
     {
         gunFire = GetComponent<GunFire>();
-        
-        // maxLaserShots'i 2 olarak garanti et (eğer prefab'ta farklı ayarlanmışsa)
-        if (maxLaserShots != 2)
-        {
-            maxLaserShots = 2;
-        }
-        
+        if (maxLaserShots != 2) maxLaserShots = 2;
         remainingShots = maxLaserShots;
-        
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
-        
         if (laserSpawnPoint == null)
         {
             Transform laserChild = transform.Find("Laser");
             if (laserChild != null)
                 laserSpawnPoint = laserChild;
         }
-        
-        // UI text'i başlangıç değeriyle güncelle
         UpdateLaserCountUI();
     }
     
     void Update()
     {
-        // Laser bitti mi kontrol et
+        if (TutorialIntroController.TutorialFifthWeaponPhase && !_tutorialUnlimitedApplied)
+        {
+            _tutorialUnlimitedApplied = true;
+            maxLaserShots = 0;
+            remainingShots = 999;
+            showChargeUI = false;
+            if (laserCountText != null) laserCountText.gameObject.SetActive(false);
+        }
         if (maxLaserShots > 0 && remainingShots <= 0) return;
+        
+        if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialFifthWeaponPhase && !TutorialIntroController.TutorialFifthWeaponSecondaryEnabled)
+            return; // 13. diyalog bitmeden ikincil (yıldırım) kapalı
         
         // A tuşu basılı tutulunca CHARGE
         bool buttonHeld = OVRInput.Get(OVRInput.Button.One) || OVRInput.Get(OVRInput.Button.Three);
@@ -447,13 +449,10 @@ public class FifthGunLaser : MonoBehaviour
     {
         if (laserSpawnPoint == null) return;
         
-        // Atış hakkını düşür
         if (maxLaserShots > 0)
         {
             remainingShots--;
             Debug.Log($"⚡ YILDIRIM! Charge: {chargeAmount:P0} | Kalan: {remainingShots}");
-            
-            // UI text'i güncelle
             UpdateLaserCountUI();
         }
         
@@ -480,7 +479,7 @@ public class FifthGunLaser : MonoBehaviour
             if (enemy != null && !hitEnemies.Contains(enemy))
             {
                 hitEnemies.Add(enemy);
-                enemy.TakeDamage(damage, hit.collider);
+                enemy.TakeDamage(damage, hit.collider, fromFlameSpray: false, fromSecondary: true, tutorialWeaponIndex: 4);
             }
         }
         

@@ -153,8 +153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bef4c87dd49b70443a9cb1cb8fbe05a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 50
-  speed: 20
+  damage: 100
+  isFromSecondary: 0
+  weaponIndex: -1
+  speed: 30
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
 --- !u!54 &5114662457644135846

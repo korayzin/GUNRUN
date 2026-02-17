@@ -20,6 +20,8 @@ public class WeaponManager : MonoBehaviour
     public GameObject fourthWeapon;
     public GameObject fifthWeapon;
     public GameObject sixthWeapon;
+    [Tooltip("6. silahtayken sol elde açılacak ekstra silah (Baretta değil). Laser spawn point içermeli.")]
+    public GameObject sixthWeaponLeftHand;
     public GameObject seventhWeapon;
     public GameObject eighthWeapon;
     public GameObject ninthWeapon;
@@ -54,6 +56,8 @@ public class WeaponManager : MonoBehaviour
     private bool _allWeaponsUnlockedPermanent = false;
 
     [Header("Weapon Switch Settings")]
+    [Tooltip("false ise kill ile silah değişimi çalışmaz (Tutorial'da dialogue 8'e kadar kapalı)")]
+    public bool weaponSwitchEnabled = true;
     [Tooltip("Fallback when GameBalanceManager is not present. GameBalanceManager.GetKillToUnlock tek kaynaktır.")]
     public int killsToSecond = 4;
     public int killsToThird = 12;
@@ -83,6 +87,8 @@ public class WeaponManager : MonoBehaviour
 
     public int GetCurrentWeaponIndex() => currentWeapon;
     public int GetEnemyKillCount() => enemyKillCount;
+    /// <summary>6. silahtayken sol elde açılan ekstra silah. SixthGunLaser ikinci spawn point için kullanır.</summary>
+    public GameObject GetSixthWeaponLeftHand() => sixthWeaponLeftHand;
 
     /// <summary>Oyuncu oyun başladıktan sonra en az bir kez ateş ettiyse true (DestructibleMeshHint ipucu için kullanılır).</summary>
     public static bool HasPlayerFiredSinceLevelLoad { get; private set; }
@@ -163,6 +169,7 @@ public class WeaponManager : MonoBehaviour
         if (fourthWeapon != null) fourthWeapon.SetActive(false);
         if (fifthWeapon != null) fifthWeapon.SetActive(false);
         if (sixthWeapon != null) sixthWeapon.SetActive(false);
+        if (sixthWeaponLeftHand != null) sixthWeaponLeftHand.SetActive(false);
         if (seventhWeapon != null) seventhWeapon.SetActive(false);
         if (eighthWeapon != null) eighthWeapon.SetActive(false);
         if (ninthWeapon != null) ninthWeapon.SetActive(false);
@@ -208,9 +215,17 @@ public class WeaponManager : MonoBehaviour
     private void OnEnemyKilled()
     {
         if (isSwitchingWeapon)
-        {
             return;
-        }
+
+        if (TutorialIntroController.TutorialFifthWeaponPhase && !TutorialIntroController.TutorialFifthWeaponGunChangeAfterEnabled
+            && EnemyHealth.LastKillWeaponIndex == 4 && EnemyHealth.LastKillWasFromSecondary)
+            return;
+
+        if (TutorialIntroController.TutorialSeventhWeaponPhase && EnemyHealth.LastKillWeaponIndex == 6 && EnemyHealth.LastKillWasFromSecondary)
+            return;
+
+        if (TutorialIntroController.TutorialEighthWeaponPhase && EnemyHealth.LastKillWeaponIndex == 7 && EnemyHealth.LastKillWasFromSecondary)
+            return;
 
         enemyKillCount++;
 
@@ -246,7 +261,7 @@ public class WeaponManager : MonoBehaviour
     }
 
     /// <summary>Kill count required to unlock the next weapon (index 1..8). From GameBalanceManager or fallback fields.</summary>
-    private int GetKillsRequiredForNextWeapon(int nextWeaponIndex)
+    public int GetKillsRequiredForNextWeapon(int nextWeaponIndex)
     {
         if (GameBalanceManager.Instance != null && nextWeaponIndex >= 1 && nextWeaponIndex <= 8)
             return GameBalanceManager.Instance.GetKillToUnlock(nextWeaponIndex);
@@ -255,7 +270,7 @@ public class WeaponManager : MonoBehaviour
 
     public void CheckWeaponSwitch()
     {
-        if (isSwitchingWeapon)
+        if (!weaponSwitchEnabled || isSwitchingWeapon)
             return;
 
         // 9 silah tamamlandıysa kill ile otomatik silah değişimi çalışmasın; sadece joystick ile seçilen silah kullanılsın
@@ -324,9 +339,11 @@ public class WeaponManager : MonoBehaviour
             HandleBarettaSwitch(fifthWeapon);
             Debug.Log($"Fourth weapon kapatıldı, Fifth weapon açıldı ({enemyKillCount} kill).");
         }
-        // Fifth -> Sixth
+        // Fifth -> Sixth (Tutorial: 5. silahta 3 kill sonrası serbest)
         else if (currentWeapon == 4 && enemyKillCount >= GetKillsRequiredForNextWeapon(5))
         {
+            if (TutorialIntroController.TutorialFifthWeaponPhase && !TutorialIntroController.TutorialFifthWeaponGunChangeAfterEnabled)
+                return;
             isSwitchingWeapon = true;
             if (fifthWeapon != null)
             {
@@ -337,11 +354,19 @@ public class WeaponManager : MonoBehaviour
             StartCoroutine(SwitchWeaponWithVFX(fifthWeapon, sixthWeapon, vfxFifth, vfxSixth));
             currentWeapon = 5;
             HandleBarettaSwitch(sixthWeapon);
+            if (sixthWeaponLeftHand != null)
+            {
+                sixthWeaponLeftHand.SetActive(true);
+                var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
+                if (laserOnLeft != null) laserOnLeft.enabled = false;
+            }
             Debug.Log($"Fifth weapon kapatıldı, Sixth weapon açıldı ({enemyKillCount} kill).");
         }
-        // Sixth -> Seventh
+        // Sixth -> Seventh (Tutorial: 16. diyalog sonrası serbest)
         else if (currentWeapon == 5 && enemyKillCount >= GetKillsRequiredForNextWeapon(6))
         {
+            if (TutorialIntroController.TutorialSixthWeaponPhase && !TutorialIntroController.TutorialSixthWeaponGunChangeAfterEnabled)
+                return;
             if (seventhWeapon == null)
             {
                 Debug.LogError("WeaponManager: Seventh weapon atanmamış! Inspector'da WeaponManager > Seventh Weapon slot'una silahı atayın.");
@@ -354,14 +379,17 @@ public class WeaponManager : MonoBehaviour
                 GunFire gunFire = sixthWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
+            if (sixthWeaponLeftHand != null) sixthWeaponLeftHand.SetActive(false);
             StartCoroutine(SwitchWeaponWithVFX(sixthWeapon, seventhWeapon, vfxSixth, vfxSeventh));
             currentWeapon = 6;
             HandleBarettaSwitch(seventhWeapon);
             Debug.Log($"Sixth weapon kapatıldı, Seventh weapon açıldı ({enemyKillCount} kill).");
         }
-        // Seventh -> Eighth
+        // Seventh -> Eighth (Tutorial: 18. diyalog sonrası serbest)
         else if (currentWeapon == 6 && enemyKillCount >= GetKillsRequiredForNextWeapon(7))
         {
+            if (TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled)
+                return;
             isSwitchingWeapon = true;
             if (seventhWeapon != null)
             {
@@ -374,9 +402,11 @@ public class WeaponManager : MonoBehaviour
             HandleBarettaSwitch(eighthWeapon);
             Debug.Log($"Seventh weapon kapatıldı, Eighth weapon açıldı ({enemyKillCount} kill).");
         }
-        // Eighth -> Ninth
+        // Eighth -> Ninth (Tutorial: 20. diyalog sonrası serbest)
         else if (currentWeapon == 7 && enemyKillCount >= GetKillsRequiredForNextWeapon(8))
         {
+            if (TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialEighthWeaponGunChangeAfterEnabled)
+                return;
             isSwitchingWeapon = true;
             if (eighthWeapon != null)
             {
@@ -386,7 +416,8 @@ public class WeaponManager : MonoBehaviour
             }
             StartCoroutine(SwitchWeaponWithVFX(eighthWeapon, ninthWeapon, vfxEighth, vfxNinth));
             currentWeapon = 8;
-            _allWeaponsUnlockedPermanent = true; // Joystick ile tüm silahlar arasında gezinme açıldı
+            bool inTutorial = FindObjectOfType<TutorialIntroController>() != null;
+            _allWeaponsUnlockedPermanent = !inTutorial; // Tutorial'da 23. diyalogda açılacak
             HandleBarettaSwitch(ninthWeapon);
             Debug.Log($"Eighth weapon kapatıldı, Ninth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -485,6 +516,32 @@ public class WeaponManager : MonoBehaviour
         SelectWeaponByIndex((currentWeapon - 1 + 9) % 9);
     }
 
+    /// <summary>Tutorial 23. diyalogda joystick ile silah geçişini açar.</summary>
+    public void SetJoystickWeaponSwitchEnabled(bool enabled)
+    {
+        _allWeaponsUnlockedPermanent = enabled;
+    }
+
+    /// <summary>Mevcut silahı yenile. Baretta ise partner da yenilenir. Tutorial mermi bitti retry için.</summary>
+    public void ReloadCurrentWeapon()
+    {
+        GameObject w = GetWeaponAt(currentWeapon);
+        if (w == null) return;
+        GunFire gf = w.GetComponent<GunFire>();
+        if (gf != null)
+        {
+            gf.Reload();
+            if (gf.isBaretta)
+            {
+                GunFire[] allGuns = FindObjectsOfType<GunFire>();
+                foreach (GunFire g in allGuns)
+                {
+                    if (g.isBaretta && g != gf) { g.Reload(); break; }
+                }
+            }
+        }
+    }
+
     public void SelectWeaponByIndex(int index)
     {
         if (!_allWeaponsUnlockedPermanent) return;
@@ -511,6 +568,7 @@ public class WeaponManager : MonoBehaviour
 
     private void SetWeaponByIndex(int index)
     {
+        if (sixthWeaponLeftHand != null && index != 5) sixthWeaponLeftHand.SetActive(false);
         for (int i = 0; i < 9; i++)
         {
             GameObject w = GetWeaponAt(i);
@@ -527,6 +585,12 @@ public class WeaponManager : MonoBehaviour
             next.SetActive(true);
             GunFire nextGun = next.GetComponent<GunFire>();
             if (nextGun != null) nextGun.enabled = true;
+        }
+        if (index == 5 && sixthWeaponLeftHand != null)
+        {
+            sixthWeaponLeftHand.SetActive(true);
+            var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
+            if (laserOnLeft != null) laserOnLeft.enabled = false;
         }
         currentWeapon = index;
         UpdateWeaponUI();
