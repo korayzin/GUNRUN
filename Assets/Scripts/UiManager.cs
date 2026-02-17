@@ -25,6 +25,12 @@ public class UIManager : MonoBehaviour
     public GameObject weaponPanel;
     public GameObject leaderboardPanel;
     public GameObject countdownPanel;
+    [Tooltip("Harita seçim paneli (Tools > Map Selection > Otomatik Kurulum ile oluşturulur)")]
+    public GameObject mapSelectionPanel;
+
+    [Header("Harita Seçimi")]
+    [Tooltip("Varsa Play tıklanınca önce harita seçim paneli açılır")]
+    public MapSelectionManager mapSelectionManager;
 
     [Header("Local Canvas")]
     [Tooltip("Play'e basınca bu canvas'ın countdown dışındaki tüm alt ögeleri kapanır")]
@@ -49,6 +55,7 @@ public class UIManager : MonoBehaviour
         if (optionsPanel != null) _contentPanels.Add(optionsPanel);
         if (weaponPanel != null) _contentPanels.Add(weaponPanel);
         if (leaderboardPanel != null) _contentPanels.Add(leaderboardPanel);
+        if (mapSelectionPanel != null) _contentPanels.Add(mapSelectionPanel);
     }
 
     private void Start()
@@ -68,6 +75,14 @@ public class UIManager : MonoBehaviour
 
     private void OnPlayClicked()
     {
+        // Geri sayım sadece harita seçildiğinde başlasın; Play'de sadece harita paneli açılır
+        // Panel başlangıçta kapalı olduğu için includeInactive: true gerekli
+        MapSelectionManager manager = mapSelectionManager != null ? mapSelectionManager : FindObjectOfType<MapSelectionManager>(true);
+        if (manager != null)
+        {
+            manager.OpenMapSelection();
+            return;
+        }
         StartGameCountdown();
     }
 
@@ -120,10 +135,17 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Play butonuna basıldığında: Sadece countdown 5'ten geriye sayar, sonra Koray sahnesine geçer.
+    /// Geri sayımı başlatır, sonra seçilen sahneye geçer.
+    /// Harita seçim paneli varsa sadece MapSelectionManager.SelectMap() bu metodu çağırmalı;
+    /// Play butonuna doğrudan bağlanmamalı (yoksa hem panel hem sayım başlar).
     /// </summary>
-    public void StartGameCountdown()
+    /// <param name="fromMapSelection">true = harita seçildi, sayım başlasın; false = Play'den geliyorsa sayım başlamasın</param>
+    public void StartGameCountdown(bool fromMapSelection = false)
     {
+        // Harita seçimi kurulmuşsa geri sayım sadece harita seçildiğinde başlasın (Inspector'daki Play->StartGameCountdown bağlantısını etkisiz kılar)
+        if (!fromMapSelection && (mapSelectionManager != null || FindObjectOfType<MapSelectionManager>(true) != null))
+            return;
+
         if (_transitionCoroutine != null)
         {
             StopCoroutine(_transitionCoroutine);

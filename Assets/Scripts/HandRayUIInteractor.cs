@@ -205,13 +205,19 @@ public class HandRayUIInteractor : MonoBehaviour
         {
             ClearHoverEffect();
             currentHoveredButton = hitButton;
-            var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
-            if (animator != null)
-                animator.OnHoverEnter();
+            var mapHover = currentHoveredButton.GetComponent<MapSelectionButtonHover>();
+            if (mapHover != null)
+                mapHover.OnHoverEnter();
             else
             {
-                originalButtonScale = currentHoveredButton.transform.localScale;
-                currentHoveredButton.transform.localScale = originalButtonScale * hoverScaleMultiplier;
+                var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
+                if (animator != null)
+                    animator.OnHoverEnter();
+                else
+                {
+                    originalButtonScale = currentHoveredButton.transform.localScale;
+                    currentHoveredButton.transform.localScale = originalButtonScale * hoverScaleMultiplier;
+                }
             }
             lineRenderer.startColor = rayHoverColor;
             lineRenderer.endColor = rayHoverColor;
@@ -250,9 +256,12 @@ public class HandRayUIInteractor : MonoBehaviour
         {
             Debug.Log($"[HandRayUIInteractor] Buton tıklandı: {currentHoveredButton.gameObject.name}");
             
-            var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
-            if (animator != null)
-                animator.OnPressed();
+            if (currentHoveredButton.GetComponent<MapSelectionButtonHover>() == null)
+            {
+                var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
+                if (animator != null)
+                    animator.OnPressed();
+            }
             
             // Butonu tıkla
             currentHoveredButton.onClick.Invoke();
@@ -263,11 +272,17 @@ public class HandRayUIInteractor : MonoBehaviour
     {
         if (currentHoveredButton != null)
         {
-            var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
-            if (animator != null)
-                animator.OnHoverExit();
+            var mapHover = currentHoveredButton.GetComponent<MapSelectionButtonHover>();
+            if (mapHover != null)
+                mapHover.OnHoverExit();
             else
-                currentHoveredButton.transform.localScale = originalButtonScale;
+            {
+                var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
+                if (animator != null)
+                    animator.OnHoverExit();
+                else
+                    currentHoveredButton.transform.localScale = originalButtonScale;
+            }
             currentHoveredButton = null;
         }
         
