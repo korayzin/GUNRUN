@@ -34275,7 +34275,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &518954663
 Transform:
   m_ObjectHideFlags: 0
@@ -68865,6 +68865,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OU_AR_FishFlock_01_D (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6168079008588464509, guid: 9283d9755c87ba34aafafb96fa68e367,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
