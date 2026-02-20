@@ -5272,13 +5272,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitHapticStrength: 0.4
   hitHapticDuration: 0.06
-  firstWeapon: {fileID: 0}
+  firstWeapon: {fileID: 828508232}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 1735730324613644644}
   fourthWeapon: {fileID: 2972479651670665011}
   fifthWeapon: {fileID: 1046036456}
   sixthWeapon: {fileID: 2443542293831071706}
-  sixthWeaponLeftHand: {fileID: 0}
+  sixthWeaponLeftHand: {fileID: 1372511284}
   seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
   ninthWeapon: {fileID: 20849705}
@@ -34206,8 +34206,9 @@ MonoBehaviour:
   botVoiceClip13: {fileID: 0}
   dialogueText14: You can also fire normal bullets using the trigger button.
   botVoiceClip14: {fileID: 0}
-  dialogueText15: 'Secondary feature: use the left controller trigger to activate the slowing laser
-    in your LeftHand. Watch the limit! If it runs out, you''re done for. Use it wisely!'
+  dialogueText15: 'Secondary feature: use the left controller trigger to activate
+    the slowing laser in your LeftHand. Watch the limit! If it runs out, you''re
+    done for. Use it wisely!'
   botVoiceClip15: {fileID: 0}
   dialogueText16: You can also fire normal bullets using the trigger button.
   botVoiceClip16: {fileID: 0}
@@ -34232,6 +34233,9 @@ MonoBehaviour:
   dialogueText23: All weapons seen! Use the left joystick to switch between them
     and play however you like. Good luck and have fun right now!!!!!!!
   botVoiceClip23: {fileID: 0}
+  dialogueText24: Hold the Y button on the left controller to return to the main
+    menu.
+  botVoiceClip24: {fileID: 0}
   tutorialRetryDialogueText: No problem, lets start where we stay.
   tutorialRetryVoiceClip: {fileID: 0}
   tutorialOutOfAmmoRetryDialogueText: If you run out of bullets, you'll have to start
@@ -34244,6 +34248,9 @@ MonoBehaviour:
   holographicWeaponHUD: {fileID: 1917262746}
   countdownTextUI: {fileID: 0}
   dialogueEndBuffer: 1
+  testMainMenuReturnAfterDialogue2: 0
+  mainMenuSceneName: UI
+  mainMenuFadeOutDuration: 1.5
 --- !u!4 &518243603
 Transform:
   m_ObjectHideFlags: 0
@@ -55888,6 +55895,7 @@ MonoBehaviour:
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!65 &1118923891
 BoxCollider:
@@ -61569,6 +61577,7 @@ MonoBehaviour:
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!65 &1286688574
 BoxCollider:
@@ -63159,6 +63168,7 @@ MonoBehaviour:
   reparentToThis: 1
   playerOffset: {x: 0, y: 1.5, z: 0}
   positionMode: 1
+  positionApplyDelayFrames: 3
 --- !u!1 &1344677897
 GameObject:
   m_ObjectHideFlags: 0
@@ -64055,6 +64065,106 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1372273467}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1372511282
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2003775407}
+    m_Modifications:
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.65000015
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.005000067
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.07000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.23200059
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.63011396
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.34184992
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.44184187
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.53932446
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -65.149
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 26.586
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 63.954
+      objectReference: {fileID: 0}
+    - target: {fileID: 5321942857070498281, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_Name
+      value: SlowedGun
+      objectReference: {fileID: 0}
+    - target: {fileID: 5321942857070498281, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c0c9369a40755ea46874c421d922220d, type: 3}
+--- !u!4 &1372511283 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1372511282}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1372511284 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5321942857070498281, guid: c0c9369a40755ea46874c421d922220d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1372511282}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1385383158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -85353,6 +85463,7 @@ MonoBehaviour:
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
   tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!4 &1834682428
 Transform:
@@ -91792,6 +91903,10 @@ PrefabInstance:
       addedObject: {fileID: 1280245131}
     - targetCorrespondingSourceObject: {fileID: 488160, guid: d9809c5e8418bb047bf2c8ba1d1a2cec,
         type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1372511283}
+    - targetCorrespondingSourceObject: {fileID: 488160, guid: d9809c5e8418bb047bf2c8ba1d1a2cec,
+        type: 3}
       insertIndex: -1
       addedObject: {fileID: 1441844564}
     - targetCorrespondingSourceObject: {fileID: 2774251407684675044, guid: d9809c5e8418bb047bf2c8ba1d1a2cec,
@@ -96755,6 +96870,7 @@ MonoBehaviour:
   laserRange: 100
   slowMultiplier: 0.4
   slowTickRate: 10
+  damagePerTick: 3
   raycastLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295

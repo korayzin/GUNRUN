@@ -180,6 +180,7 @@ public class SeventhGunWhip : MonoBehaviour
     
     void Update()
     {
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         bool tutorialUnlimited = TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled;
         if (!tutorialUnlimited && maxWhipShots > 0 && remainingWhipShots <= 0) return;
         

@@ -192,6 +192,7 @@ public class SixthGunLaser : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSixthWeaponPhase && !TutorialIntroController.TutorialSixthWeaponSecondaryEnabled)
             return; // 15. diyalog bitmeden ikincil (yavaşlatma) kapalı
         

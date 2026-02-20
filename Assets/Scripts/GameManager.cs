@@ -31,16 +31,31 @@ public class GameManager : MonoBehaviour
     [Header("Tutorial Timer")]
     [Tooltip("Tutorial'da 9. diyalogdan sonra süre (sn) - 360'dan geriye sayar")]
     public float tutorialTimerDuration = 360f;
+    [Tooltip("23. diyalog sonrası serbest oyun süresi (sn) - geriye sayar")]
+    public float tutorialFinalPhaseDuration = 45f;
     private bool _tutorialTimerActive = false;
 
     public int score = 0;
     private bool isGameOver = false;
+
+    /// <summary>Retry ekranı aktif mi? Bu durumda sadece HandRayUIInteractor ile Retry/Main Menu butonlarına tıklanabilir, ateş vb. kapalı.</summary>
+    public static bool IsRetryScreenActive => Instance != null && Instance.isGameOver;
 
     /// <summary>Tutorial 9. diyalogdan sonra süreyi başlat. Pause'da otomatik durur (Time.deltaTime=0).</summary>
     public void StartTutorialTimer()
     {
         _tutorialTimerActive = true;
         gameTimer = tutorialTimerDuration;
+        if (timeAndScorePanel != null)
+            timeAndScorePanel.SetActive(true);
+        UpdateTimerUI();
+    }
+
+    /// <summary>23. diyalog sonrası 45 sn geri sayım başlat. Tutorial final phase.</summary>
+    public void StartTutorialFinalPhaseTimer()
+    {
+        _tutorialTimerActive = true;
+        gameTimer = tutorialFinalPhaseDuration;
         if (timeAndScorePanel != null)
             timeAndScorePanel.SetActive(true);
         UpdateTimerUI();
@@ -230,6 +245,18 @@ public class GameManager : MonoBehaviour
     public void GameOver(Collider hitCollider)
     {
         if (isGameOver) return;
+
+        // Tutorial: süre bitti (23. diyalog sonrası 45 sn) - 24. diyalog göster
+        if (IsTutorialScene() && TutorialIntroController.TutorialActive && hitCollider == null && TutorialIntroController.TutorialCompleteFreehand)
+        {
+            _tutorialTimerActive = false; // Tekrar GameOver tetiklenmesin
+            var ctrl = FindObjectOfType<TutorialIntroController>();
+            if (ctrl != null)
+            {
+                ctrl.HandleTutorialFinalPhaseComplete();
+                return;
+            }
+        }
 
         // Tutorial retry: ölünce normal game over yerine retry diyaloğu
         if (IsTutorialScene() && TutorialIntroController.TutorialActive)

@@ -15,6 +15,7 @@ public class GunUIInteractor : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         Debug.Log("adsfafsd");
         if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger))
         {

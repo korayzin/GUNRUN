@@ -199,6 +199,7 @@ public class ToyHelper : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         if (toy == null) return;
 
         if (state == State.Idle)

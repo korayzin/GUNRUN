@@ -143,6 +143,7 @@ public class HolographicWeaponHUD : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         if (toggleWithXButton && !_isPopAnimating && OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.LTouch))
             ToggleHUD();
 

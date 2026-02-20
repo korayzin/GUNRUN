@@ -127,6 +127,7 @@ public class GunFire : MonoBehaviour
         }
 
         if (!canFire) return;
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         if (!TutorialIntroController.TutorialFiringEnabled) return;
 
         // LastGun: ateş püskürtme bu silahta LastGunFlameSpray tarafından yönetilir, mermi atma.

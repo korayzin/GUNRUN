@@ -192,6 +192,7 @@ public class LastGunFlameSpray : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         OVRInput.Button trigger = isLeftHanded ? OVRInput.Button.PrimaryIndexTrigger : OVRInput.Button.SecondaryIndexTrigger;
         bool triggerHeld = OVRInput.Get(trigger);
 

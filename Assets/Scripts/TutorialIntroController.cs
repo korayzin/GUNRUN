@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -342,6 +343,12 @@ public class TutorialIntroController : MonoBehaviour
     public string dialogueText23 = "";
     public AudioClip botVoiceClip23;
 
+    [Header("24. Diyalog - 45 sn sonra ana menüye dönüş")]
+    [Tooltip("45 sn bittiğinde gösterilir. Sol kontrolcü Y tuşuna basılı tutarak ana menüye dön")]
+    [TextArea(2, 5)]
+    public string dialogueText24 = "Hold the Y button on the left controller to return to the main menu.";
+    public AudioClip botVoiceClip24;
+
     [Header("Tutorial Retry - Oyuncu öldüğünde")]
     [Tooltip("Tutorial sırasında ölünce gösterilecek retry diyaloğu")]
     [TextArea(2, 5)]
@@ -375,6 +382,14 @@ public class TutorialIntroController : MonoBehaviour
     [Tooltip("Konuşma bitince ekstra bekleme süresi (saniye) - okuma için")]
     public float dialogueEndBuffer = 1f;
 
+    [Header("Ana Menü Geçişi")]
+    [Tooltip("TEST: true ise 2. diyalog bitince Y tuşu ile ana menüye dönüş aktif olur (test için)")]
+    public bool testMainMenuReturnAfterDialogue2 = true;
+    [Tooltip("Y tuşuna basılı tutunca yüklenecek sahne adı (Build Settings'te ekli olmalı)")]
+    public string mainMenuSceneName = "MainMenu";
+    [Tooltip("Y tuşuna basılı tutunca fade out süresi (sn)")]
+    public float mainMenuFadeOutDuration = 1.5f;
+
     private Transform _tutorialBot;
     private Vector3 _botBasePosition;
     private Quaternion _botBaseRotation;
@@ -401,6 +416,7 @@ public class TutorialIntroController : MonoBehaviour
     private bool _dialogue22Shown;
     private bool _dialogue22Complete; // 22 bittiğinde true; 23 için gerekli
     private bool _dialogue23Shown;
+    private bool _tutorialFinalPhaseEnded; // 24. diyalog bitti, Y ile ana menüye dönüş bekleniyor
     private float _mainMenuHoldTime;
     private bool _tutorialRetryInProgress;
 
@@ -732,6 +748,31 @@ public class TutorialIntroController : MonoBehaviour
             spawner.ClearAllEnemiesInScene();
             spawner.StopTutorialPhase2aSpawning();
         }
+
+        // 23. diyalog bitti: 45 sn geri sayım başlat (sonsuzdan 45 sn'e geçiş)
+        if (GameManager.Instance != null)
+            GameManager.Instance.StartTutorialFinalPhaseTimer();
+    }
+
+    /// <summary>23. diyalog sonrası 45 sn bittiğinde: oyun durur, 24. diyalog (Y ile ana menü) gösterilir.</summary>
+    public void HandleTutorialFinalPhaseComplete()
+    {
+        if (_tutorialRetryInProgress) return;
+        StartCoroutine(TutorialFinalPhaseCompleteCoroutine());
+    }
+
+    private IEnumerator TutorialFinalPhaseCompleteCoroutine()
+    {
+        _tutorialRetryInProgress = true;
+        Time.timeScale = 0f;
+        if (dialoguePanel != null) dialoguePanel.SetActive(true);
+        if (dialogueTextUI != null) dialogueTextUI.gameObject.SetActive(true);
+        if (!string.IsNullOrEmpty(dialogueText24))
+            yield return ShowDialogueCoroutine(dialogueText24, botVoiceClip24);
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+        if (dialogueTextUI != null) dialogueTextUI.gameObject.SetActive(false);
+        _tutorialRetryInProgress = false;
+        _tutorialFinalPhaseEnded = true; // Y tuşu ile ana menüye dönüş aktif
     }
 
     /// <summary>Tutorial sırasında oyuncu öldüğünde: retry diyaloğu göster, düşmanları temizle, enerji/süre yenile, devam et.</summary>
@@ -1092,6 +1133,16 @@ public class TutorialIntroController : MonoBehaviour
                 audioRemaining2 = Mathf.Max(0f, botVoiceClip2.length - typingDuration2);
             yield return new WaitForSecondsRealtime(audioRemaining2 + dialogueEndBuffer);
 
+            // TEST: 2. diyalog bitince Y ile ana menüye dönüşü test et
+            if (testMainMenuReturnAfterDialogue2)
+            {
+                if (dialoguePanel != null) dialoguePanel.SetActive(false);
+                if (dialogueTextUI != null) dialogueTextUI.gameObject.SetActive(false);
+                _tutorialFinalPhaseEnded = true;
+                Time.timeScale = 0f;
+                yield break; // Tutorial akışını durdur, Y tuşu ile ana menüye dön
+            }
+
             // 2. diyalog bitti, 3. diyaloga geç: düşman spawn, unpause, dialogue 3 göster
             if (spawner != null)
             {
@@ -1252,10 +1303,8 @@ public class TutorialIntroController : MonoBehaviour
                 countdownTextUI.gameObject.SetActive(false);
             }
 
-            // Unpause, süreyi başlat (360 sn geriye sayar, pause'da durur)
+            // Unpause - süre 23. diyaloga kadar sonsuz, 23. diyalog sonrası 45 sn geri sayım başlar
             Time.timeScale = 1f;
-            if (GameManager.Instance != null)
-                GameManager.Instance.StartTutorialTimer();
 
             _tutorialKillCount = 0;
             _waitingForFourKills = true;
@@ -1359,6 +1408,42 @@ public class TutorialIntroController : MonoBehaviour
         yield break;
     }
 
+    private IEnumerator FadeOutAndLoadMainMenu()
+    {
+        // Tam ekran siyah overlay oluştur
+        var canvasObj = new GameObject("TutorialFadeOverlay");
+        var canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 32767;
+        canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        canvasObj.AddComponent<GraphicRaycaster>();
+
+        var imageObj = new GameObject("FadeImage");
+        imageObj.transform.SetParent(canvasObj.transform, false);
+        var rect = imageObj.AddComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        var image = imageObj.AddComponent<Image>();
+        image.color = new Color(0f, 0f, 0f, 0f);
+
+        float elapsed = 0f;
+        while (elapsed < mainMenuFadeOutDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / mainMenuFadeOutDuration);
+            t = 1f - (1f - t) * (1f - t); // EaseOutQuad
+            image.color = new Color(0f, 0f, 0f, t);
+            yield return null;
+        }
+        image.color = new Color(0f, 0f, 0f, 1f);
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(string.IsNullOrEmpty(mainMenuSceneName) ? "MainMenu" : mainMenuSceneName);
+    }
+
     private IEnumerator MoveBotToPositionCoroutine(Vector3 targetPos, float duration)
     {
         if (_tutorialBot == null || duration <= 0f)
@@ -1382,17 +1467,22 @@ public class TutorialIntroController : MonoBehaviour
 
     private void Update()
     {
-        if (_dialogue23Shown && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.LTouch))
+        // 24. diyalog bittikten sonra: sol kontrolcü Y tuşuna basılı tutarak ana menüye dön
+        if (_tutorialFinalPhaseEnded && OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.LTouch))
         {
+            // Sol kontrolcü titreşim (basılı tutarken)
+            OVRInput.SetControllerVibration(0.5f, 0.7f, OVRInput.Controller.LTouch);
             _mainMenuHoldTime += Time.unscaledDeltaTime;
             if (_mainMenuHoldTime >= 2f)
             {
-                SceneManager.LoadScene("MainMenu");
+                OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.LTouch);
+                StartCoroutine(FadeOutAndLoadMainMenu());
                 return;
             }
         }
         else
         {
+            OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.LTouch);
             _mainMenuHoldTime = 0f;
         }
 

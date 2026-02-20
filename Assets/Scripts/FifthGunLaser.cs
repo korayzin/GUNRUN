@@ -206,6 +206,7 @@ public class FifthGunLaser : MonoBehaviour
     
     void Update()
     {
+        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         if (TutorialIntroController.TutorialFifthWeaponPhase && !_tutorialUnlimitedApplied)
         {
             _tutorialUnlimitedApplied = true;
