@@ -212,10 +212,12 @@ public class GunFire : MonoBehaviour
     }
 
     private bool _nextShotIsFromSecondary = false;
+    private bool _canRestoreAmmoThisShot = false; // İlk 2 silah: destructible mesh'e çarpınca en fazla 1 iade (dual shot için)
 
     private IEnumerator FireWithCooldown()
     {
         canFire = false;
+        _canRestoreAmmoThisShot = (weaponBalanceIndex == 0 || weaponBalanceIndex == 1);
         Fire();
         StartCoroutine(HapticFeedback());
         if (!TutorialIntroController.TutorialUnlimitedAmmo && !TutorialIntroController.TutorialNinthWeaponFireballUnlimited)
@@ -240,6 +242,7 @@ public class GunFire : MonoBehaviour
 
         while (OVRInput.Get(fireButton) && (TutorialIntroController.TutorialUnlimitedAmmo || currentAmmo > 0))
         {
+            _canRestoreAmmoThisShot = (weaponBalanceIndex == 0 || weaponBalanceIndex == 1);
             Fire();
             StartCoroutine(HapticFeedback());
             if (!TutorialIntroController.TutorialUnlimitedAmmo)
@@ -330,6 +333,7 @@ public class GunFire : MonoBehaviour
             bulletScript.damageEffectPrefab = damageEffectPrefab;
             bulletScript.isFromSecondary = _nextShotIsFromSecondary;
             bulletScript.weaponIndex = weaponBalanceIndex;
+            bulletScript.sourceGunFire = this; // İlk 2 silah destructible mesh'e çarpınca mermi iade için
             _nextShotIsFromSecondary = false;
             bulletScript.SetMovementDirection(targetDirection);
         }
@@ -354,6 +358,15 @@ public class GunFire : MonoBehaviour
         OVRInput.SetControllerVibration(1, hapticStrength, controller);
         yield return new WaitForSeconds(0.1f);
         OVRInput.SetControllerVibration(0, 0, controller);
+    }
+
+    /// <summary>İlk 2 silahın mermisi destructible mesh'e çarptığında mermi iade için. Atış başına en fazla 1 iade (dual shot için).</summary>
+    public void RestoreAmmo(int amount)
+    {
+        if (!_canRestoreAmmoThisShot) return;
+        _canRestoreAmmoThisShot = false;
+        currentAmmo = Mathf.Min(currentAmmo + amount, maxAmmo);
+        UpdateAmmoDisplay();
     }
 
     public void Reload()

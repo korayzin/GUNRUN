@@ -9,6 +9,8 @@ public class Bullet : MonoBehaviour
     public bool isFromSecondary = false;
     [Tooltip("Tutorial: Hangi silahtan atıldı (0-8)")]
     public int weaponIndex = -1;
+    [Tooltip("İlk 2 silah (FirstGun, SecondGun) destructible mesh'e çarptığında mermi iade için")]
+    public GunFire sourceGunFire;
     public float speed = 20f;
     [Tooltip("Açıkken mermi yerçekiminden etkilenir (eğik atış). Kapalıyken düz gider.")]
     public bool useGravity = false;
@@ -122,6 +124,9 @@ public class Bullet : MonoBehaviour
         {
             destructibleMesh.DestroySegment(other.gameObject);
             DestructibleMeshHint.NotifyWallDestroyed(); // Duvar ipuçlarını ilk kırılmada kaldır
+            // İlk 2 silah (FirstGun=0, SecondGun=1): destructible mesh'e çarpınca mermi azalmasın (iade et)
+            if ((weaponIndex == 0 || weaponIndex == 1) && sourceGunFire != null)
+                sourceGunFire.RestoreAmmo(1);
             if (WeaponManager.Instance != null)
             {
                 WeaponManager.Instance.PlayHitSound();
@@ -166,6 +171,9 @@ public class Bullet : MonoBehaviour
         {
             destructibleMesh.DestroySegment(other.gameObject);
             DestructibleMeshHint.NotifyWallDestroyed();
+            // İlk 2 silah (FirstGun=0, SecondGun=1): destructible mesh'e çarpınca mermi azalmasın (iade et)
+            if ((weaponIndex == 0 || weaponIndex == 1) && sourceGunFire != null)
+                sourceGunFire.RestoreAmmo(1);
             if (WeaponManager.Instance != null)
             {
                 WeaponManager.Instance.PlayHitSound();
