@@ -110,7 +110,9 @@ MonoBehaviour:
   damage: 120
   isFromSecondary: 0
   weaponIndex: -1
-  speed: 60
+  sourceGunFire: {fileID: 0}
+  speed: 20
+  useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
 --- !u!136 &1916902168721234505
@@ -177,6 +179,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRotation: 1
   rotationSpeed: 30
+  spinAxis: {x: 0, y: 0, z: 1}
+  randomizeSpinSpeed: 1
+  spinSpeedVariation: 0.3
   enableAura: 1
   auraRadius: 0.12
   auraWidth: 0.03

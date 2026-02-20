@@ -21,6 +21,16 @@ public class SharkBulletAnimation : MonoBehaviour
     [Tooltip("Dönme hızı (derece/saniye)")]
     public float rotationSpeed = 720f;
     
+    [Tooltip("Dönüş ekseni (varsayılan: forward)")]
+    public Vector3 spinAxis = Vector3.forward;
+    
+    [Tooltip("Rastgele dönüş hızı ekle")]
+    public bool randomizeSpinSpeed = true;
+    
+    [Tooltip("Rastgele dönüş hızı varyasyonu")]
+    [Range(0f, 1f)]
+    public float spinSpeedVariation = 0.3f;
+    
     [Header("=== AURA EFEKTİ ===")]
     [Tooltip("Aura efekti aktif mi?")]
     public bool enableAura = true;
@@ -118,6 +128,7 @@ public class SharkBulletAnimation : MonoBehaviour
     
     // Private değişkenler
     private Transform modelTransform; // Ana model transformu (child)
+    private float currentSpinSpeed;
     private LineRenderer auraRing;
     private List<LineRenderer> energyLines = new List<LineRenderer>();
     private TrailRenderer trailGlow;
@@ -129,7 +140,6 @@ public class SharkBulletAnimation : MonoBehaviour
     
     private Quaternion baseRotation;
     private float timeOffset;
-    private bool hasHit = false;
 
     private void Awake()
     {
@@ -148,6 +158,17 @@ public class SharkBulletAnimation : MonoBehaviour
         if (modelTransform != null)
         {
             baseRotation = modelTransform.localRotation;
+        }
+        
+        // Dönüş hızını ayarla (RocketAnimation gibi)
+        if (randomizeSpinSpeed)
+        {
+            float variation = 1f + Random.Range(-spinSpeedVariation, spinSpeedVariation);
+            currentSpinSpeed = rotationSpeed * variation;
+        }
+        else
+        {
+            currentSpinSpeed = rotationSpeed;
         }
         
         // Rastgele zaman offset'i
@@ -192,8 +213,6 @@ public class SharkBulletAnimation : MonoBehaviour
 
     private void Update()
     {
-        if (hasHit) return;
-        
         float time = Time.time + timeOffset;
         
         // Mesh dönme animasyonu
@@ -225,9 +244,9 @@ public class SharkBulletAnimation : MonoBehaviour
     {
         if (modelTransform == null) return;
         
-        // Forward axis (Z axis) etrafında dönme
-        float angle = rotationSpeed * Time.deltaTime;
-        modelTransform.Rotate(0f, 0f, angle, Space.Self);
+        // Spin axis etrafında dönme (RocketAnimation gibi)
+        float angle = currentSpinSpeed * Time.deltaTime;
+        modelTransform.Rotate(spinAxis.normalized, angle, Space.Self);
     }
 
     private void CreateAura()
@@ -583,86 +602,15 @@ public class SharkBulletAnimation : MonoBehaviour
         return mat;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (hasHit) return;
-        
-        bool hitEnemy = other.GetComponentInParent<EnemyHealth>() != null;
-        bool hitBoard = other.GetComponentInParent<TargetBoardHealth>() != null;
-        bool hitSolid = !other.isTrigger && !hitEnemy && !hitBoard;
-        
-        if (hitEnemy || hitBoard || hitSolid)
-        {
-            hasHit = true;
-            CreateHitEffect(other.ClosestPoint(transform.position));
-        }
-    }
-
-    private void CreateHitEffect(Vector3 position)
-    {
-        GameObject hitFX = new GameObject("SharkHitEffect");
-        hitFX.transform.position = position;
-        
-        // Patlama partikülleri
-        ParticleSystem hitParticles = hitFX.AddComponent<ParticleSystem>();
-        var main = hitParticles.main;
-        main.startLifetime = new ParticleSystem.MinMaxCurve(0.3f, 0.6f);
-        main.startSpeed = new ParticleSystem.MinMaxCurve(2f, 5f);
-        main.startSize = new ParticleSystem.MinMaxCurve(0.08f, 0.15f);
-        main.startColor = new ParticleSystem.MinMaxGradient(
-            new Color(0.3f, 0.7f, 1f, 0.8f),
-            new Color(0.5f, 0.8f, 1f, 0.6f)
-        );
-        main.simulationSpace = ParticleSystemSimulationSpace.World;
-        main.maxParticles = 30;
-        main.gravityModifier = -0.3f;
-        
-        var emission = hitParticles.emission;
-        emission.rateOverTime = 0;
-        emission.SetBursts(new ParticleSystem.Burst[] {
-            new ParticleSystem.Burst(0f, 30)
-        });
-        
-        var shape = hitParticles.shape;
-        shape.shapeType = ParticleSystemShapeType.Sphere;
-        shape.radius = 0.2f;
-        
-        var renderer = hitParticles.GetComponent<ParticleSystemRenderer>();
-        renderer.material = new Material(Shader.Find("Sprites/Default"));
-        
-        Destroy(hitFX, 1f);
-        
-        // Trail ve efektleri durdur
-        if (trailGlow != null) trailGlow.time = 0f;
-        if (trailMain != null) trailMain.time = 0f;
-        if (trailCore != null) trailCore.time = 0f;
-        if (particleSystem != null) particleSystem.Stop();
-    }
-
     private void OnDestroy()
     {
-        // Trail'leri temizle
         if (trailGlow != null && trailGlow.gameObject != null)
-        {
-            trailGlow.time = 0f;
-            Destroy(trailGlow.gameObject, 0.5f);
-        }
+            Destroy(trailGlow.gameObject);
         if (trailMain != null && trailMain.gameObject != null)
-        {
-            trailMain.time = 0f;
-            Destroy(trailMain.gameObject, 0.5f);
-        }
+            Destroy(trailMain.gameObject);
         if (trailCore != null && trailCore.gameObject != null)
-        {
-            trailCore.time = 0f;
-            Destroy(trailCore.gameObject, 0.5f);
-        }
-        
-        // Parçacıkları temizle
+            Destroy(trailCore.gameObject);
         if (particleSystem != null && particleSystem.gameObject != null)
-        {
-            particleSystem.Stop();
-            Destroy(particleSystem.gameObject, 1f);
-        }
+            Destroy(particleSystem.gameObject);
     }
 }
