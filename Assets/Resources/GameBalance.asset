@@ -41,7 +41,7 @@ MonoBehaviour:
     fireCooldown: 0.5
   - weaponName: SixthGun
     damage: 75
-    bulletVelocity: 10
+    bulletVelocity: 5
     maxAmmo: 12
     fireCooldown: 0.2
   - weaponName: SeventhGun

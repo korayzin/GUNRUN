@@ -104,6 +104,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1115760949863528562}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ca30fb0923eb047438714a781edbc292,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2225760949863528563}
   m_SourcePrefab: {fileID: 100100000, guid: ca30fb0923eb047438714a781edbc292, type: 3}
 --- !u!1 &1592294681952573691 stripped
 GameObject:
@@ -123,10 +127,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bef4c87dd49b70443a9cb1cb8fbe05a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 80
+  damage: 120
   isFromSecondary: 0
   weaponIndex: -1
-  speed: 50
+  sourceGunFire: {fileID: 0}
+  speed: 15
+  useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
 --- !u!136 &5376164086682188425
@@ -179,3 +185,51 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &2225760949863528563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592294681952573691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c4d2a1f9e3b5c7d6a8f0e2b4d1c3a5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinSpeed: 360
+  spinAxis: {x: 0, y: 0, z: 1}
+  randomizeSpinSpeed: 1
+  spinSpeedVariation: 0.1
+  enableInkEffect: 0
+  inkOffset: {x: 0, y: 0, z: -0.25}
+  inkParticleSize: 0.08
+  inkCoreColor: {r: 0.9, g: 0.7, b: 1, a: 1}
+  inkStartColor: {r: 0.5, g: 0.2, b: 0.8, a: 0.9}
+  inkEndColor: {r: 0.3, g: 0.1, b: 0.5, a: 0}
+  inkIntensity: 70
+  inkParticleCount: 100
+  enableTrail: 1
+  trailTime: 0.45
+  trailStartWidth: 0.08
+  trailEndWidth: 0.02
+  glowTrailStartWidth: 0.25
+  glowTrailEndWidth: 0.06
+  trailCoreColor: {r: 0.9, g: 0.8, b: 1, a: 1}
+  trailMainColor: {r: 0.5, g: 0.25, b: 0.9, a: 0.85}
+  trailGlowColor: {r: 0.4, g: 0.15, b: 0.7, a: 0.35}
+  enableLight: 0
+  lightIntensity: 1.8
+  lightRange: 4
+  lightColor: {r: 0.6, g: 0.3, b: 1, a: 1}
+  enableTentacles: 1
+  tentacleCount: 8
+  tentacleLength: 0.25
+  tentacleWaveAmplitude: 0.06
+  tentacleWaveFrequency: 4
+  tentacleSegments: 12
+  tentacleCoreColor: {r: 0.9, g: 0.7, b: 1, a: 0.9}
+  tentacleGlowColor: {r: 0.5, g: 0.2, b: 0.8, a: 0.5}
+  tentacleUpdateRate: 0.04
+  tentacleCoreWidth: 0.015
+  tentacleGlowWidth: 0.06
