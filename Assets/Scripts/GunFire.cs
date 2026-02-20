@@ -80,6 +80,14 @@ public class GunFire : MonoBehaviour
         UpdateAmmoDisplay();
     }
 
+    /// <summary>Silah her etkinleştirildiğinde (9. silahtan sonra joystick ile geçiş) ateş hazır olsun.
+    /// SetWeaponByIndex ile silah değişince FireWithCooldown coroutine kesilir, canFire false kalır - bu düzeltir.</summary>
+    private void OnEnable()
+    {
+        canFire = true;
+        isFiring = false;
+    }
+
     void Start()
     {
         ApplyBalanceFromManager();

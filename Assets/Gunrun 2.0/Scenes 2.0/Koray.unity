@@ -5272,14 +5272,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitHapticStrength: 0.4
   hitHapticDuration: 0.06
-  firstWeapon: {fileID: 5555600068782280050}
+  firstWeapon: {fileID: 828508232}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 1735730324613644644}
   fourthWeapon: {fileID: 2972479651670665011}
   fifthWeapon: {fileID: 1046036456}
-  sixthWeapon: {fileID: 0}
+  sixthWeapon: {fileID: 2443542293831071706}
   sixthWeaponLeftHand: {fileID: 1645557256}
-  seventhWeapon: {fileID: 0}
+  seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
   ninthWeapon: {fileID: 20849705}
   firstWeaponImage: {fileID: 0}
@@ -55703,6 +55703,7 @@ MonoBehaviour:
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!65 &1118923891
 BoxCollider:
@@ -60938,7 +60939,7 @@ PrefabInstance:
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -61384,6 +61385,7 @@ MonoBehaviour:
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!65 &1286688574
 BoxCollider:
@@ -85218,6 +85220,7 @@ MonoBehaviour:
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
   tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!4 &1834682428
 Transform:

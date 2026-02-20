@@ -34233,8 +34233,8 @@ MonoBehaviour:
   dialogueText23: All weapons seen! Use the left joystick to switch between them
     and play however you like. Good luck and have fun right now!!!!!!!
   botVoiceClip23: {fileID: 0}
-  dialogueText24: Hold the Y button on the left controller to return to the main
-    menu.
+  dialogueText24: Tutorial finished! Hold 'Y' to return to Main Menu. Don't worry,
+    you can come back anytime! Good luck and have fun right now!!!!!
   botVoiceClip24: {fileID: 0}
   tutorialRetryDialogueText: No problem, lets start where we stay.
   tutorialRetryVoiceClip: {fileID: 0}
