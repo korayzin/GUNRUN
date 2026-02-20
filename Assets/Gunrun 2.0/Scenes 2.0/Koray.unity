@@ -55700,6 +55700,7 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  portalOpenSound: {fileID: 0}
   stage1FirstEnemySpawnSound: {fileID: 0}
   stage2TransitionSound: {fileID: 0}
   stage3TransitionSound: {fileID: 0}
@@ -61386,6 +61387,7 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  portalOpenSound: {fileID: 0}
   stage1FirstEnemySpawnSound: {fileID: 0}
   stage2TransitionSound: {fileID: 0}
   stage3TransitionSound: {fileID: 0}
@@ -85225,9 +85227,13 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 2087939525}
   backgroundMusic: {fileID: 0}
-  stage1FirstEnemySpawnSound: {fileID: 0}
-  stage2TransitionSound: {fileID: 0}
-  stage3TransitionSound: {fileID: 0}
+  portalOpenSound: {fileID: 8300000, guid: fa695e3e65e837b4cbcd20780920adf9, type: 3}
+  stage1FirstEnemySpawnSound: {fileID: 8300000, guid: 89a1fdc161937454a966d1028c6d66df,
+    type: 3}
+  stage2TransitionSound: {fileID: 8300000, guid: a84ba1ef707c0574cbe8cef3696dbcfa,
+    type: 3}
+  stage3TransitionSound: {fileID: 8300000, guid: 30867246ee57d2e43949f07345b858a5,
+    type: 3}
   stageSoundsAudioSource: {fileID: 1834682426}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360

@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
     public AudioSource backgroundMusic;
     private AdvancedPortalSpawner portalSpawner;
     
+    [Header("Portal Sounds")]
+    [Tooltip("Portallar açıldığında çalacak ses (her portal için bir kez)")]
+    public AudioClip portalOpenSound;
+
     [Header("Stage Sounds")]
     [Tooltip("Stage 1: İlk düşman spawn olduğunda çalacak ses")]
     public AudioClip stage1FirstEnemySpawnSound;
@@ -223,6 +227,21 @@ public class GameManager : MonoBehaviour
         // Skor modunda stage geçişi ve sesler skora göre anında tetiklensin
         if (GameBalanceManager.Instance != null && GameBalanceManager.Instance.UseScoreForStage && portalSpawner != null)
             portalSpawner.RefreshStage();
+    }
+
+    /// <summary>
+    /// Portal açılma sesini çalar. Inspector'dan portalOpenSound atayın.
+    /// </summary>
+    public void PlayPortalOpenSound()
+    {
+        if (portalOpenSound == null) return;
+        if (stageSoundsAudioSource != null)
+            stageSoundsAudioSource.PlayOneShot(portalOpenSound);
+        else
+        {
+            Vector3 pos = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
+            AudioSource.PlayClipAtPoint(portalOpenSound, pos);
+        }
     }
 
     /// <summary>

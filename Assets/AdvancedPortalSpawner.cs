@@ -418,6 +418,9 @@ public class AdvancedPortalSpawner : MonoBehaviour
         portalTransform.localScale = targetScale;
         portalTransform.rotation = targetRotation;
         yield return StartCoroutine(PulseEffectUnscaled(portalTransform, targetScale));
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlayPortalOpenSound();
     }
 
     private IEnumerator PulseEffectUnscaled(Transform portalTransform, Vector3 baseScale)
@@ -629,6 +632,9 @@ public class AdvancedPortalSpawner : MonoBehaviour
         
         // Pulse efekti (tatlı bir son dokunuş)
         yield return StartCoroutine(PulseEffect(portalTransform, targetScale));
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlayPortalOpenSound();
     }
 
     IEnumerator PulseEffect(Transform portalTransform, Vector3 baseScale)

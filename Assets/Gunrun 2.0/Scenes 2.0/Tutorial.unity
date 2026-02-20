@@ -34216,26 +34216,25 @@ MonoBehaviour:
     activate the whip by pressing the \u201CA\u201D button and fling nearby enemies
     away."
   botVoiceClip17: {fileID: 8300000, guid: 5047fb91d65e74148a0e3f6a55733f0a, type: 3}
-  dialogueText18: You can also fire DOUBLE bullets using the trigger button. Whip
-    has energy to use!
-  botVoiceClip18: {fileID: 8300000, guid: bcd977fcaab383346b35b72e759c6bf5, type: 3}
+  dialogueText18: By the way whip has energy to use.
+  botVoiceClip18: {fileID: 8300000, guid: baf714f2b6de69e4ca2263df0815184f, type: 3}
   dialogueText19: More enemies now! When You See an Enemy Use the 'A' key to activate
     a helpful toy in this weapon; it will take down the enemies for you.!!!
-  botVoiceClip19: {fileID: 8300000, guid: baf714f2b6de69e4ca2263df0815184f, type: 3}
-  dialogueText20: You can also fire DOUBLE bullets using the trigger button.
+  botVoiceClip19: {fileID: 8300000, guid: 592d73a59f523464abf21459efab8f81, type: 3}
+  dialogueText20: 'You can also fire  bullets using the trigger button. '
   botVoiceClip20: {fileID: 8300000, guid: bcd977fcaab383346b35b72e759c6bf5, type: 3}
   dialogueText21: Final weapon! All weapons unlocked. Now you can spit fire at your
     enemies. Hold down the trigger and watch the show right now!!!!
-  botVoiceClip21: {fileID: 8300000, guid: 592d73a59f523464abf21459efab8f81, type: 3}
+  botVoiceClip21: {fileID: 8300000, guid: f8a5960a0d6f84142b9f67b0ed5fc38a, type: 3}
   dialogueText22: "You can also shoot fireballs using the A button, which is a secondary
     feature!\t"
-  botVoiceClip22: {fileID: 8300000, guid: f8a5960a0d6f84142b9f67b0ed5fc38a, type: 3}
+  botVoiceClip22: {fileID: 8300000, guid: 341bf35a1dd5b1f4d999f1fc2cd8e043, type: 3}
   dialogueText23: All weapons seen! Use the left joystick to switch between them
     and play however you like. Good luck and have fun right now!!!!!!!
-  botVoiceClip23: {fileID: 8300000, guid: 341bf35a1dd5b1f4d999f1fc2cd8e043, type: 3}
+  botVoiceClip23: {fileID: 8300000, guid: 5426b7419895607418fb1f96cf0afd9c, type: 3}
   dialogueText24: Tutorial finished! Hold 'Y' to return to Main Menu. Don't worry,
     you can come back anytime! Good luck and have fun right now!!!!!
-  botVoiceClip24: {fileID: 8300000, guid: 5426b7419895607418fb1f96cf0afd9c, type: 3}
+  botVoiceClip24: {fileID: 8300000, guid: 922ce0a146db0e446be91fa1eaf70473, type: 3}
   tutorialRetryDialogueText: No problem, lets start where we stay.
   tutorialRetryVoiceClip: {fileID: 8300000, guid: 881955fba641b56488398d1e57e72b7f,
     type: 3}
@@ -55895,6 +55894,10 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
@@ -61577,6 +61580,10 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
@@ -85463,6 +85470,10 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 2087939525}
   backgroundMusic: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
   tutorialTimerDuration: 360
