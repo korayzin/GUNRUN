@@ -55700,6 +55700,10 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
@@ -61382,6 +61386,10 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
@@ -85217,6 +85225,10 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 2087939525}
   backgroundMusic: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 1834682426}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
   tutorialTimerDuration: 360
@@ -97054,7 +97066,7 @@ PrefabInstance:
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

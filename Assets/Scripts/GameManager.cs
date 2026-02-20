@@ -21,6 +21,16 @@ public class GameManager : MonoBehaviour
     public AudioSource backgroundMusic;
     private AdvancedPortalSpawner portalSpawner;
     
+    [Header("Stage Sounds")]
+    [Tooltip("Stage 1: İlk düşman spawn olduğunda çalacak ses")]
+    public AudioClip stage1FirstEnemySpawnSound;
+    [Tooltip("Stage 2: Stage 2'ye geçildiğinde çalacak ses")]
+    public AudioClip stage2TransitionSound;
+    [Tooltip("Stage 3: Stage 3'e geçildiğinde çalacak ses")]
+    public AudioClip stage3TransitionSound;
+    [Tooltip("Stage sesleri için AudioSource - boşsa PlayClipAtPoint kullanılır")]
+    public AudioSource stageSoundsAudioSource;
+    
     [Header("Hand Ray UI Interactor")]
     [Tooltip("Retry menüsünde el ray etkileşimi için - otomatik bulunur eğer atanmazsa")]
     public HandRayUIInteractor handRayInteractor;
@@ -210,6 +220,35 @@ public class GameManager : MonoBehaviour
         if (IsTutorialScene()) return;
         score += damage;
         UpdateScoreUI();
+        // Skor modunda stage geçişi ve sesler skora göre anında tetiklensin
+        if (GameBalanceManager.Instance != null && GameBalanceManager.Instance.UseScoreForStage && portalSpawner != null)
+            portalSpawner.RefreshStage();
+    }
+
+    /// <summary>
+    /// Stage değişim anlarında ses çalar. stage: 1 = ilk düşman spawn, 2 = stage2 geçişi, 3 = stage3 geçişi.
+    /// Inspector'dan stage1FirstEnemySpawnSound, stage2TransitionSound, stage3TransitionSound atayın.
+    /// </summary>
+    public void PlayStageSound(int stage)
+    {
+        AudioClip clip = stage switch
+        {
+            1 => stage1FirstEnemySpawnSound,
+            2 => stage2TransitionSound,
+            3 => stage3TransitionSound,
+            _ => null
+        };
+        if (clip == null) return;
+
+        if (stageSoundsAudioSource != null)
+        {
+            stageSoundsAudioSource.PlayOneShot(clip);
+        }
+        else
+        {
+            Vector3 pos = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
+            AudioSource.PlayClipAtPoint(clip, pos);
+        }
     }
 
     private void UpdateTimerUI()

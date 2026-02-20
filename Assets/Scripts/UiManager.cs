@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 /// <summary>
@@ -88,7 +89,7 @@ public class UIManager : MonoBehaviour
 
     private void OnInfoClicked()
     {
-        ShowWeapons();
+        LoadTutorial();
     }
 
     private void OnOptionsClicked()
@@ -118,11 +119,51 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sadece Weapon (Info) panelini açar, diğerlerini kapatır.
+    /// 5-4-3-2-1 geri sayımı ile Tutorial sahnesini yükler.
     /// </summary>
-    public void ShowWeapons()
+    public void LoadTutorial()
     {
-        ShowPanel(weaponPanel);
+        StartCoroutine(LoadTutorialCountdownCoroutine());
+    }
+
+    private IEnumerator LoadTutorialCountdownCoroutine()
+    {
+        if (_transitionCoroutine != null)
+        {
+            StopCoroutine(_transitionCoroutine);
+            _transitionCoroutine = null;
+        }
+
+        // Tüm panelleri kapat, sadece countdown paneli göster
+        foreach (var p in _contentPanels)
+            if (p != null) SetPanelActiveImmediate(p, false);
+
+        Transform canvas = localCanvas != null ? localCanvas : (countdownPanel != null ? countdownPanel.transform.parent : null);
+        if (canvas != null)
+        {
+            foreach (Transform child in canvas)
+            {
+                bool keepActive = (countdownPanel != null && child.gameObject == countdownPanel);
+                child.gameObject.SetActive(keepActive);
+            }
+        }
+
+        if (countdownPanel != null) countdownPanel.SetActive(true);
+        _currentPanel = null;
+
+        TextMeshProUGUI countdownText = CountdownManager.Instance != null ? CountdownManager.Instance.countdownText : null;
+        if (countdownText != null) countdownText.gameObject.SetActive(true);
+
+        for (int i = 5; i >= 1; i--)
+        {
+            if (countdownText != null) countdownText.text = i.ToString();
+            yield return new WaitForSeconds(1f);
+        }
+
+        if (countdownText != null) countdownText.text = "GO!";
+        yield return new WaitForSeconds(1f);
+
+        SceneManager.LoadScene("Tutorial");
     }
 
     /// <summary>

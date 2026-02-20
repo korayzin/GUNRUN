@@ -21,7 +21,7 @@ MonoBehaviour:
     fireCooldown: 0.1
   - weaponName: SecondGun
     damage: 30
-    bulletVelocity: 100
+    bulletVelocity: 125
     maxAmmo: 30
     fireCooldown: 0.2
   - weaponName: ThirdGun
@@ -60,29 +60,29 @@ MonoBehaviour:
     maxAmmo: 100
     fireCooldown: 0.08
   stage2ScoreThreshold: 1500
-  stage3ScoreThreshold: 8000
+  stage3ScoreThreshold: 3000
   stage2KillThreshold: 36
-  stage3KillThreshold: 90
+  stage3KillThreshold: 72
   useScoreForStage: 1
-  stage1SpawnInterval: 2.5
+  stage1SpawnInterval: 2.25
   stage2SpawnInterval: 2
   stage3SpawnInterval: 1.4
-  stage1EnemySpeed: 2
-  stage2EnemySpeed: 2.5
-  stage3EnemySpeed: 3
+  stage1EnemySpeed: 1.5
+  stage2EnemySpeed: 2
+  stage3EnemySpeed: 2.5
   enemyHPByStage:
   - weak: 100
     medium: 120
     strong: 140
     tank: 0
-  - weak: 150
-    medium: 250
-    strong: 350
-    tank: 400
+  - weak: 140
+    medium: 180
+    strong: 200
+    tank: 250
   - weak: 250
-    medium: 350
-    strong: 500
-    tank: 750
+    medium: 270
+    strong: 300
+    tank: 350
   enemyScoreByStage:
   - weak: 25
     medium: 50

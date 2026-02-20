@@ -489,6 +489,12 @@ public class AdvancedPortalSpawner : MonoBehaviour
         UpdateStage();
     }
 
+    /// <summary>Skor veya kill'e göre stage günceller. AddScore'tan (skor modunda) veya OnEnemyKilled'den çağrılır.</summary>
+    public void RefreshStage()
+    {
+        UpdateStage();
+    }
+
     void UpdateStage()
     {
         int newStage = currentStage;
@@ -508,6 +514,8 @@ public class AdvancedPortalSpawner : MonoBehaviour
         {
             currentStage = newStage;
             RefillSpawnBag();
+            if (GameManager.Instance != null)
+                GameManager.Instance.PlayStageSound(currentStage);
             Debug.Log($"[STAGE] Stage {currentStage}'e geçildi! Kill: {totalKillCount}, Spawn Interval: {GetSpawnInterval()}s, Enemy Speed: {GetEnemySpeed()}");
         }
     }
@@ -668,6 +676,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
     {
         yield return new WaitForSeconds(delayBeforeFirstSpawn);
 
+        bool firstSpawn = true;
         while (!isGameOver)
         {
             GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
@@ -698,6 +707,12 @@ public class AdvancedPortalSpawner : MonoBehaviour
                 consecutivePortalCounts[p] = 0;
 
             lastEnemyPerPortal[portal] = enemyPrefab;
+
+            if (firstSpawn && GameManager.Instance != null)
+            {
+                GameManager.Instance.PlayStageSound(1);
+                firstSpawn = false;
+            }
 
             Debug.Log($"[SPAWN] Stage {currentStage} | {enemyPrefab.name} | Portal {portal} | Speed: {GetEnemySpeed()} | Kill: {totalKillCount}");
 

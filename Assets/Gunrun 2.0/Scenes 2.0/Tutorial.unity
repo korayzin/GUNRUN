@@ -34150,15 +34150,15 @@ MonoBehaviour:
   botSpawnPoint: {fileID: 1340582796}
   delayBeforeSpawn: 4
   delayBeforeDialogue: 1
-  botSwayAmount: 0.03
+  botSwayAmount: 0.05
   botRotationSway: {x: 10, y: -5}
   dialogueText: Hey! Welcome. I'm your guide. Let's start by breaking this fake reality.
     Use your Trigger to destroy these walls!
-  botVoiceClip: {fileID: 0}
+  botVoiceClip: {fileID: 8300000, guid: 686a30ccdd31c31478dd21f23dc66f08, type: 3}
   dialogueTextUI: {fileID: 0}
   dialoguePanel: {fileID: 0}
   audioSource: {fileID: 0}
-  typingSpeedPerChar: 0.0033
+  typingSpeedPerChar: 0.085
   delayAfterDialogue1BeforeDialogue2: 5
   minWallBreakCountBeforeDialogue2: 1
   delayBetweenDialogues: 3
@@ -34166,84 +34166,87 @@ MonoBehaviour:
   botPositionMoveDuration: 0.2
   dialogueText2: Look left, a portal has opened there. Anomalies will emerge from
     it. Use the controller's trigger to take them down right away!!!
-  botVoiceClip2: {fileID: 0}
+  botVoiceClip2: {fileID: 8300000, guid: f89ab7fc4d9d77642b15f2b41d6d920a, type: 3}
   delayAfterDialogue2StartBeforePortalA: 1
   enemyMoveDurationBeforeDialogue4: 2
   portalSpawner: {fileID: 1622565104}
   dialogueText3: Here come the anomaly! Its moving, take it down! Watch out, if anomaly
     touch you, you'll die!
-  botVoiceClip3: {fileID: 0}
+  botVoiceClip3: {fileID: 8300000, guid: a62bcc7249da5b245b8ae6e9e8e1541c, type: 3}
   dialogueText4: There's the anomaly, now shoot it and take it down!
-  botVoiceClip4: {fileID: 0}
+  botVoiceClip4: {fileID: 8300000, guid: 545b21346f26cf74eafe237238cecddf, type: 3}
   dialogueText5: 'Well done! You took down the first enemy, now it''s time for the
     others. '
-  botVoiceClip5: {fileID: 0}
+  botVoiceClip5: {fileID: 8300000, guid: 061a882fb905fec46b1c1489aef3411a, type: 3}
   dialogueText6: Take down the enemies coming from the portals, watch your ammo.
     If you run out of ammo, the game restarts!
-  botVoiceClip6: {fileID: 0}
+  botVoiceClip6: {fileID: 8300000, guid: 86c1819f6856db045b38aa5ea6ac85ba, type: 3}
   dialogueText7: Look, anomalies are coming from your other portals too! Shoot the
     incoming anomalies.
-  botVoiceClip7: {fileID: 0}
+  botVoiceClip7: {fileID: 8300000, guid: a61f68b8a8a7078458030c51bfaf266b, type: 3}
   delayAfterPortalsBCBeforeDialogue7: 2
   dialogueText8: "Once you kill a specific number of enemies, your weapon swaps.
     Check the \u2018Gun Change After\u2019 counter on the screen to track this!!"
-  botVoiceClip8: {fileID: 0}
+  botVoiceClip8: {fileID: 8300000, guid: 8025c8c4032123d49b847c323cda8954, type: 3}
   killsAfterDialogue7BeforeDialogue8: 5
   dialogueText9: Great! Now you have a more powerful weapon, but enemies are increasing
     at the same rate. Play carefully, complete all 9 weapons!!
-  botVoiceClip9: {fileID: 0}
+  botVoiceClip9: {fileID: 8300000, guid: 1671eac6f4cc94c4f9c10f4c41c2b363, type: 3}
   dialogueText10: Now you have a different type of weapon; it's stronger and has
     a longer range. But the ammo is low, so be extremely careful now!!
-  botVoiceClip10: {fileID: 0}
+  botVoiceClip10: {fileID: 8300000, guid: 6de4e636aa39688409229c7fa200cd4b, type: 3}
   dialogueText11: This weapon is awesome! You fire a huge cannonball and deal area
     damage, but this weapon can't defy gravity!
-  botVoiceClip11: {fileID: 0}
+  botVoiceClip11: {fileID: 8300000, guid: 561748eddc656724aa7d7176af2177a2, type: 3}
   dialogueText12: You can also see which weapon is in your left hand and how many
     weapons are left. Also you can close it off by press "A"
-  botVoiceClip12: {fileID: 0}
+  botVoiceClip12: {fileID: 8300000, guid: c7c27d5af7911f74f9928d27f593a835, type: 3}
   dialogueText13: Level changing! More enemies/guns. Charge lightning by holding
     A on the right controller to kill everyone hit. Great for crowds!!
-  botVoiceClip13: {fileID: 0}
+  botVoiceClip13: {fileID: 8300000, guid: 5ffd8e124f96788479305951be27d9f3, type: 3}
   dialogueText14: You can also fire normal bullets using the trigger button.
-  botVoiceClip14: {fileID: 0}
+  botVoiceClip14: {fileID: 8300000, guid: bcd977fcaab383346b35b72e759c6bf5, type: 3}
   dialogueText15: 'Secondary feature: use the left controller trigger to activate
     the slowing laser in your LeftHand. Watch the limit! If it runs out, you''re
     done for. Use it wisely!'
-  botVoiceClip15: {fileID: 0}
+  botVoiceClip15: {fileID: 8300000, guid: d3cfbb5a5c4f91e49acf35ab28a0ffe2, type: 3}
   dialogueText16: You can also fire normal bullets using the trigger button.
-  botVoiceClip16: {fileID: 0}
+  botVoiceClip16: {fileID: 8300000, guid: bcd977fcaab383346b35b72e759c6bf5, type: 3}
   dialogueText17: "This weapon is a pistol, but it fires two shots. You can also
     activate the whip by pressing the \u201CA\u201D button and fling nearby enemies
     away."
-  botVoiceClip17: {fileID: 0}
+  botVoiceClip17: {fileID: 8300000, guid: 5047fb91d65e74148a0e3f6a55733f0a, type: 3}
   dialogueText18: You can also fire DOUBLE bullets using the trigger button. Whip
     has energy to use!
-  botVoiceClip18: {fileID: 0}
+  botVoiceClip18: {fileID: 8300000, guid: bcd977fcaab383346b35b72e759c6bf5, type: 3}
   dialogueText19: More enemies now! When You See an Enemy Use the 'A' key to activate
     a helpful toy in this weapon; it will take down the enemies for you.!!!
-  botVoiceClip19: {fileID: 0}
+  botVoiceClip19: {fileID: 8300000, guid: baf714f2b6de69e4ca2263df0815184f, type: 3}
   dialogueText20: You can also fire DOUBLE bullets using the trigger button.
-  botVoiceClip20: {fileID: 0}
+  botVoiceClip20: {fileID: 8300000, guid: bcd977fcaab383346b35b72e759c6bf5, type: 3}
   dialogueText21: Final weapon! All weapons unlocked. Now you can spit fire at your
     enemies. Hold down the trigger and watch the show right now!!!!
-  botVoiceClip21: {fileID: 0}
+  botVoiceClip21: {fileID: 8300000, guid: 592d73a59f523464abf21459efab8f81, type: 3}
   dialogueText22: "You can also shoot fireballs using the A button, which is a secondary
     feature!\t"
-  botVoiceClip22: {fileID: 0}
+  botVoiceClip22: {fileID: 8300000, guid: f8a5960a0d6f84142b9f67b0ed5fc38a, type: 3}
   dialogueText23: All weapons seen! Use the left joystick to switch between them
     and play however you like. Good luck and have fun right now!!!!!!!
-  botVoiceClip23: {fileID: 0}
+  botVoiceClip23: {fileID: 8300000, guid: 341bf35a1dd5b1f4d999f1fc2cd8e043, type: 3}
   dialogueText24: Tutorial finished! Hold 'Y' to return to Main Menu. Don't worry,
     you can come back anytime! Good luck and have fun right now!!!!!
-  botVoiceClip24: {fileID: 0}
+  botVoiceClip24: {fileID: 8300000, guid: 5426b7419895607418fb1f96cf0afd9c, type: 3}
   tutorialRetryDialogueText: No problem, lets start where we stay.
-  tutorialRetryVoiceClip: {fileID: 0}
+  tutorialRetryVoiceClip: {fileID: 8300000, guid: 881955fba641b56488398d1e57e72b7f,
+    type: 3}
   tutorialOutOfAmmoRetryDialogueText: If you run out of bullets, you'll have to start
     over, so use them sparingly!
-  tutorialOutOfAmmoRetryVoiceClip: {fileID: 0}
+  tutorialOutOfAmmoRetryVoiceClip: {fileID: 8300000, guid: 508b3deee5561d048a45c27ff33cf0ec,
+    type: 3}
   tutorialEnergyOrTimeRetryDialogueText: No worries, I'll refill your energy and
     time. Lets try again.
-  tutorialEnergyOrTimeRetryVoiceClip: {fileID: 0}
+  tutorialEnergyOrTimeRetryVoiceClip: {fileID: 8300000, guid: a8dd241eb4c16694a83656d3b11efc0f,
+    type: 3}
   gunChangeAfterUI: {fileID: 1138728818}
   holographicWeaponHUD: {fileID: 1917262746}
   countdownTextUI: {fileID: 0}
