@@ -695,7 +695,8 @@ public class ToyHelper : MonoBehaviour
         if (lineLeft == null || lineRight == null || toy == null) return;
 
         Vector3 origin = toy.position;
-        Collider[] hits = Physics.OverlapSphere(origin, laserRange, enemyLayerMask);
+        float range = (TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialCompleteFreehand) ? 50f : laserRange;
+        Collider[] hits = Physics.OverlapSphere(origin, range, enemyLayerMask);
         List<EnemyHealth> sorted = new List<EnemyHealth>();
         foreach (Collider c in hits)
         {
@@ -727,11 +728,11 @@ public class ToyHelper : MonoBehaviour
         Vector3 dirRight = (aimRight - rightEye).normalized;
 
         RaycastHit hitL, hitR;
-        Vector3 endL = leftEye + dirLeft * laserRange;
-        Vector3 endR = rightEye + dirRight * laserRange;
-        if (Physics.Raycast(leftEye, dirLeft, out hitL, laserRange, enemyLayerMask))
+        Vector3 endL = leftEye + dirLeft * range;
+        Vector3 endR = rightEye + dirRight * range;
+        if (Physics.Raycast(leftEye, dirLeft, out hitL, range, enemyLayerMask))
             endL = hitL.point;
-        if (Physics.Raycast(rightEye, dirRight, out hitR, laserRange, enemyLayerMask))
+        if (Physics.Raycast(rightEye, dirRight, out hitR, range, enemyLayerMask))
             endR = hitR.point;
 
         float dt = Time.deltaTime;
