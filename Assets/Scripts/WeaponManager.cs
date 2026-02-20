@@ -358,7 +358,7 @@ public class WeaponManager : MonoBehaviour
             {
                 sixthWeaponLeftHand.SetActive(true);
                 var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
-                if (laserOnLeft != null) laserOnLeft.enabled = false;
+                if (laserOnLeft != null) laserOnLeft.enabled = true; // Sol trigger ile slow laser
             }
             Debug.Log($"Fifth weapon kapatıldı, Sixth weapon açıldı ({enemyKillCount} kill).");
         }
@@ -590,7 +590,7 @@ public class WeaponManager : MonoBehaviour
         {
             sixthWeaponLeftHand.SetActive(true);
             var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
-            if (laserOnLeft != null) laserOnLeft.enabled = false;
+            if (laserOnLeft != null) laserOnLeft.enabled = true; // Sol trigger ile slow laser
         }
         currentWeapon = index;
         UpdateWeaponUI();

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using TMPro;
+using Meta.XR.MRUtilityKit;
 
 /// <summary>
 /// SeventhGun için kırbaç/tentakül sistemi.
@@ -437,6 +438,27 @@ public class SeventhGunWhip : MonoBehaviour
                     // İlk kez vuruldu, hasar ver ve savur
                     hitEnemies.Add(enemyHealth);
                     ApplyDamageAndKnockback(enemyHealth, hit, segmentEnd);
+                }
+            }
+
+            // DestructibleMesh (MRUK duvar) - kırbaç duvara değince kırsın
+            RaycastHit[] wallHits = Physics.SphereCastAll(segmentStart, collisionRadius, segmentDir, segmentLength);
+            foreach (RaycastHit hit in wallHits)
+            {
+                if (!hit.collider) continue;
+                if (whipSpawnPoint != null && hit.collider.transform.IsChildOf(whipSpawnPoint.root))
+                    continue;
+                DestructibleMeshComponent destructibleMesh = hit.collider.GetComponentInParent<DestructibleMeshComponent>();
+                if (destructibleMesh != null && hit.collider.gameObject != destructibleMesh.ReservedSegment)
+                {
+                    destructibleMesh.DestroySegment(hit.collider.gameObject);
+                    DestructibleMeshHint.NotifyWallDestroyed();
+                    if (WeaponManager.Instance != null)
+                    {
+                        WeaponManager.Instance.PlayHitSound();
+                        WeaponManager.Instance.TriggerHitHaptic();
+                    }
+                    break;
                 }
             }
         }

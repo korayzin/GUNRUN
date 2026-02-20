@@ -1,4 +1,5 @@
 using UnityEngine;
+using Meta.XR.MRUtilityKit;
 
 /// <summary>
 /// Fireball düşmana değince belirgin patlama VFX (çok katmanlı) ve etrafındaki düşmanlara AOE hasar.
@@ -231,9 +232,25 @@ public class FireballExplosion : MonoBehaviour
         foreach (Collider col in hits)
         {
             EnemyHealth eh = col.GetComponentInParent<EnemyHealth>();
-            if (eh == null) continue;
-            if (eh == primaryTarget) continue;
-            eh.TakeDamage(explosionDamage, col);
+            if (eh != null)
+            {
+                if (eh == primaryTarget) continue;
+                eh.TakeDamage(explosionDamage, col);
+                continue;
+            }
+
+            // DestructibleMesh (MRUK duvar) - patlama alanındaki segmentleri kır
+            DestructibleMeshComponent destructibleMesh = col.GetComponentInParent<DestructibleMeshComponent>();
+            if (destructibleMesh != null && col.gameObject != destructibleMesh.ReservedSegment)
+            {
+                destructibleMesh.DestroySegment(col.gameObject);
+                DestructibleMeshHint.NotifyWallDestroyed();
+                if (WeaponManager.Instance != null)
+                {
+                    WeaponManager.Instance.PlayHitSound();
+                    WeaponManager.Instance.TriggerHitHaptic();
+                }
+            }
         }
     }
 }

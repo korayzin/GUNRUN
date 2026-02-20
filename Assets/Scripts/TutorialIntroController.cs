@@ -289,7 +289,7 @@ public class TutorialIntroController : MonoBehaviour
     public AudioClip botVoiceClip14;
 
     [Header("15. Diyalog - 6. silah ikincil özellik (yavaşlatma)")]
-    [Tooltip("6. silaha geçilince. B tuşu ile düşmanları yavaşlatır, açıp kapatabilirsin.")]
+    [Tooltip("6. silaha geçilince. Sol kontrolcü trigger ile düşmanları yavaşlatır, açıp kapatabilirsin.")]
     [TextArea(2, 5)]
     public string dialogueText15 = "";
     public AudioClip botVoiceClip15;

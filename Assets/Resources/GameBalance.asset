@@ -30,25 +30,25 @@ MonoBehaviour:
     maxAmmo: 10
     fireCooldown: 0.5
   - weaponName: FourthGun
-    damage: 50
+    damage: 75
     bulletVelocity: 80
-    maxAmmo: 100
-    fireCooldown: 0.05
+    maxAmmo: 15
+    fireCooldown: 0.6
   - weaponName: FifthGun
     damage: 50
     bulletVelocity: 20
     maxAmmo: 60
-    fireCooldown: 0.01
+    fireCooldown: 0.5
   - weaponName: SixthGun
-    damage: 40
-    bulletVelocity: 60
-    maxAmmo: 25
-    fireCooldown: 0.5
+    damage: 75
+    bulletVelocity: 20
+    maxAmmo: 12
+    fireCooldown: 0.2
   - weaponName: SeventhGun
-    damage: 200
-    bulletVelocity: 25
+    damage: 60
+    bulletVelocity: 1
     maxAmmo: 25
-    fireCooldown: 0.5
+    fireCooldown: 0.2
   - weaponName: EightGun
     damage: 90
     bulletVelocity: 100

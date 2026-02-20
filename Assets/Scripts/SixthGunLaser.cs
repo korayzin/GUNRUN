@@ -28,6 +28,10 @@ public class SixthGunLaser : MonoBehaviour
     [Tooltip("Slow tick rate (saniyede kaç kez kontrol)")]
     public float slowTickRate = 10f; // Saniyede 10 kez
     
+    [Header("=== CAN AZALMA (HASAR) ===")]
+    [Tooltip("Laser düşmana değerken her tick'te verilen hasar (tur1-tur4 tüm düşmanlara uygulanır)")]
+    public float damagePerTick = 3f;
+    
     [Tooltip("Raycast layer mask")]
     public LayerMask raycastLayerMask = -1; // Tüm layer'lar
     
@@ -191,7 +195,8 @@ public class SixthGunLaser : MonoBehaviour
         if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSixthWeaponPhase && !TutorialIntroController.TutorialSixthWeaponSecondaryEnabled)
             return; // 15. diyalog bitmeden ikincil (yavaşlatma) kapalı
         
-        if (OVRInput.GetDown(OVRInput.Button.Two) || OVRInput.GetDown(OVRInput.Button.Three))
+        // B/Y tuşları veya sol kontrolcü trigger ile toggle (SlowedGun sol elde tutulurken)
+        if (OVRInput.GetDown(OVRInput.Button.Two) || OVRInput.GetDown(OVRInput.Button.Three) || OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
         {
             ToggleLaser();
         }
@@ -477,13 +482,13 @@ public class SixthGunLaser : MonoBehaviour
             if (enemyBehavior != null && !currentHitEnemies.Contains(enemyBehavior))
             {
                 currentHitEnemies.Add(enemyBehavior);
-                ApplySlowToEnemy(enemyBehavior, enemyHealth);
+                ApplySlowToEnemy(enemyBehavior, enemyHealth, hit.collider);
                 hittingAnyEnemy = true;
             }
         }
     }
     
-    private void ApplySlowToEnemy(EnemyBehavior enemyBehavior, EnemyHealth enemyHealth)
+    private void ApplySlowToEnemy(EnemyBehavior enemyBehavior, EnemyHealth enemyHealth, Collider hitCollider)
     {
         if (enemyBehavior == null) return;
         
@@ -495,6 +500,11 @@ public class SixthGunLaser : MonoBehaviour
         if (enemyHealth != null)
         {
             enemyHealth.ApplyFreezeEffect();
+            // Can azalma efekti - tüm düşman tiplerine (tur1, tur2, tur3, tur4) uygulanır
+            if (damagePerTick > 0f && hitCollider != null)
+            {
+                enemyHealth.TakeDamage(damagePerTick, hitCollider, fromFlameSpray: false, fromSecondary: true, tutorialWeaponIndex: 5);
+            }
         }
         
         if (TutorialIntroController.TutorialSixthWeaponPhase && TutorialIntroController.TutorialSixthWeaponSecondaryEnabled && !_tutorialSixthSecondaryUsed)

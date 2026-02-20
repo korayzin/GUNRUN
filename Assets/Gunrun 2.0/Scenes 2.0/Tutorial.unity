@@ -34206,8 +34206,8 @@ MonoBehaviour:
   botVoiceClip13: {fileID: 0}
   dialogueText14: You can also fire normal bullets using the trigger button.
   botVoiceClip14: {fileID: 0}
-  dialogueText15: 'Secondary feature: use the X button to activate a slowing laser
-    in ypur LeftHand. Watch the limit! If it runs out, you''re done for. Use it wisely!'
+  dialogueText15: 'Secondary feature: use the left controller trigger to activate the slowing laser
+    in your LeftHand. Watch the limit! If it runs out, you''re done for. Use it wisely!'
   botVoiceClip15: {fileID: 0}
   dialogueText16: You can also fire normal bullets using the trigger button.
   botVoiceClip16: {fileID: 0}

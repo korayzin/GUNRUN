@@ -5272,10 +5272,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitHapticStrength: 0.4
   hitHapticDuration: 0.06
-  firstWeapon: {fileID: 828508232}
+  firstWeapon: {fileID: 2972479651670665011}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 1735730324613644644}
-  fourthWeapon: {fileID: 2972479651670665011}
+  fourthWeapon: {fileID: 0}
   fifthWeapon: {fileID: 1046036456}
   sixthWeapon: {fileID: 2443542293831071706}
   sixthWeaponLeftHand: {fileID: 1645557256}
@@ -60938,7 +60938,7 @@ PrefabInstance:
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -62898,7 +62898,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1341397035}
   - component: {fileID: 1341397036}
-  - component: {fileID: 1341397037}
   m_Layer: 0
   m_Name: Destructible
   m_TagString: Untagged
@@ -62944,32 +62943,7 @@ MonoBehaviour:
   reparentToThis: 1
   playerOffset: {x: 0, y: 1.5, z: 0}
   positionMode: 1
---- !u!114 &1341397037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1341397034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2ed5fcac11f22b4aa0fe0c9645ddba3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destructibleGlobalMeshSpawner: {fileID: 1241246874}
-  showHintAfterSeconds: 3
-  hintSprite: {fileID: 0}
-  hintSize: 0.28
-  hintColorFallback: {r: 1, g: 0.45, b: 0.1, a: 0.5}
-  surfaceOffset: 0.002
-  hintDensity: 0.4
-  pulseScale: 1
-  pulseSpeed: 2
-  pulseMinScale: 0.9
-  pulseMaxScale: 1.1
-  wallOpacityMin: 0.5
-  wallOpacityCycleDuration: 2.5
-  hideAfterFirstDestruction: 1
+  positionApplyDelayFrames: 3
 --- !u!1 &1344677897
 GameObject:
   m_ObjectHideFlags: 0
@@ -72541,7 +72515,7 @@ MonoBehaviour:
     type: 3}
   tur3Enemy: {fileID: 4377912173820595719, guid: a565f6d26fce2544f90a24e9a84f3015,
     type: 3}
-  tur4Enemy: {fileID: 4377912173820595719, guid: a565f6d26fce2544f90a24e9a84f3015,
+  tur4Enemy: {fileID: 919132149155446097, guid: 89c68c201bde49f4eb554ccb028ffa68,
     type: 3}
   floatingTextPrefab: {fileID: 7127387094801913698, guid: 0dd27ccc7d25e96458067037de82e456,
     type: 3}
@@ -97077,7 +97051,7 @@ PrefabInstance:
     - target: {fileID: 9047823037174840447, guid: 38a6a9f97183106429c37216093488dd,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

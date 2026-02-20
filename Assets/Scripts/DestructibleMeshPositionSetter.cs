@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
 
@@ -5,6 +6,7 @@ using Meta.XR.MRUtilityKit;
 /// MRUK tarafından spawn edilen DestructibleMesh'in pozisyonunu ayarlar.
 /// Mesh, MRUK room.GlobalMeshAnchor altında spawn olduğu için sahnedeki Destructible GameObject'i
 /// değiştirmek etkili olmaz. Bu script mesh'i reparent ederek veya oyuncu pozisyonuna göre konumlandırarak çözer.
+/// Retry sonrası duvarın yukarıda spawn olmasını önlemek için pozisyon birkaç frame sonra uygulanır (tracking stabilizasyonu).
 /// </summary>
 public class DestructibleMeshPositionSetter : MonoBehaviour
 {
@@ -14,6 +16,8 @@ public class DestructibleMeshPositionSetter : MonoBehaviour
         FixedPosition,
         /// <summary>Oyuncu (OVRCameraRig CenterEye) pozisyonuna göre konumlandır - room oyuncunun etrafında olur</summary>
         UsePlayerPosition,
+        /// <summary>Tracking space (zemin) referansı - retry sonrası daha tutarlı yükseklik</summary>
+        UseTrackingSpacePosition,
         /// <summary>Bu GameObject'in world pozisyonunu kullan - Destructible'ı sahnede taşıyarak kontrol edebilirsin</summary>
         UseThisTransformPosition
     }
@@ -27,6 +31,8 @@ public class DestructibleMeshPositionSetter : MonoBehaviour
     [Tooltip("PositionMode: UsePlayerPosition kullanıldığında oyuncudan offset (örn. zemin hizası için)")]
     [SerializeField] private Vector3 playerOffset = Vector3.zero;
     [SerializeField] private PositionMode positionMode = PositionMode.UsePlayerPosition;
+    [Tooltip("Retry sonrası duvar yüksekliği tutarlılığı için pozisyon uygulama gecikmesi (frame). 0 = anında.")]
+    [SerializeField] private int positionApplyDelayFrames = 3;
 
     private OVRCameraRig _cameraRig;
 
@@ -52,6 +58,37 @@ public class DestructibleMeshPositionSetter : MonoBehaviour
     }
 
     private void OnDestructibleMeshCreated(DestructibleMeshComponent destructibleMeshComponent)
+    {
+        if (destructibleMeshComponent == null) return;
+
+        // Önce reparent ve ilk pozisyonu uygula
+        ApplyPositionToMesh(destructibleMeshComponent);
+
+        // Retry sonrası tracking farklı olabilir; birkaç frame sonra pozisyonu tekrar uygula
+        if (positionApplyDelayFrames > 0)
+        {
+            StartCoroutine(ReapplyPositionAfterDelay(destructibleMeshComponent));
+        }
+        else
+        {
+            ApplyPositionToMesh(destructibleMeshComponent);
+        }
+    }
+
+    private IEnumerator ReapplyPositionAfterDelay(DestructibleMeshComponent destructibleMeshComponent)
+    {
+        for (int i = 0; i < positionApplyDelayFrames; i++)
+        {
+            yield return null;
+        }
+
+        if (destructibleMeshComponent != null)
+        {
+            ApplyPositionToMesh(destructibleMeshComponent);
+        }
+    }
+
+    private void ApplyPositionToMesh(DestructibleMeshComponent destructibleMeshComponent)
     {
         if (destructibleMeshComponent == null) return;
 
@@ -87,6 +124,16 @@ public class DestructibleMeshPositionSetter : MonoBehaviour
                 if (_cameraRig != null && _cameraRig.centerEyeAnchor != null)
                 {
                     return _cameraRig.centerEyeAnchor.position + playerOffset;
+                }
+                Debug.LogWarning("[DestructibleMeshPositionSetter] OVRCameraRig bulunamadı, origin kullanılıyor.");
+                return playerOffset;
+
+            case PositionMode.UseTrackingSpacePosition:
+                if (_cameraRig != null)
+                {
+                    Transform trackingSpace = _cameraRig.transform.Find("TrackingSpace");
+                    Vector3 basePos = trackingSpace != null ? trackingSpace.position : _cameraRig.transform.position;
+                    return basePos + playerOffset;
                 }
                 Debug.LogWarning("[DestructibleMeshPositionSetter] OVRCameraRig bulunamadı, origin kullanılıyor.");
                 return playerOffset;

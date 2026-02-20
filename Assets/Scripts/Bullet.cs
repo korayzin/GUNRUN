@@ -9,7 +9,9 @@ public class Bullet : MonoBehaviour
     public bool isFromSecondary = false;
     [Tooltip("Tutorial: Hangi silahtan atıldı (0-8)")]
     public int weaponIndex = -1;
-    public float speed = 20f; 
+    public float speed = 20f;
+    [Tooltip("Açıkken mermi yerçekiminden etkilenir (eğik atış). Kapalıyken düz gider.")]
+    public bool useGravity = false;
     public AudioClip hitSound;
     public GameObject damageEffectPrefab;
     private bool isGameOver = false;
@@ -53,21 +55,36 @@ public class Bullet : MonoBehaviour
         movementDirection = direction.normalized;
         directionSet = true;
         
-        // Rigidbody'yi kinematic yap ve velocity'yi sıfırla
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = Vector3.zero;
-            rb.isKinematic = true;
+            if (useGravity)
+            {
+                // Yerçekimli mermi: Bullet.speed ile başlangıç hızı, yerçekimi physics ile
+                rb.useGravity = true;
+                rb.isKinematic = false;
+                rb.velocity = movementDirection * speed;
+            }
+            else
+            {
+                // Normal mermi: kinematic hareket
+                rb.velocity = Vector3.zero;
+                rb.isKinematic = true;
+            }
         }
     }
 
     private void Update()
     {
-        if (!isGameOver)
+        if (isGameOver) return;
+        
+        if (useGravity)
         {
-            transform.position += movementDirection * speed * Time.unscaledDeltaTime;
+            // Yerçekimli mermi: Rigidbody physics hareket ettirir, elle hareket yok
+            return;
         }
+        
+        transform.position += movementDirection * speed * Time.unscaledDeltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -105,6 +122,50 @@ public class Bullet : MonoBehaviour
         {
             destructibleMesh.DestroySegment(other.gameObject);
             DestructibleMeshHint.NotifyWallDestroyed(); // Duvar ipuçlarını ilk kırılmada kaldır
+            if (WeaponManager.Instance != null)
+            {
+                WeaponManager.Instance.PlayHitSound();
+                WeaponManager.Instance.TriggerHitHaptic();
+            }
+            Destroy(gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Non-trigger collider'lı mermiler (PotionGunBullet, SixthAmmo) için - OnCollisionEnter tetiklenir.
+    /// </summary>
+    private void OnCollisionEnter(Collision collision)
+    {
+        Collider other = collision.collider;
+        EnemyHealth enemyHealth = other.GetComponentInParent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            Debug.Log("Dusmana hasar verildi: " + damage);
+            int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);
+            enemyHealth.TakeDamage(damage, other, fromFlameSpray: false, fromSecondary: isFromSecondary, tutorialWeaponIndex: tw);
+            if (WeaponManager.Instance != null)
+            {
+                WeaponManager.Instance.PlayHitSound();
+                WeaponManager.Instance.TriggerHitHaptic();
+            }
+            Destroy(gameObject);
+            return;
+        }
+
+        TargetBoardHealth boardHealth = other.GetComponentInParent<TargetBoardHealth>();
+        if (boardHealth != null)
+        {
+            Debug.Log("Target Board'a hasar verildi: " + damage);
+            boardHealth.TakeDamage(damage, other.ClosestPoint(transform.position));
+            Destroy(gameObject);
+            return;
+        }
+
+        DestructibleMeshComponent destructibleMesh = other.GetComponentInParent<DestructibleMeshComponent>();
+        if (destructibleMesh != null && other.gameObject != destructibleMesh.ReservedSegment)
+        {
+            destructibleMesh.DestroySegment(other.gameObject);
+            DestructibleMeshHint.NotifyWallDestroyed();
             if (WeaponManager.Instance != null)
             {
                 WeaponManager.Instance.PlayHitSound();
