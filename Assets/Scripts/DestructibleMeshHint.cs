@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,8 +55,12 @@ public class DestructibleMeshHint : MonoBehaviour
     private bool _firstDestructionDone;
     private Vector3 _roomCenter;
 
+    /// <summary>TutorialIntroController vb. duvar kırımını dinleyebilir.</summary>
+    public static event Action OnWallDestroyed;
+
     public static void NotifyWallDestroyed()
     {
+        OnWallDestroyed?.Invoke();
         var hint = FindObjectOfType<DestructibleMeshHint>();
         if (hint != null)
             hint.OnFirstWallDestroyed();

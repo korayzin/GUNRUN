@@ -195,12 +195,19 @@ public class LastGunFlameSpray : MonoBehaviour
         OVRInput.Button trigger = isLeftHanded ? OVRInput.Button.PrimaryIndexTrigger : OVRInput.Button.SecondaryIndexTrigger;
         bool triggerHeld = OVRInput.Get(trigger);
 
-        if (triggerHeld && currentSprayEnergy > 0f)
+        if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialNinthWeaponPhase && !TutorialIntroController.TutorialNinthWeaponPrimaryEnabled)
+            triggerHeld = false; // 21. diyalog bitmeden birincil (flame spray) kapalı
+
+        bool flameSprayUnlimited = TutorialIntroController.TutorialNinthWeaponPhase && !TutorialIntroController.TutorialNinthWeaponDialogue22Complete;
+        if (triggerHeld && (flameSprayUnlimited || currentSprayEnergy > 0f))
         {
             if (!isSpraying)
                 StartSpray();
-            currentSprayEnergy -= drainRate * Time.deltaTime;
-            if (currentSprayEnergy < 0f) currentSprayEnergy = 0f;
+            if (!flameSprayUnlimited)
+            {
+                currentSprayEnergy -= drainRate * Time.deltaTime;
+                if (currentSprayEnergy < 0f) currentSprayEnergy = 0f;
+            }
         }
         else
         {
@@ -219,14 +226,20 @@ public class LastGunFlameSpray : MonoBehaviour
         }
 
         if (isSpraying && currentSprayEnergy > 0f)
+        {
             DoDamageTick();
+            if (TutorialIntroController.TutorialNinthWeaponPhase && !TutorialIntroController.TutorialNinthWeaponDialogue22Complete)
+                TutorialIntroController.NotifyTutorialNinthWeaponFlameSprayTime(Time.deltaTime);
+        }
 
         // VR kontrolcüsü A butonu: Toy kullanılabilirse ToyHelper tüketir; Toy aktifken ateş engellenir; değilse tek atış (Fireball vb.)
         if (gunFire != null && OVRInput.GetDown(OVRInput.Button.One))
         {
+            if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialNinthWeaponPhase && !TutorialIntroController.TutorialNinthWeaponSecondaryEnabled)
+                return; // 22. diyalog bitmeden fireball kapalı
             ToyHelper toyHelper = GetComponent<ToyHelper>();
             if (toyHelper == null || (toyHelper.IsIdle() && !toyHelper.WouldConsumeA()))
-                gunFire.TryFire();
+                gunFire.TryFire(isSecondary: true);
         }
 
         UpdateVFXPosition();
@@ -234,6 +247,14 @@ public class LastGunFlameSpray : MonoBehaviour
             UpdateFlameLines();
         else
             SetFlameLinesVisible(false);
+        UpdateEnergyUI();
+    }
+
+    /// <summary>Tutorial retry: enerjiyi yenile. Death/energy retry sonrası çağrılır.</summary>
+    public void RefillSprayEnergy()
+    {
+        currentSprayEnergy = maxSprayEnergy;
+        sprayEnergyGameOverTriggered = false;
         UpdateEnergyUI();
     }
 
@@ -450,7 +471,7 @@ public class LastGunFlameSpray : MonoBehaviour
             EnemyHealth eh = hit.collider.GetComponentInParent<EnemyHealth>();
             if (eh != null)
             {
-                eh.TakeDamage(damageThisTick, hit.collider, fromFlameSpray: true);
+                eh.TakeDamage(damageThisTick, hit.collider, fromFlameSpray: true, fromSecondary: false, tutorialWeaponIndex: 8);
                 hitEnemiesThisSpray.Add(eh);
             }
         }
@@ -463,7 +484,7 @@ public class LastGunFlameSpray : MonoBehaviour
             EnemyHealth eh = hit.collider.GetComponentInParent<EnemyHealth>();
             if (eh != null && !hitEnemiesThisSpray.Contains(eh))
             {
-                eh.TakeDamage(damageThisTick * 0.5f, hit.collider);
+                eh.TakeDamage(damageThisTick * 0.5f, hit.collider, fromFlameSpray: true, fromSecondary: false, tutorialWeaponIndex: 8);
                 hitEnemiesThisSpray.Add(eh);
             }
         }
@@ -618,6 +639,10 @@ public class LastGunFlameSpray : MonoBehaviour
     private void UpdateEnergyUI()
     {
         if (uiContainer == null || fillImage == null) return;
+
+        bool flameSprayUnlimited = TutorialIntroController.TutorialNinthWeaponPhase && !TutorialIntroController.TutorialNinthWeaponDialogue22Complete;
+        uiContainer.SetActive(!flameSprayUnlimited);
+        if (flameSprayUnlimited) return;
 
         float percent = maxSprayEnergy > 0f ? currentSprayEnergy / maxSprayEnergy : 1f;
 

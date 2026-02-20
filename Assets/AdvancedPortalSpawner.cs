@@ -66,6 +66,12 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public int tur3Score = 100;
     public int tur4Score = 150;
 
+    [Header("Tutorial Modu")]
+    [Tooltip("Açıksa normal akış başlamaz - portallar kapalı kalır. TutorialIntroController OpenPortalA() ile açar")]
+    public bool tutorialMode = false;
+    [Tooltip("B ve C portallarından spawn: interval çarpanı (2 = normalin 2 katı yavaş)")]
+    public float tutorialBCSpawnIntervalMultiplier = 2.5f;
+
     [Header("Portal Spawn Animation")]
     [Tooltip("Oyun başladıktan kaç saniye sonra portallar açılsın")]
     public float portalSpawnStartDelay = 7.5f;
@@ -119,8 +125,350 @@ public class AdvancedPortalSpawner : MonoBehaviour
             { "C", portalPrefabC }
         };
 
-        // Portalları ve düşmanları gecikmeli başlat
-        StartCoroutine(StartGameSequence());
+        // Tutorial modunda otomatik başlatma - TutorialIntroController OpenPortalA() çağıracak
+        if (!tutorialMode)
+            StartCoroutine(StartGameSequence());
+    }
+
+    /// <summary>
+    /// Tutorial için sadece Portal A'yı aç. Pause (timeScale=0) sırasında da çalışır.
+    /// TutorialIntroController 2. diyalogdan 3 sn sonra çağırır.
+    /// </summary>
+    public void OpenPortalA()
+    {
+        StartCoroutine(OpenPortalACoroutine());
+    }
+
+    /// <summary>Tutorial fallback: Portal A açılana kadar bekle (yield return ile kullanılır).</summary>
+    public IEnumerator OpenPortalAAndWait()
+    {
+        yield return OpenPortalACoroutine();
+    }
+
+    /// <summary>Tutorial: Portal A açıldığında WayManager vb. dinleyebilir.</summary>
+    public static System.Action OnPortalAOpened;
+
+    private IEnumerator OpenPortalACoroutine()
+    {
+        if (portalPrefabA == null) yield break;
+
+        GameObject portalA = Instantiate(portalPrefabA, portalAPosition, portalARotation);
+        yield return AnimatePortalSpawnUnscaled(portalA, portalARotation);
+        _portalAOpened = true;
+        OnPortalAOpened?.Invoke();
+    }
+
+    /// <summary>
+    /// Tutorial: Sadece Portal A'dan düşman spawn başlat. Unpause sonrası TutorialIntroController çağırır.
+    /// </summary>
+    public void StartTutorialEnemySpawn()
+    {
+        if (tutorialMode)
+            StartCoroutine(SpawnEnemiesFromPortalAOnly());
+    }
+
+    /// <summary>
+    /// Tutorial: Portal A'dan tek düşman spawn et.
+    /// addTutorialController=true ise TutorialFirstEnemyController eklenir (stop/resume, invulnerability).
+    /// </summary>
+    public GameObject SpawnSingleEnemyAtPortalA(bool addTutorialController = false)
+    {
+        GameObject enemyPrefab = tur1Enemy != null ? tur1Enemy : tur2Enemy;
+        if (enemyPrefab == null) return null;
+
+        Vector3 spawnPos = portalAPosition;
+        spawnPos.y += spawnHeightOffset;
+
+        Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
+        directionToPlayer.y = 0;
+        Quaternion spawnRotation = directionToPlayer != Vector3.zero ? Quaternion.LookRotation(directionToPlayer) : Quaternion.identity;
+
+        GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
+        enemy.tag = "Enemy";
+        SetupEnemyComponents(enemy, spawnPos, enemyPrefab);
+
+        if (addTutorialController && enemy.GetComponent<TutorialFirstEnemyController>() == null)
+            enemy.AddComponent<TutorialFirstEnemyController>();
+
+        return enemy;
+    }
+
+    /// <summary>
+    /// Tutorial: Portal B'yi aç. Pause sırasında da çalışır.
+    /// </summary>
+    public void OpenPortalB()
+    {
+        StartCoroutine(OpenPortalCoroutine("B", portalBPosition, portalBRotation));
+    }
+
+    /// <summary>
+    /// Tutorial: Portal C'yi aç. Pause sırasında da çalışır.
+    /// </summary>
+    public void OpenPortalC()
+    {
+        StartCoroutine(OpenPortalCoroutine("C", portalCPosition, portalCRotation));
+    }
+
+    /// <summary>
+    /// Tutorial: Portal B ve C'yi sırayla aç. Coroutine olarak yield return edilebilir.
+    /// </summary>
+    public IEnumerator OpenPortalBAndC()
+    {
+        yield return OpenPortalBAndCCoroutine();
+    }
+
+    private IEnumerator OpenPortalCoroutine(string portalId, Vector3 pos, Quaternion rot)
+    {
+        GameObject prefab = portalId == "B" ? portalPrefabB : portalPrefabC;
+        if (prefab == null) yield break;
+
+        GameObject portal = Instantiate(prefab, pos, rot);
+        yield return AnimatePortalSpawnUnscaled(portal, rot);
+    }
+
+    /// <summary>Tutorial: Portal B ve C açıldığında WayManager vb. dinleyebilir.</summary>
+    public static System.Action OnPortalBAndCOpened;
+
+    private IEnumerator OpenPortalBAndCCoroutine()
+    {
+        if (portalPrefabB != null)
+        {
+            GameObject portalB = Instantiate(portalPrefabB, portalBPosition, portalBRotation);
+            StartCoroutine(AnimatePortalSpawnUnscaled(portalB, portalBRotation));
+        }
+        yield return new WaitForSecondsRealtime(portalSpawnDelay);
+        if (portalPrefabC != null)
+        {
+            GameObject portalC = Instantiate(portalPrefabC, portalCPosition, portalCRotation);
+            yield return AnimatePortalSpawnUnscaled(portalC, portalCRotation);
+        }
+        _portalBAndCOpened = true;
+        OnPortalBAndCOpened?.Invoke();
+    }
+
+    private bool _stopTutorialPhase2Spawning;
+    private bool _stopTutorialPhase2aSpawning;
+
+    private bool _portalAOpened;
+    private bool _portalBAndCOpened;
+
+    /// <summary>
+    /// Tutorial: Sadece B ve C portallarından düşman spawn et (normalden daha az - yavaş interval).
+    /// Dialogue 7 öncesi düşmanların ilerlemesi için.
+    /// </summary>
+    public void StartTutorialPhase2aFromBAndC()
+    {
+        _stopTutorialPhase2aSpawning = false;
+        StartCoroutine(SpawnTutorialPhase2aFromBAndCCoroutine());
+    }
+
+    public void StopTutorialPhase2aSpawning()
+    {
+        _stopTutorialPhase2aSpawning = true;
+    }
+
+    private IEnumerator SpawnTutorialPhase2aFromBAndCCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(delayBeforeFirstSpawn);
+
+        var bcPortals = new List<string> { "B", "C" };
+        float interval = stage1SpawnInterval * Mathf.Max(1f, tutorialBCSpawnIntervalMultiplier);
+
+        while (!_stopTutorialPhase2aSpawning && !isGameOver)
+        {
+            string portal = bcPortals[Random.Range(0, bcPortals.Count)];
+            Vector3 spawnPos = GetPortalPosition(portal);
+            spawnPos.y += spawnHeightOffset;
+
+            GameObject enemyPrefab = tur1Enemy != null ? tur1Enemy : tur2Enemy;
+            if (enemyPrefab == null) break;
+
+            Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
+            directionToPlayer.y = 0;
+            Quaternion spawnRotation = directionToPlayer != Vector3.zero ? Quaternion.LookRotation(directionToPlayer) : Quaternion.identity;
+
+            GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
+            enemy.tag = "Enemy";
+            SetupEnemyComponents(enemy, spawnPos, enemyPrefab);
+
+            yield return new WaitForSecondsRealtime(interval);
+        }
+    }
+
+    /// <summary>
+    /// Tutorial: 3 portaldan düşman spawn et. targetKillCount'a ulaşılınca durur (TutorialIntroController OnEnemyKilled ile sayar).
+    /// </summary>
+    public void StartTutorialPhase2Spawning(int targetKillCount, System.Func<int> getCurrentTutorialKillCount)
+    {
+        _stopTutorialPhase2Spawning = false;
+        StartCoroutine(SpawnTutorialPhase2Coroutine(targetKillCount, getCurrentTutorialKillCount));
+    }
+
+    public void StopTutorialPhase2Spawning()
+    {
+        _stopTutorialPhase2Spawning = true;
+    }
+
+    /// <summary>Tutorial 4-kill fazı bittikten sonra normal oyun spawn'ına geç (süre dolana kadar devam).</summary>
+    public void StartNormalSpawningFromTutorial()
+    {
+        StartCoroutine(SpawnEnemiesContinuously());
+    }
+
+    /// <summary>Sahnedeki tüm düşmanları kaldır. 5. silah vb. geçişlerde temiz başlangıç için.</summary>
+    public void ClearAllEnemiesInScene()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject e in enemies)
+        {
+            if (e != null) Object.Destroy(e);
+        }
+    }
+
+    /// <summary>Tutorial retry: düşmanları temizleyip sadece açık portallardan hemen spawn et. Diğer aşamaya kadar normal spawn devam eder.</summary>
+    public void ClearAndSpawnFromPortalsForTutorialRetry()
+    {
+        ClearAllEnemiesInScene();
+        var openPortals = new List<string>();
+        if (_portalAOpened) openPortals.Add("A");
+        if (_portalBAndCOpened) { openPortals.Add("B"); openPortals.Add("C"); }
+        if (openPortals.Count == 0) openPortals.Add("A");
+        for (int i = 0; i < openPortals.Count; i++)
+        {
+            string portal = openPortals[i];
+            Vector3 spawnPos = GetPortalPosition(portal);
+            spawnPos.y += spawnHeightOffset;
+
+            GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
+            if (enemyPrefab == null) continue;
+
+            Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
+            directionToPlayer.y = 0;
+            Quaternion spawnRotation = directionToPlayer != Vector3.zero ? Quaternion.LookRotation(directionToPlayer) : Quaternion.identity;
+
+            GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
+            enemy.tag = "Enemy";
+            SetupEnemyComponents(enemy, spawnPos, enemyPrefab);
+
+            if (!consecutivePortalCounts.ContainsKey(portal)) consecutivePortalCounts[portal] = 0;
+            consecutivePortalCounts[portal]++;
+            foreach (var p in portals.Where(p => p != portal))
+                consecutivePortalCounts[p] = 0;
+            lastEnemyPerPortal[portal] = enemyPrefab;
+        }
+    }
+
+    private IEnumerator SpawnTutorialPhase2Coroutine(int targetKillCount, System.Func<int> getCurrentTutorialKillCount)
+    {
+        yield return new WaitForSeconds(delayBeforeFirstSpawn);
+
+        while (!_stopTutorialPhase2Spawning && !isGameOver)
+        {
+            if (getCurrentTutorialKillCount != null && getCurrentTutorialKillCount() >= targetKillCount)
+                break;
+
+            GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
+            string portal = GetPreferredPortalForEnemy(enemyPrefab);
+            Vector3 spawnPos = GetPortalPosition(portal);
+            spawnPos.y += spawnHeightOffset;
+
+            if (enemyPrefab == null) break;
+
+            Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
+            directionToPlayer.y = 0;
+            Quaternion spawnRotation = directionToPlayer != Vector3.zero ? Quaternion.LookRotation(directionToPlayer) : Quaternion.identity;
+
+            GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
+            enemy.tag = "Enemy";
+            SetupEnemyComponents(enemy, spawnPos, enemyPrefab);
+
+            if (!consecutivePortalCounts.ContainsKey(portal))
+                consecutivePortalCounts[portal] = 0;
+            consecutivePortalCounts[portal]++;
+            foreach (var p in portals.Where(p => p != portal))
+                consecutivePortalCounts[p] = 0;
+            lastEnemyPerPortal[portal] = enemyPrefab;
+
+            yield return new WaitForSeconds(GetSpawnInterval());
+        }
+    }
+
+    private IEnumerator AnimatePortalSpawnUnscaled(GameObject portal, Quaternion targetRotation)
+    {
+        if (portal == null) yield break;
+
+        Transform portalTransform = portal.transform;
+        Vector3 targetScale = portalTransform.localScale;
+        portalTransform.localScale = Vector3.zero;
+
+        float elapsed = 0f;
+        float startRotationY = targetRotation.eulerAngles.y - portalSpawnRotation;
+
+        while (elapsed < portalSpawnDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / portalSpawnDuration;
+            float easedT = EaseOutBack(t, portalOvershoot);
+            portalTransform.localScale = Vector3.LerpUnclamped(Vector3.zero, targetScale, easedT);
+            float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, EaseOutCubic(t));
+            portalTransform.rotation = Quaternion.Euler(targetRotation.eulerAngles.x, currentRotationY, targetRotation.eulerAngles.z);
+            yield return null;
+        }
+
+        portalTransform.localScale = targetScale;
+        portalTransform.rotation = targetRotation;
+        yield return StartCoroutine(PulseEffectUnscaled(portalTransform, targetScale));
+    }
+
+    private IEnumerator PulseEffectUnscaled(Transform portalTransform, Vector3 baseScale)
+    {
+        float pulseDuration = 0.2f;
+        float pulseAmount = 1.05f;
+        float elapsed = 0f;
+        while (elapsed < pulseDuration / 2f)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / (pulseDuration / 2f);
+            portalTransform.localScale = Vector3.Lerp(baseScale, baseScale * pulseAmount, t);
+            yield return null;
+        }
+        elapsed = 0f;
+        while (elapsed < pulseDuration / 2f)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / (pulseDuration / 2f);
+            portalTransform.localScale = Vector3.Lerp(baseScale * pulseAmount, baseScale, t);
+            yield return null;
+        }
+        portalTransform.localScale = baseScale;
+    }
+
+    private IEnumerator SpawnEnemiesFromPortalAOnly()
+    {
+        yield return new WaitForSecondsRealtime(delayBeforeFirstSpawn);
+
+        while (!isGameOver && !TutorialIntroController.TutorialCompleteFreehand)
+        {
+            GameObject enemyPrefab = tur1Enemy != null ? tur1Enemy : tur2Enemy;
+            if (enemyPrefab == null) break;
+
+            Vector3 spawnPos = portalAPosition;
+            spawnPos.y += spawnHeightOffset;
+
+            Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
+            directionToPlayer.y = 0;
+            Quaternion spawnRotation = directionToPlayer != Vector3.zero ? Quaternion.LookRotation(directionToPlayer) : Quaternion.identity;
+
+            GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
+            enemy.tag = "Enemy";
+            SetupEnemyComponents(enemy, spawnPos, enemyPrefab);
+
+            if (!consecutivePortalCounts.ContainsKey("A")) consecutivePortalCounts["A"] = 0;
+            consecutivePortalCounts["A"]++;
+            lastEnemyPerPortal["A"] = enemyPrefab;
+
+            yield return new WaitForSecondsRealtime(stage1SpawnInterval);
+        }
     }
 
     IEnumerator StartGameSequence()
@@ -166,6 +514,22 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     float GetSpawnInterval()
     {
+        if (TutorialIntroController.TutorialCompleteFreehand)
+        {
+            if (GameBalanceManager.Instance != null)
+                return GameBalanceManager.Instance.GetSpawnInterval(currentStage);
+            return currentStage switch { 1 => stage1SpawnInterval, 2 => stage2SpawnInterval, _ => stage3SpawnInterval };
+        }
+        if (TutorialIntroController.TutorialNinthWeaponPhase)
+            return 1.2f; // 9. silah: flame + fireball denemesi
+        if (TutorialIntroController.TutorialEighthWeaponPhase)
+            return 2f; // 8. silah: daha fazla düşman (toy denemesi)
+        if (TutorialIntroController.TutorialSeventhWeaponPhase)
+            return 3.5f; // 7. silah (kırbaç): 6. silah gibi (uzaklaştırma denemesi)
+        if (TutorialIntroController.TutorialSixthWeaponPhase)
+            return 3.5f; // 6. silah: az az (slow beam denemesi)
+        if (TutorialIntroController.TutorialFifthWeaponPhase)
+            return 1f; // 5. silah: 1 sn aralık (yıldırım 3 kere denemesi)
         if (GameBalanceManager.Instance != null)
             return GameBalanceManager.Instance.GetSpawnInterval(currentStage);
         return currentStage switch { 1 => stage1SpawnInterval, 2 => stage2SpawnInterval, _ => stage3SpawnInterval };
@@ -173,6 +537,16 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     float GetEnemySpeed()
     {
+        if (TutorialIntroController.TutorialCompleteFreehand)
+        {
+            if (GameBalanceManager.Instance != null)
+                return GameBalanceManager.Instance.GetEnemySpeed(currentStage);
+            return currentStage switch { 1 => stage1EnemySpeed, 2 => stage2EnemySpeed, _ => stage3EnemySpeed };
+        }
+        if (TutorialIntroController.TutorialEighthWeaponPhase)
+            return 1.8f; // 8. silah: 19. diyalog sonrası biraz daha hızlı (sayı aynı)
+        if (TutorialIntroController.TutorialFifthWeaponPhase || TutorialIntroController.TutorialSixthWeaponPhase || TutorialIntroController.TutorialSeventhWeaponPhase)
+            return 1.2f; // 5./6./7. silah tutorial: yavaş düşmanlar
         if (GameBalanceManager.Instance != null)
             return GameBalanceManager.Instance.GetEnemySpeed(currentStage);
         return currentStage switch { 1 => stage1EnemySpeed, 2 => stage2EnemySpeed, _ => stage3EnemySpeed };
@@ -304,7 +678,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
             spawnPos.y += spawnHeightOffset;
 
             // Düşmanı oyuncuya bakacak şekilde spawn et (portaldan dönerek çıkmasını engeller)
-            Vector3 directionToPlayer = Camera.main.transform.position - spawnPos;
+            Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
             directionToPlayer.y = 0; // Y eksenini sabitle, sadece yatay düzlemde dönsün
             Quaternion spawnRotation = directionToPlayer != Vector3.zero 
                 ? Quaternion.LookRotation(directionToPlayer) 

@@ -203,13 +203,18 @@ public class ToyHelper : MonoBehaviour
 
         if (state == State.Idle)
         {
-            if (cooldownRemaining > 0f)
+            bool tutorialUnlimited = TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialCompleteFreehand; // 8. silah tutorial: toy sürekli kullanılabilir (freehand'de normal)
+            if (!tutorialUnlimited && cooldownRemaining > 0f)
             {
                 cooldownRemaining -= Time.deltaTime;
                 if (cooldownRemaining < 0f) cooldownRemaining = 0f;
             }
-            if (OVRInput.GetDown(OVRInput.Button.One) && cooldownRemaining <= 0f)
+            if (OVRInput.GetDown(OVRInput.Button.One) && (tutorialUnlimited || cooldownRemaining <= 0f))
+            {
+                if (tutorialUnlimited)
+                    TutorialIntroController.NotifyTutorialEighthWeaponToyUsed();
                 StartDeploy();
+            }
             UpdateCooldownUI();
             return;
         }
@@ -482,7 +487,8 @@ public class ToyHelper : MonoBehaviour
         }
 
         state = State.Idle;
-        cooldownRemaining = cooldownDuration;
+        if (!TutorialIntroController.TutorialEighthWeaponPhase || TutorialIntroController.TutorialCompleteFreehand)
+            cooldownRemaining = cooldownDuration;
         lastCooldownPercent = -1f;
         moveCoroutine = null;
     }
@@ -544,7 +550,8 @@ public class ToyHelper : MonoBehaviour
         if (toy == null) return;
 
         Vector3 origin = toy.position;
-        Collider[] hits = Physics.OverlapSphere(origin, laserRange, enemyLayerMask);
+        float range = (TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialCompleteFreehand) ? 50f : laserRange;
+        Collider[] hits = Physics.OverlapSphere(origin, range, enemyLayerMask);
         List<EnemyHealth> enemies = new List<EnemyHealth>();
         foreach (Collider c in hits)
         {
@@ -557,14 +564,13 @@ public class ToyHelper : MonoBehaviour
         leftLineAnimT = 0f;
         rightLineAnimT = 0f;
 
-        // En yakın 2 düşman
         enemies.Sort((a, b) =>
         {
             float da = (a.transform.position - origin).sqrMagnitude;
             float db = (b.transform.position - origin).sqrMagnitude;
             return da.CompareTo(db);
         });
-        int maxTargets = Mathf.Min(2, enemies.Count);
+        int maxTargets = (TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialCompleteFreehand) ? enemies.Count : Mathf.Min(2, enemies.Count);
         bool didHitAny = false;
 
         Vector3 leftEyePos = GetEyePosition(true);
@@ -581,12 +587,12 @@ public class ToyHelper : MonoBehaviour
             bool useLeftEye = (i % 2 == 0);
             Vector3 eyePos = useLeftEye ? leftEyePos : rightEyePos;
             RaycastHit rayHit;
-            if (Physics.Raycast(eyePos, toTarget, out rayHit, laserRange, enemyLayerMask))
+            if (Physics.Raycast(eyePos, toTarget, out rayHit, range, enemyLayerMask))
             {
                 EnemyHealth eh = rayHit.collider.GetComponentInParent<EnemyHealth>();
                 if (eh != null)
                 {
-                    eh.TakeDamage(damagePerTick, rayHit.collider, false);
+                    eh.TakeDamage(damagePerTick, rayHit.collider, fromFlameSpray: false, fromSecondary: true, tutorialWeaponIndex: 7);
                     didHitAny = true;
                     float now = Time.time;
                     if (now - lastLaserHitSfxTime >= laserHitSfxThrottle && laserHitSfx != null && audioSource != null)
@@ -843,6 +849,10 @@ public class ToyHelper : MonoBehaviour
     private void UpdateCooldownUI()
     {
         if (cooldownUIContainer == null || cooldownFillImage == null) return;
+
+        bool tutorialUnlimited = TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialCompleteFreehand;
+        cooldownUIContainer.SetActive(!tutorialUnlimited);
+        if (tutorialUnlimited) return;
 
         float percent = cooldownDuration > 0f ? 1f - (cooldownRemaining / cooldownDuration) : 1f;
         // VR optimize: sadece değiştiğinde veya 0.1 s'de bir güncelle

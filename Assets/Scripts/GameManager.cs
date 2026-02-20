@@ -7,6 +7,11 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+    private static bool IsTutorialScene()
+    {
+        return UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Tutorial"
+            || FindObjectOfType<TutorialIntroController>() != null;
+    }
     public static GameManager Instance;
     public GameObject restartCanvas;
     public TextMeshProUGUI scoreText;
@@ -23,18 +28,48 @@ public class GameManager : MonoBehaviour
     private float gameTimer;
     public float gameDuration = 150f;
 
+    [Header("Tutorial Timer")]
+    [Tooltip("Tutorial'da 9. diyalogdan sonra süre (sn) - 360'dan geriye sayar")]
+    public float tutorialTimerDuration = 360f;
+    private bool _tutorialTimerActive = false;
+
     public int score = 0;
     private bool isGameOver = false;
 
+    /// <summary>Tutorial 9. diyalogdan sonra süreyi başlat. Pause'da otomatik durur (Time.deltaTime=0).</summary>
+    public void StartTutorialTimer()
+    {
+        _tutorialTimerActive = true;
+        gameTimer = tutorialTimerDuration;
+        if (timeAndScorePanel != null)
+            timeAndScorePanel.SetActive(true);
+        UpdateTimerUI();
+    }
+
+    /// <summary>Tutorial retry: süreyi yenile. Death/energy/time retry sonrası çağrılır.</summary>
+    public void RefillTutorialTimer()
+    {
+        if (_tutorialTimerActive)
+        {
+            gameTimer = tutorialTimerDuration;
+            UpdateTimerUI();
+        }
+    }
+
     private void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
-        {
             Instance = this;
+
+        DestructibleMeshExperience.allowTriggerToBreakWalls = false; // Sadece mermi duvar kırsın
+
+        // Tutorial sahnesinde normal oyun akışı çalışmasın
+        if (IsTutorialScene())
+        {
+            Time.timeScale = 0f;
+            return;
         }
-        
-        // Awake'te de Time.timeScale'i kontrol et
+
         if (Time.timeScale != 1f)
         {
             Debug.LogWarning($"⚠️ Awake'te Time.timeScale = {Time.timeScale}, 1'e ayarlanıyor...");
@@ -44,7 +79,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // ÖNCE Time.timeScale'in 1 olduğundan emin ol (önceki sahneden kalmış olabilir)
+        if (IsTutorialScene())
+        {
+            portalSpawner = FindObjectOfType<AdvancedPortalSpawner>();
+            UpdateScoreUI();
+            return;
+        }
+
         Time.timeScale = 1f;
         Debug.Log($"🕐 Time.timeScale başlangıçta {Time.timeScale} olarak ayarlandı");
         
@@ -116,6 +157,21 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (IsTutorialScene())
+        {
+            if (_tutorialTimerActive && !isGameOver)
+            {
+                gameTimer -= Time.deltaTime;
+                UpdateTimerUI();
+                if (gameTimer <= 0)
+                {
+                    gameTimer = 0;
+                    GameOver(null);
+                }
+            }
+            return;
+        }
+
         if (!isGameOver)
         {
             gameTimer -= Time.deltaTime;
@@ -136,6 +192,7 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(int damage)
     {
+        if (IsTutorialScene()) return;
         score += damage;
         UpdateScoreUI();
     }
@@ -159,19 +216,32 @@ public class GameManager : MonoBehaviour
 
     private void UpdateScoreUI()
     {
+        string displayText = IsTutorialScene() ? "∞" : score.ToString();
         if (scoreText != null)
         {
-            scoreText.text = score.ToString();
+            scoreText.text = displayText;
         }
         if (secondaryScoreText != null)
         {
-            secondaryScoreText.text = score.ToString();
+            secondaryScoreText.text = displayText;
         }
     }
 
     public void GameOver(Collider hitCollider)
     {
         if (isGameOver) return;
+
+        // Tutorial retry: ölünce normal game over yerine retry diyaloğu
+        if (IsTutorialScene() && TutorialIntroController.TutorialActive)
+        {
+            var ctrl = FindObjectOfType<TutorialIntroController>();
+            if (ctrl != null)
+            {
+                ctrl.HandleTutorialDeath(hitCollider);
+                return;
+            }
+        }
+
         isGameOver = true;
 
         Debug.Log($"🎮 GAME OVER! Çarpılan obje: {hitCollider?.name ?? "Bilinmiyor"}");

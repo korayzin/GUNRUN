@@ -100,12 +100,26 @@ public class GunFire : MonoBehaviour
 
     void Update()
     {
-        // Mermi/enerji bitti mi kontrolü (LastGun için de çalışsın; flameSpray varken trigger atılmaz ama ammo 0 olunca oyun biter)
-        if (currentAmmo <= 0 && !isOutOfAmmo)
+        // Mermi/enerji bitti mi kontrolü (Tutorial sınırsız mermi modunda atla)
+        if (!TutorialIntroController.TutorialUnlimitedAmmo && currentAmmo <= 0 && !isOutOfAmmo)
         {
             bool partnerHasAmmo = isBaretta && FindPartnerBaretta() != null && FindPartnerBaretta().GetCurrentAmmo() > 0;
             if (!partnerHasAmmo)
             {
+                bool inTutorial = FindObjectOfType<TutorialIntroController>() != null;
+                if (inTutorial && TutorialIntroController.TutorialActive)
+                {
+                    var ctrl = FindObjectOfType<TutorialIntroController>();
+                    if (ctrl != null)
+                    {
+                        isOutOfAmmo = true;
+                        ctrl.HandleTutorialOutOfAmmo();
+                        return;
+                    }
+                }
+                bool isLastTwoWeapons = weaponBalanceIndex >= 7;
+                if (inTutorial && !isLastTwoWeapons)
+                    return;
                 isOutOfAmmo = true;
                 if (GameManager.Instance != null)
                     GameManager.Instance.GameOver(null);
@@ -113,6 +127,7 @@ public class GunFire : MonoBehaviour
         }
 
         if (!canFire) return;
+        if (!TutorialIntroController.TutorialFiringEnabled) return;
 
         // LastGun: ateş püskürtme bu silahta LastGunFlameSpray tarafından yönetilir, mermi atma.
         var flameSpray = GetComponent<LastGunFlameSpray>();
@@ -142,12 +157,12 @@ public class GunFire : MonoBehaviour
 
         if (isAutomatic)
         {
-            if (OVRInput.Get(fireButton) && currentAmmo > 0 && !isFiring)
+            if (OVRInput.Get(fireButton) && (TutorialIntroController.TutorialUnlimitedAmmo || currentAmmo > 0) && !isFiring)
             {
                 isFiring = true;
                 StartCoroutine(AutoFire(fireButton));
             }
-            else if (!OVRInput.Get(fireButton) || currentAmmo <= 0)
+            else if (!OVRInput.Get(fireButton) || (!TutorialIntroController.TutorialUnlimitedAmmo && currentAmmo <= 0))
             {
                 isFiring = false;
                 StopFireSound();
@@ -155,7 +170,7 @@ public class GunFire : MonoBehaviour
         }
         else
         {
-            if (OVRInput.GetDown(fireButton) && currentAmmo > 0 && canFire)
+            if (OVRInput.GetDown(fireButton) && (TutorialIntroController.TutorialUnlimitedAmmo || currentAmmo > 0) && canFire)
             {
                 StartCoroutine(FireWithCooldown());
             }
@@ -187,22 +202,29 @@ public class GunFire : MonoBehaviour
     /// <summary>
     /// Alternatif giriş (örn. LastGun A tuşu) ile tek atış. Bu silahın bulletPrefab'ını kullanır.
     /// </summary>
-    public bool TryFire()
+    /// <param name="isSecondary">true = A tuşu (fireball), Tutorial ikincil kill takibi için</param>
+    public bool TryFire(bool isSecondary = false)
     {
-        if (!canFire || currentAmmo <= 0) return false;
+        if (!canFire || (!TutorialIntroController.TutorialUnlimitedAmmo && !TutorialIntroController.TutorialNinthWeaponFireballUnlimited && currentAmmo <= 0)) return false;
+        _nextShotIsFromSecondary = isSecondary;
         StartCoroutine(FireWithCooldown());
         return true;
     }
+
+    private bool _nextShotIsFromSecondary = false;
 
     private IEnumerator FireWithCooldown()
     {
         canFire = false;
         Fire();
         StartCoroutine(HapticFeedback());
-        currentAmmo -= 1;
-        UpdateAmmoDisplay();
+        if (!TutorialIntroController.TutorialUnlimitedAmmo && !TutorialIntroController.TutorialNinthWeaponFireballUnlimited)
+        {
+            currentAmmo -= 1;
+            UpdateAmmoDisplay();
+        }
 
-        yield return new WaitForSeconds(fireCooldown);
+        yield return new WaitForSecondsRealtime(fireCooldown);
 
         canFire = true;
     }
@@ -216,14 +238,17 @@ public class GunFire : MonoBehaviour
             audioSource.Play();
         }
 
-        while (OVRInput.Get(fireButton) && currentAmmo > 0)
+        while (OVRInput.Get(fireButton) && (TutorialIntroController.TutorialUnlimitedAmmo || currentAmmo > 0))
         {
             Fire();
             StartCoroutine(HapticFeedback());
-            currentAmmo -= 1;
-            UpdateAmmoDisplay();
+            if (!TutorialIntroController.TutorialUnlimitedAmmo)
+            {
+                currentAmmo -= 1;
+                UpdateAmmoDisplay();
+            }
 
-            yield return new WaitForSeconds(fireCooldown);
+            yield return new WaitForSecondsRealtime(fireCooldown);
         }
 
         StopFireSound();
@@ -303,6 +328,9 @@ public class GunFire : MonoBehaviour
                 bulletScript.damage = GameBalanceManager.Instance.GetWeaponData(weaponBalanceIndex).damage;
             bulletScript.hitSound = bulletHitSound;
             bulletScript.damageEffectPrefab = damageEffectPrefab;
+            bulletScript.isFromSecondary = _nextShotIsFromSecondary;
+            bulletScript.weaponIndex = weaponBalanceIndex;
+            _nextShotIsFromSecondary = false;
             bulletScript.SetMovementDirection(targetDirection);
         }
 
@@ -343,6 +371,12 @@ public class GunFire : MonoBehaviour
     {
         if (ammoText != null)
         {
+            if (TutorialIntroController.TutorialUnlimitedAmmo)
+            {
+                ammoText.gameObject.SetActive(false);
+                return;
+            }
+            ammoText.gameObject.SetActive(true);
             ammoText.text = currentAmmo.ToString();
             
             // Son 3 mermide kırmızı, son 5 mermide turuncu, diğer durumlarda beyaz

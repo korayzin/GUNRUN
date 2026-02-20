@@ -37,6 +37,10 @@ public class EnemyHealth : MonoBehaviour
     public int scoreValue = 50;
     private bool isDead = false;
 
+    [Header("Tutorial")]
+    [Tooltip("true ise hasar almaz - TutorialFirstEnemyController tarafından ayarlanır")]
+    public bool isInvulnerable = false;
+
     private Renderer[] enemyRenderers;
     private MaterialPropertyBlock propertyBlock;
     
@@ -60,8 +64,14 @@ public class EnemyHealth : MonoBehaviour
         InitializeHealthGlow();
     }
 
-    public void TakeDamage(float damage, Collider hitCollider, bool fromFlameSpray = false)
+    /// <summary>Son öldürme kaynağı - Tutorial için (5-9. silah ikincil kill takibi)</summary>
+    public static bool LastKillWasFromFlameSpray { get; private set; }
+    public static bool LastKillWasFromSecondary { get; private set; }
+    public static int LastKillWeaponIndex { get; private set; } = -1;
+
+    public void TakeDamage(float damage, Collider hitCollider, bool fromFlameSpray = false, bool fromSecondary = false, int tutorialWeaponIndex = -1)
     {
+        if (isInvulnerable) return;
         Debug.Log(hitCollider.name + " tarafından vuruldu! Hasar: " + damage);
         if (fromFlameSpray)
             ApplyBurnEffect();
@@ -115,6 +125,9 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            LastKillWasFromFlameSpray = fromFlameSpray;
+            LastKillWasFromSecondary = fromSecondary;
+            LastKillWeaponIndex = tutorialWeaponIndex >= 0 ? tutorialWeaponIndex : (fromFlameSpray || fromSecondary ? 8 : -1);
             Die();
         }
 

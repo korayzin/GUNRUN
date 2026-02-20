@@ -5,6 +5,10 @@ public class Bullet : MonoBehaviour
 {
     [Tooltip("Merminin verdigi hasar miktari")]
     public float damage = 25f;
+    [Tooltip("Tutorial: A tuşu (fireball) ile atıldıysa true - ikincil kill takibi için")]
+    public bool isFromSecondary = false;
+    [Tooltip("Tutorial: Hangi silahtan atıldı (0-8)")]
+    public int weaponIndex = -1;
     public float speed = 20f; 
     public AudioClip hitSound;
     public GameObject damageEffectPrefab;
@@ -72,7 +76,8 @@ public class Bullet : MonoBehaviour
         if (enemyHealth != null)
         {
             Debug.Log("Dusmana hasar verildi: " + damage);
-            enemyHealth.TakeDamage(damage, other);
+            int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);
+            enemyHealth.TakeDamage(damage, other, fromFlameSpray: false, fromSecondary: isFromSecondary, tutorialWeaponIndex: tw);
             
             // WeaponManager üzerinden hit sesi ve kontrolcülere haptic
             if (WeaponManager.Instance != null)

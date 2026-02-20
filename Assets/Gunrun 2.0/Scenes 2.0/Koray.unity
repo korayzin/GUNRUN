@@ -5272,12 +5272,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitHapticStrength: 0.4
   hitHapticDuration: 0.06
-  firstWeapon: {fileID: 0}
+  firstWeapon: {fileID: 828508232}
   secondWeapon: {fileID: 633709889}
   thirdWeapon: {fileID: 1735730324613644644}
   fourthWeapon: {fileID: 2972479651670665011}
   fifthWeapon: {fileID: 1046036456}
   sixthWeapon: {fileID: 2443542293831071706}
+  sixthWeaponLeftHand: {fileID: 1645557256}
   seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
   ninthWeapon: {fileID: 20849705}
@@ -5299,6 +5300,7 @@ MonoBehaviour:
   vfxSeventh: {fileID: 0}
   vfxEighth: {fileID: 0}
   vfxNinth: {fileID: 0}
+  weaponSwitchEnabled: 1
   killsToSecond: 4
   killsToThird: 12
   killsToFourth: 20
@@ -47140,6 +47142,8 @@ MonoBehaviour:
   - {fileID: 2031120015}
   - {fileID: 1244761644}
   - {fileID: 815147436}
+  panelsForPortalA: []
+  panelsForPortalBAndC: []
   showDelay: 9
   visibleDuration: 8
   showAnimationDuration: 0.6
@@ -48448,12 +48452,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 87444287605753292, guid: 219291cae7ec88b42879ba62dee74e0f,
     type: 3}
   m_PrefabInstance: {fileID: 908495306}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &911151362 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4060938240063826061, guid: ee8efac66317faa4190c88084a344472,
-    type: 3}
-  m_PrefabInstance: {fileID: 2443542293831071704}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &914649028
 GameObject:
@@ -55704,6 +55702,7 @@ MonoBehaviour:
   backgroundMusic: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
+  tutorialTimerDuration: 360
   score: 0
 --- !u!65 &1118923891
 BoxCollider:
@@ -61384,6 +61383,7 @@ MonoBehaviour:
   backgroundMusic: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
+  tutorialTimerDuration: 360
   score: 0
 --- !u!65 &1286688574
 BoxCollider:
@@ -62958,7 +62958,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destructibleGlobalMeshSpawner: {fileID: 1241246874}
   showHintAfterSeconds: 3
-  hintSprite: {fileID: 21300000, guid: 11121792d46f0c147b422f056f9fef4b, type: 3}
+  hintSprite: {fileID: 0}
   hintSize: 0.28
   hintColorFallback: {r: 1, g: 0.45, b: 0.1, a: 0.5}
   surfaceOffset: 0.002
@@ -72563,6 +72563,8 @@ MonoBehaviour:
   tur2Score: 50
   tur3Score: 100
   tur4Score: 150
+  tutorialMode: 0
+  tutorialBCSpawnIntervalMultiplier: 2.5
   portalSpawnStartDelay: 7.5
   portalSpawnDuration: 1.5
   portalSpawnDelay: 0.3
@@ -73010,6 +73012,91 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5971611788882507682, guid: a574b93858cad4047a6ad9212fb5ffab,
     type: 3}
   m_PrefabInstance: {fileID: 1636512337}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1645557254
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2003775407}
+    m_Modifications:
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.07
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.232
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6301139
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.34184995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.44184187
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.5393245
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -65.149
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 26.586
+      objectReference: {fileID: 0}
+    - target: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 63.954
+      objectReference: {fileID: 0}
+    - target: {fileID: 5321942857070498281, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_Name
+      value: SlowedGun
+      objectReference: {fileID: 0}
+    - target: {fileID: 5321942857070498281, guid: c0c9369a40755ea46874c421d922220d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c0c9369a40755ea46874c421d922220d, type: 3}
+--- !u!4 &1645557255 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4796481455187102547, guid: c0c9369a40755ea46874c421d922220d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1645557254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1645557256 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5321942857070498281, guid: c0c9369a40755ea46874c421d922220d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1645557254}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1648026092
 GameObject:
@@ -85156,6 +85243,7 @@ MonoBehaviour:
   backgroundMusic: {fileID: 0}
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
+  tutorialTimerDuration: 360
   score: 0
 --- !u!4 &1834682428
 Transform:
@@ -91595,6 +91683,10 @@ PrefabInstance:
       addedObject: {fileID: 1280245131}
     - targetCorrespondingSourceObject: {fileID: 488160, guid: d9809c5e8418bb047bf2c8ba1d1a2cec,
         type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1645557255}
+    - targetCorrespondingSourceObject: {fileID: 488160, guid: d9809c5e8418bb047bf2c8ba1d1a2cec,
+        type: 3}
       insertIndex: -1
       addedObject: {fileID: 1441844564}
     - targetCorrespondingSourceObject: {fileID: 2774251407684675044, guid: d9809c5e8418bb047bf2c8ba1d1a2cec,
@@ -96479,10 +96571,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2443542293831071707}
-    - targetCorrespondingSourceObject: {fileID: 9112582989930850791, guid: ee8efac66317faa4190c88084a344472,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2443542293831071708}
   m_SourcePrefab: {fileID: 100100000, guid: ee8efac66317faa4190c88084a344472, type: 3}
 --- !u!4 &2443542293831071705 stripped
 Transform:
@@ -96541,45 +96629,6 @@ MonoBehaviour:
   weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
---- !u!114 &2443542293831071708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2443542293831071706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ff1645266c76ec4f8ef4b50381b6ee7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  laserSpawnPoint: {fileID: 911151362}
-  laserRange: 100
-  slowMultiplier: 0.4
-  slowTickRate: 10
-  raycastLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  laserColor: {r: 0, g: 0.7, b: 1, a: 1}
-  glowColor: {r: 0, g: 0.4, b: 1, a: 0.4}
-  coreColor: {r: 1, g: 1, b: 1, a: 1}
-  laserWidth: 0.02
-  glowWidth: 0.008
-  coreWidth: 0.008
-  enableLight: 0
-  lightIntensity: 3
-  lightRange: 5
-  lightColor: {r: 0, g: 0.98, b: 1, a: 1}
-  showEnergyBar: 1
-  maxEnergy: 100
-  drainRate: 1
-  drainRateOnHit: 2
-  rechargeRate: 2
-  uiSize: 0.06
-  uiOffset: {x: 0, y: 0.08, z: -0.25}
-  uiColor: {r: 0, g: 0.7, b: 1, a: 1}
-  uiBgColor: {r: 0.1, g: 0.1, b: 0.15, a: 0.8}
-  uiArcThickness: 0.15
 --- !u!114 &2443542293831071709 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3161343720096927567, guid: ee8efac66317faa4190c88084a344472,

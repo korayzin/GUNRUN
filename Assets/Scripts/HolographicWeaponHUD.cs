@@ -169,6 +169,29 @@ public class HolographicWeaponHUD : MonoBehaviour
         StartCoroutine(PopAnimation());
     }
 
+    /// <summary>Tutorial 12. diyalogda HUD'u açmak için. Kapalıysa açar ve pop animasyonu oynatır.</summary>
+    public void EnsureVisible()
+    {
+        gameObject.SetActive(true);
+        if (_isHudVisible) return;
+        _isHudVisible = true;
+        if (!_isPopAnimating) StartCoroutine(PopAnimation());
+    }
+
+    /// <summary>Tutorial başında HUD'u gizlemek için.</summary>
+    public void EnsureHidden()
+    {
+        _isHudVisible = false;
+        gameObject.SetActive(false);
+    }
+
+    /// <summary>Tutorial: Sadece Canvas'ı aç/kapat. GameObject aktif kalır, HUD bileşeni çalışır.</summary>
+    public void SetCanvasVisible(bool visible)
+    {
+        var c = _canvas != null ? _canvas : GetComponent<Canvas>();
+        if (c != null) c.enabled = visible;
+    }
+
     private IEnumerator PopAnimation()
     {
         _isPopAnimating = true;
@@ -184,7 +207,7 @@ public class HolographicWeaponHUD : MonoBehaviour
 
         while (elapsed < popDuration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / popDuration);
             float curveT = _isHudVisible ? popOpenCurve.Evaluate(t) : popCloseCurve.Evaluate(t);
             transform.localScale = Vector3.LerpUnclamped(startScale, endScale, curveT);

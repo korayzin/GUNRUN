@@ -5,13 +5,19 @@ using UnityEngine;
 /// <summary>
 /// Atadığın panelleri oyun başladıktan 9 saniye sonra (portalların açılmasından 1.5 sn sonra)
 /// animasyonla gösterir, 5 saniye sonra animasyonla kaldırır.
-/// Boş bir GameObject'e ekleyip Inspector'dan panelleri sürükleyebilirsin.
+/// Tutorial modunda: portalların açılış sırasına göre paneller gösterilir (A → B ve C).
 /// </summary>
 public class WayManager : MonoBehaviour
 {
-    [Header("Way Panelleri")]
-    [Tooltip("Gösterilecek paneller (UI veya 3D). Boş bırakırsan hiçbir şey olmaz.")]
+    [Header("Way Panelleri (Normal Oyun)")]
+    [Tooltip("Normal oyunda gösterilecek paneller. Tutorial modunda kullanılmaz.")]
     public List<GameObject> panels = new List<GameObject>();
+
+    [Header("Tutorial - Portal Bazlı Paneller")]
+    [Tooltip("Portal A açıldığında gösterilecek paneller (yol gösterici)")]
+    public List<GameObject> panelsForPortalA = new List<GameObject>();
+    [Tooltip("Portal B ve C açıldığında gösterilecek paneller")]
+    public List<GameObject> panelsForPortalBAndC = new List<GameObject>();
 
     [Header("Zamanlama")]
     [Tooltip("Oyun başladıktan kaç saniye sonra paneller gösterilsin (portallar ~7.5+1.5 sn)")]
@@ -29,9 +35,31 @@ public class WayManager : MonoBehaviour
     public float showOvershoot = 1.08f;
 
     private Dictionary<GameObject, Vector3> originalScales = new Dictionary<GameObject, Vector3>();
+    private AdvancedPortalSpawner _spawner;
+
+    private void OnEnable()
+    {
+        AdvancedPortalSpawner.OnPortalAOpened += OnPortalAOpened;
+        AdvancedPortalSpawner.OnPortalBAndCOpened += OnPortalBAndCOpened;
+    }
+
+    private void OnDisable()
+    {
+        AdvancedPortalSpawner.OnPortalAOpened -= OnPortalAOpened;
+        AdvancedPortalSpawner.OnPortalBAndCOpened -= OnPortalBAndCOpened;
+    }
 
     private void Start()
     {
+        _spawner = FindObjectOfType<AdvancedPortalSpawner>();
+        bool tutorialMode = _spawner != null && _spawner.tutorialMode;
+
+        if (tutorialMode)
+        {
+            InitializePanelsForTutorial();
+            return;
+        }
+
         if (panels == null || panels.Count == 0)
             return;
 
@@ -47,6 +75,51 @@ public class WayManager : MonoBehaviour
         }
 
         StartCoroutine(WaySequence());
+    }
+
+    private void InitializePanelsForTutorial()
+    {
+        var allTutorialPanels = new List<GameObject>();
+        if (panelsForPortalA != null) allTutorialPanels.AddRange(panelsForPortalA);
+        if (panelsForPortalBAndC != null) allTutorialPanels.AddRange(panelsForPortalBAndC);
+
+        originalScales.Clear();
+        foreach (GameObject p in allTutorialPanels)
+        {
+            if (p == null) continue;
+            Vector3 sc = GetCurrentScale(p);
+            if (sc == Vector3.zero) sc = Vector3.one;
+            originalScales[p] = sc;
+            p.SetActive(true);
+            SetPanelState(p, false);
+        }
+    }
+
+    private void OnPortalAOpened()
+    {
+        ShowWayPanels(panelsForPortalA);
+    }
+
+    private void OnPortalBAndCOpened()
+    {
+        ShowWayPanels(panelsForPortalBAndC);
+    }
+
+    private void ShowWayPanels(List<GameObject> panelList)
+    {
+        if (panelList == null) return;
+        foreach (GameObject p in panelList)
+        {
+            if (p != null && p.activeInHierarchy)
+                StartCoroutine(AnimateShowAndHide(p));
+        }
+    }
+
+    private IEnumerator AnimateShowAndHide(GameObject panel)
+    {
+        yield return AnimateShow(panel);
+        yield return new WaitForSecondsRealtime(visibleDuration);
+        yield return AnimateHide(panel);
     }
 
     private IEnumerator WaySequence()
