@@ -6,7 +6,7 @@ using Meta.XR.MRUtilityKit;
 
 /// <summary>
 /// Oyun başladıktan 3 saniye sonra oyuncu hâlâ ateş etmediyse, destructible duvarların üzerinde
-/// "kırılabilir" ipucu gösterir (sprite decal). Duvarların opacity'si de azalıp tekrar full olarak nabız yapar.
+/// "kırılabilir" ipucu gösterir (sprite decal). Passthrough ile uyumlu: duvar materyaline dokunulmaz (opacity nabzı yok).
 /// </summary>
 public class DestructibleMeshHint : MonoBehaviour
 {
@@ -35,20 +35,12 @@ public class DestructibleMeshHint : MonoBehaviour
     [SerializeField] private float pulseMinScale = 0.9f;
     [SerializeField] private float pulseMaxScale = 1.1f;
 
-    [Header("Duvar opacity nabzı")]
-    [Tooltip("Duvar materyalinin alpha'sı bu değere inip tekrar 1'e çıkar")]
-    [Range(0.2f, 1f)]
-    [SerializeField] private float wallOpacityMin = 0.5f;
-    [Tooltip("Bir döngü süresi (saniye): full -> min -> full")]
-    [SerializeField] private float wallOpacityCycleDuration = 2.5f;
-
     [Header("Kaldırma")]
     [Tooltip("İlk duvar kırıldığında ipuçları ve duvar nabzı kaldırılır")]
     [SerializeField] private bool hideAfterFirstDestruction = true;
 
     private readonly List<GameObject> _segments = new List<GameObject>();
     private readonly List<HintDecal> _hintDecals = new List<HintDecal>();
-    private readonly List<WallOpacityState> _wallOpacityStates = new List<WallOpacityState>();
     private DestructibleMeshComponent _currentDestructible;
     private float _meshCreatedTime = -1f;
     private bool _hintsShown;
@@ -120,7 +112,7 @@ public class DestructibleMeshHint : MonoBehaviour
 
         if (_firstDestructionDone) return;
 
-        // İpucu nabız
+        // İpucu nabız (sadece decal scale; duvar materyaline dokunulmaz - passthrough uyumlu)
         if (pulseScale && _hintDecals.Count > 0)
         {
             float pulse = (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f;
@@ -138,23 +130,6 @@ public class DestructibleMeshHint : MonoBehaviour
                 h.transform.localScale = new Vector3(s, s, s);
             }
         }
-
-        // Duvar opacity nabzı
-        if (_wallOpacityStates.Count > 0)
-        {
-            float t = (Time.time % wallOpacityCycleDuration) / wallOpacityCycleDuration; // 0..1
-            float alpha = t < 0.5f
-                ? Mathf.Lerp(1f, wallOpacityMin, t * 2f)
-                : Mathf.Lerp(wallOpacityMin, 1f, (t - 0.5f) * 2f);
-            for (int i = _wallOpacityStates.Count - 1; i >= 0; i--)
-            {
-                var w = _wallOpacityStates[i];
-                if (w.renderer == null) { _wallOpacityStates.RemoveAt(i); continue; }
-                if (w.material == null) continue;
-                Color c = w.originalColor;
-                w.material.color = new Color(c.r, c.g, c.b, c.a * alpha);
-            }
-        }
     }
 
     private void ShowHints()
@@ -168,18 +143,6 @@ public class DestructibleMeshHint : MonoBehaviour
             if (hintDensity < 1f && (i % Mathf.Max(1, Mathf.RoundToInt(1f / hintDensity)) != 0))
                 continue;
             AddHintToSegment(segment);
-        }
-
-        // Duvar opacity için her segmentin materyalini kaydet
-        foreach (GameObject segment in _segments)
-        {
-            if (segment == null || segment == _currentDestructible.ReservedSegment) continue;
-            MeshRenderer r = segment.GetComponent<MeshRenderer>();
-            if (r == null) continue;
-            Material mat = r.material; // instance
-            if (mat == null || !mat.HasProperty("_Color")) continue;
-            Color orig = mat.color;
-            _wallOpacityStates.Add(new WallOpacityState { renderer = r, material = mat, originalColor = orig });
         }
     }
 
@@ -260,14 +223,6 @@ public class DestructibleMeshHint : MonoBehaviour
                 StartCoroutine(FadeOutAndDestroy(h));
         }
         _hintDecals.Clear();
-
-        // Duvar opacity'yi tekrar full yap ve listeyi temizle
-        foreach (var w in _wallOpacityStates)
-        {
-            if (w.material != null)
-                w.material.color = w.originalColor;
-        }
-        _wallOpacityStates.Clear();
     }
 
     private IEnumerator FadeOutAndDestroy(HintDecal h)
@@ -295,12 +250,6 @@ public class DestructibleMeshHint : MonoBehaviour
             if (h.transform != null) Destroy(h.transform.gameObject);
         }
         _hintDecals.Clear();
-        foreach (var w in _wallOpacityStates)
-        {
-            if (w.material != null)
-                w.material.color = w.originalColor;
-        }
-        _wallOpacityStates.Clear();
     }
 
     private struct HintDecal
@@ -309,12 +258,5 @@ public class DestructibleMeshHint : MonoBehaviour
         public MeshRenderer renderer;
         public float baseScale;
         public Material material;
-    }
-
-    private struct WallOpacityState
-    {
-        public MeshRenderer renderer;
-        public Material material;
-        public Color originalColor;
     }
 }

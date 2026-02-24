@@ -163,6 +163,8 @@ public class UIManager : MonoBehaviour
         if (countdownText != null) countdownText.text = "GO!";
         yield return new WaitForSeconds(1f);
 
+        // Info butonuyla yüklendi - tutorial atlanmasın, tekrar izlensin
+        TutorialIntroController.ForceShowTutorialThisLoad = true;
         SceneManager.LoadScene("Tutorial");
     }
 

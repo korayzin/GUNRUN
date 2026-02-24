@@ -18,6 +18,11 @@ using TMPro;
 /// </summary>
 public class TutorialIntroController : MonoBehaviour
 {
+    private const string TutorialCompletedKey = "TutorialCompleted";
+
+    /// <summary>Info butonuyla yüklendiyse true - tutorial atlanmaz, tekrar izlenebilir.</summary>
+    public static bool ForceShowTutorialThisLoad = false;
+
     /// <summary>Tutorial başında false, ilk diyalog bitip 1 sn sonra true. GunFire bu flag'i kontrol eder.</summary>
     public static bool TutorialFiringEnabled = true;
 
@@ -422,6 +427,19 @@ public class TutorialIntroController : MonoBehaviour
 
     private void Awake()
     {
+        // Info butonuyla yüklendiyse tutorial göster (tekrar izleme)
+        if (ForceShowTutorialThisLoad)
+        {
+            ForceShowTutorialThisLoad = false;
+        }
+        // Tutorial daha önce tamamlandıysa doğrudan ana menüye geç (uygulama ilk açılışında atla)
+        else if (PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
+        {
+            string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName;
+            SceneManager.LoadScene(targetScene);
+            return;
+        }
+
         Time.timeScale = 0f;
         TutorialActive = true;
     }
@@ -1440,8 +1458,12 @@ public class TutorialIntroController : MonoBehaviour
         }
         image.color = new Color(0f, 0f, 0f, 1f);
 
+        // Tutorial tamamlandı - bir daha oyun tutorial ile başlamasın
+        PlayerPrefs.SetInt(TutorialCompletedKey, 1);
+        PlayerPrefs.Save();
+
         Time.timeScale = 1f;
-        SceneManager.LoadScene(string.IsNullOrEmpty(mainMenuSceneName) ? "MainMenu" : mainMenuSceneName);
+        SceneManager.LoadScene(string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName);
     }
 
     private IEnumerator MoveBotToPositionCoroutine(Vector3 targetPos, float duration)

@@ -4,21 +4,21 @@ using Meta.XR.MRUtilityKit;
 
 /// <summary>
 /// MRUK tarafından spawn edilen DestructibleMesh'in pozisyonunu ayarlar.
-/// Mesh, MRUK room.GlobalMeshAnchor altında spawn olduğu için sahnedeki Destructible GameObject'i
-/// değiştirmek etkili olmaz. Bu script mesh'i reparent ederek veya oyuncu pozisyonuna göre konumlandırarak çözer.
-/// Retry sonrası duvarın yukarıda spawn olmasını önlemek için pozisyon birkaç frame sonra uygulanır (tracking stabilizasyonu).
+/// Mixed Reality için: AlignToScannedRoom kullanın – destructible mesh taranan gerçek duvarlarla aynı yerde olur.
 /// </summary>
 public class DestructibleMeshPositionSetter : MonoBehaviour
 {
     public enum PositionMode
     {
+        /// <summary>Mesh'i MRUK taranan oda ile hizala – gerçek dünya duvarlarıyla çakışır (Mixed Reality önerilen).</summary>
+        AlignToScannedRoom,
         /// <summary>Sabit pozisyon kullan (targetPosition)</summary>
         FixedPosition,
-        /// <summary>Oyuncu (OVRCameraRig CenterEye) pozisyonuna göre konumlandır - room oyuncunun etrafında olur</summary>
+        /// <summary>Oyuncu (OVRCameraRig CenterEye) pozisyonuna göre konumlandır</summary>
         UsePlayerPosition,
-        /// <summary>Tracking space (zemin) referansı - retry sonrası daha tutarlı yükseklik</summary>
+        /// <summary>Tracking space (zemin) referansı</summary>
         UseTrackingSpacePosition,
-        /// <summary>Bu GameObject'in world pozisyonunu kullan - Destructible'ı sahnede taşıyarak kontrol edebilirsin</summary>
+        /// <summary>Bu GameObject'in world pozisyonunu kullan</summary>
         UseThisTransformPosition
     }
 
@@ -26,11 +26,12 @@ public class DestructibleMeshPositionSetter : MonoBehaviour
     [Tooltip("PositionMode: FixedPosition kullanıldığında hedef pozisyon")]
     [SerializeField] private Vector3 targetPosition = Vector3.zero;
     [SerializeField] private bool useLocalPosition = true;
-    [Tooltip("Mesh'i bu GameObject'in child'ı yap - böylece Destructible'ı sahnede taşıyarak room pozisyonunu kontrol edebilirsin")]
-    [SerializeField] private bool reparentToThis = true;
+    [Tooltip("Mesh'i bu GameObject'in child'ı yap. AlignToScannedRoom modunda kullanılmaz (mesh oda ile hizalanır).")]
+    [SerializeField] private bool reparentToThis = false;
     [Tooltip("PositionMode: UsePlayerPosition kullanıldığında oyuncudan offset (örn. zemin hizası için)")]
     [SerializeField] private Vector3 playerOffset = Vector3.zero;
-    [SerializeField] private PositionMode positionMode = PositionMode.UsePlayerPosition;
+    [Tooltip("AlignToScannedRoom = destructible mesh gerçek taranan duvarlarla aynı yerde (Mixed Reality önerilen).")]
+    [SerializeField] private PositionMode positionMode = PositionMode.AlignToScannedRoom;
     [Tooltip("Retry sonrası duvar yüksekliği tutarlılığı için pozisyon uygulama gecikmesi (frame). 0 = anında.")]
     [SerializeField] private int positionApplyDelayFrames = 3;
 
@@ -94,16 +95,32 @@ public class DestructibleMeshPositionSetter : MonoBehaviour
 
         Transform meshTransform = destructibleMeshComponent.transform;
 
-        // 1. Reparent: Mesh'i bu GameObject'in child'ı yap - böylece sahnedeki Destructible pozisyonu room'u kontrol eder
-        if (reparentToThis)
+        if (positionMode == PositionMode.AlignToScannedRoom)
         {
-            meshTransform.SetParent(transform, true); // worldPositionStays = true
+            // Mixed Reality: destructible mesh = taranan gerçek duvarlar. Mesh'i MRUK room'a bağla.
+            var room = MRUK.Instance != null ? MRUK.Instance.GetCurrentRoom() : null;
+            if (room != null && room.transform != null)
+            {
+                meshTransform.SetParent(room.transform, true);
+                meshTransform.localPosition = Vector3.zero;
+                meshTransform.localRotation = Quaternion.identity;
+                meshTransform.localScale = Vector3.one;
+                Debug.Log("[DestructibleMeshPositionSetter] Destructible mesh taranan oda ile hizalandı (gerçek duvarlar).");
+            }
+            else
+            {
+                Debug.LogWarning("[DestructibleMeshPositionSetter] MRUK/room bulunamadı, mesh pozisyonu değiştirilmedi.");
+            }
+            return;
         }
 
-        // 2. Hedef pozisyonu hesapla (world space)
-        Vector3 targetWorld = GetTargetPosition();
+        // Diğer modlar: isteğe bağlı reparent ve özel pozisyon
+        if (reparentToThis)
+        {
+            meshTransform.SetParent(transform, true);
+        }
 
-        // 3. Pozisyonu uygula
+        Vector3 targetWorld = GetTargetPosition();
         if (reparentToThis && useLocalPosition)
         {
             meshTransform.localPosition = transform.InverseTransformPoint(targetWorld);

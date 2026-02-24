@@ -309,7 +309,10 @@ public class GunFire : MonoBehaviour
         // WeaponManager üzerinden ateş sesini çal ve hangi el ile ateş edildiğini kaydet (isabet haptic için)
         if (WeaponManager.Instance != null)
         {
-            WeaponManager.Instance.PlayFireSound();
+            if (weaponBalanceIndex == 8 && _nextShotIsFromSecondary)
+                WeaponManager.Instance.PlayWeapon9FireballSFX();
+            else
+                WeaponManager.Instance.PlayFireSound(weaponBalanceIndex);
             WeaponManager.Instance.SetLastFiringController((int)(isLeftHanded ? OVRInput.Controller.LTouch : OVRInput.Controller.RTouch));
         }
     }

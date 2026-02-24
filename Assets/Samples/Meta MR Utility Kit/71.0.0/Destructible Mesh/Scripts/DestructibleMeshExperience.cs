@@ -80,6 +80,8 @@ public class DestructibleMeshExperience : MonoBehaviour
         destructibleMeshComponent.GetDestructibleMeshSegments(_globalMeshSegments);
         foreach (var globalMeshSegment in _globalMeshSegments)
         {
+            if (globalMeshSegment == destructibleMeshComponent.ReservedSegment)
+                continue;
             globalMeshSegment.AddComponent<MeshCollider>();
         }
     }

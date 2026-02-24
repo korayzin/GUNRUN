@@ -188,9 +188,18 @@ public class FifthGunLaser : MonoBehaviour
     
     private bool _tutorialUnlimitedApplied;
 
+    private void ApplyBalanceFromManager()
+    {
+        if (GameBalanceManager.Instance == null) return;
+        var d = GameBalanceManager.Instance.GetWeaponData(4);
+        laserDamage = d.damage;
+        if (d.maxAmmo > 0) maxLaserShots = d.maxAmmo;
+    }
+
     void Start()
     {
         gunFire = GetComponent<GunFire>();
+        ApplyBalanceFromManager();
         if (maxLaserShots != 2) maxLaserShots = 2;
         remainingShots = maxLaserShots;
         if (audioSource == null)
@@ -460,7 +469,9 @@ public class FifthGunLaser : MonoBehaviour
         // BÜYÜK HAPTİK
         StartCoroutine(FireHapticFeedback());
         
-        // Ateşleme sesi
+        // Ateşleme sesi (WeaponManager SFX + yerel fireSound)
+        if (WeaponManager.Instance != null)
+            WeaponManager.Instance.PlayWeapon5ChargeReleaseSFX();
         if (audioSource != null && fireSound != null)
         {
             audioSource.PlayOneShot(fireSound);

@@ -136,8 +136,17 @@ public class LastGunFlameSpray : MonoBehaviour
     private Image progressDotImage;
     private RectTransform progressDotRect;
 
+    private void ApplyBalanceFromManager()
+    {
+        if (GameBalanceManager.Instance == null) return;
+        var d = GameBalanceManager.Instance.GetWeaponData(8);
+        damagePerSecond = d.damage;
+        if (d.maxAmmo > 0) maxSprayEnergy = d.maxAmmo;
+    }
+
     void Start()
     {
+        ApplyBalanceFromManager();
         currentSprayEnergy = maxSprayEnergy;
         gunFire = GetComponent<GunFire>();
         if (gunFire != null)
@@ -192,7 +201,12 @@ public class LastGunFlameSpray : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
+        if (GameManager.IsRetryScreenActive)
+        {
+            if (isSpraying)
+                StopSpray();
+            return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
+        }
         OVRInput.Button trigger = isLeftHanded ? OVRInput.Button.PrimaryIndexTrigger : OVRInput.Button.SecondaryIndexTrigger;
         bool triggerHeld = OVRInput.Get(trigger);
 
@@ -222,6 +236,8 @@ public class LastGunFlameSpray : MonoBehaviour
         if (currentSprayEnergy <= 0f && !sprayEnergyGameOverTriggered)
         {
             sprayEnergyGameOverTriggered = true;
+            if (isSpraying)
+                StopSpray();
             if (GameManager.Instance != null)
                 GameManager.Instance.GameOver(null);
         }
@@ -420,7 +436,7 @@ public class LastGunFlameSpray : MonoBehaviour
         UpdateFlameLines();
 
         if (WeaponManager.Instance != null)
-            WeaponManager.Instance.PlayFireSound();
+            WeaponManager.Instance.PlayWeapon9FlameSprayLoopSFX(true);
 
         if (hapticCoroutine != null) StopCoroutine(hapticCoroutine);
         hapticCoroutine = StartCoroutine(HapticLoop());
@@ -429,6 +445,8 @@ public class LastGunFlameSpray : MonoBehaviour
     private void StopSpray()
     {
         isSpraying = false;
+        if (WeaponManager.Instance != null)
+            WeaponManager.Instance.PlayWeapon9FlameSprayLoopSFX(false);
         if (vfxInstance != null)
         {
             if (vfxParticles != null)

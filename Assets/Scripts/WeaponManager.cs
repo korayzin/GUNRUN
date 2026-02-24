@@ -6,6 +6,24 @@ public class WeaponManager : MonoBehaviour
 {
     public static WeaponManager Instance { get; private set; }
 
+    [Header("Weapon SFX")]
+    [Tooltip("Her tetik basıldığında çalacak mermi sesleri (1-9. silah)")]
+    public AudioClip[] weaponFireSFX = new AudioClip[9];
+    [Tooltip("5. silah: Charge tamamlandığında patlama sesi")]
+    public AudioClip weapon5ChargeReleaseSFX;
+    [Tooltip("6. silah: Slow laser açıkken loop çalacak ses")]
+    public AudioClip weapon6SlowLaserSFX;
+    [Tooltip("7. silah: Kırbaç her çıktığında ses")]
+    public AudioClip weapon7WhipSFX;
+    [Tooltip("8. silah: ToyHelper her ateş ettiğinde ses")]
+    public AudioClip weapon8ToyFireSFX;
+    [Tooltip("9. silah: Flame spray basılı tutarken loop ses")]
+    public AudioClip weapon9FlameSprayLoopSFX;
+    [Tooltip("9. silah: Fireball tetiklendiğinde ses")]
+    public AudioClip weapon9FireballSFX;
+    [Tooltip("SFX çalmak için AudioSource (boşsa otomatik eklenir)")]
+    public AudioSource sfxAudioSource;
+
     [Header("Haptic - İsabet (düşmana vurulduğunda)")]
     [Tooltip("İsabet haptic şiddeti (0-1)")]
     [Range(0f, 1f)]
@@ -51,6 +69,7 @@ public class WeaponManager : MonoBehaviour
     private int currentWeapon = 0;
     private int enemyKillCount = 0;
     private bool isSwitchingWeapon = false;
+    private AudioSource _loopSfxSource; // Slow laser ve flame spray loop için
     private int _lastFiringController = -1; // 0 = sol, 1 = sağ, -1 = bilinmiyor (OVRInput.Controller enum değeri)
     /// <summary>Bir kez 9. silaha ulaşıldığında true olur; joystick ile tüm silahlar arasında gezinmeye izin verir.</summary>
     private bool _allWeaponsUnlockedPermanent = false;
@@ -68,6 +87,10 @@ public class WeaponManager : MonoBehaviour
     public int killsToEighth = 82;
     public int killsToNinth = 102;
     public float vfxDelay = 0.5f;
+
+    [Header("TEST - Sixth Left Hand on Second Weapon")]
+    [Tooltip("true = SixthWeaponLeftHand sadece 2. silahta (ikinci silah) açılır. false = normal (6. silahta açılır).")]
+    public bool testSixthLeftHandOnSecondWeapon = true;
 
     [Header("Weapon Scale Settings")]
     public float activeGlobalScale = 1.2f;
@@ -93,10 +116,118 @@ public class WeaponManager : MonoBehaviour
     /// <summary>Oyuncu oyun başladıktan sonra en az bir kez ateş ettiyse true (DestructibleMeshHint ipucu için kullanılır).</summary>
     public static bool HasPlayerFiredSinceLevelLoad { get; private set; }
 
-    public void PlayFireSound()
+    /// <summary>Her tetik basıldığında çağrılır (1-9. silah mermi sesi). weaponIndex 0-8.</summary>
+    public void PlayFireSound(int weaponIndex = -1)
     {
         HasPlayerFiredSinceLevelLoad = true;
-        // Ses çalma mantığını buraya ekleyebilirsin (örn. AudioSource.PlayClipAtPoint)
+        if (weaponIndex < 0 || weaponIndex > 8) weaponIndex = currentWeapon;
+        PlaySFX(GetFireClip(weaponIndex));
+    }
+
+    /// <summary>5. silah: Charge tamamlandığında patlama sesi.</summary>
+    public void PlayWeapon5ChargeReleaseSFX()
+    {
+        PlaySFX(weapon5ChargeReleaseSFX);
+    }
+
+    /// <summary>6. silah: Slow laser açıkken loop başlat, kapalıyken durdur.</summary>
+    public void PlayWeapon6SlowLaserSFX(bool startLoop)
+    {
+        if (startLoop && weapon6SlowLaserSFX != null)
+        {
+            EnsureLoopSource();
+            if (!_loopSfxSource.isPlaying || _loopSfxSource.clip != weapon6SlowLaserSFX)
+            {
+                _loopSfxSource.clip = weapon6SlowLaserSFX;
+                _loopSfxSource.loop = true;
+                _loopSfxSource.Play();
+            }
+        }
+        else
+        {
+            StopLoopSFX();
+        }
+    }
+
+    /// <summary>7. silah: Kırbaç her çıktığında ses.</summary>
+    public void PlayWeapon7WhipSFX()
+    {
+        PlaySFX(weapon7WhipSFX);
+    }
+
+    /// <summary>8. silah: ToyHelper her ateş ettiğinde ses.</summary>
+    public void PlayWeapon8ToyFireSFX()
+    {
+        PlaySFX(weapon8ToyFireSFX);
+    }
+
+    /// <summary>9. silah: Flame spray basılı tutarken loop başlat/durdur.</summary>
+    public void PlayWeapon9FlameSprayLoopSFX(bool startLoop)
+    {
+        if (startLoop && weapon9FlameSprayLoopSFX != null)
+        {
+            EnsureLoopSource();
+            if (!_loopSfxSource.isPlaying || _loopSfxSource.clip != weapon9FlameSprayLoopSFX)
+            {
+                _loopSfxSource.clip = weapon9FlameSprayLoopSFX;
+                _loopSfxSource.loop = true;
+                _loopSfxSource.Play();
+            }
+        }
+        else
+        {
+            StopLoopSFX();
+        }
+    }
+
+    /// <summary>9. silah: Fireball tetiklendiğinde ses.</summary>
+    public void PlayWeapon9FireballSFX()
+    {
+        PlaySFX(weapon9FireballSFX);
+    }
+
+    private AudioClip GetFireClip(int weaponIndex)
+    {
+        if (weaponFireSFX == null || weaponIndex < 0 || weaponIndex >= weaponFireSFX.Length) return null;
+        return weaponFireSFX[weaponIndex];
+    }
+
+    private void PlaySFX(AudioClip clip)
+    {
+        if (clip == null) return;
+        AudioSource src = sfxAudioSource != null ? sfxAudioSource : GetOrCreateSFXSource();
+        if (src != null)
+            src.PlayOneShot(clip);
+        else
+            AudioSource.PlayClipAtPoint(clip, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+    }
+
+    private void EnsureLoopSource()
+    {
+        if (_loopSfxSource == null)
+        {
+            GameObject loopObj = new GameObject("WeaponManager_LoopSFX");
+            loopObj.transform.SetParent(transform);
+            _loopSfxSource = loopObj.AddComponent<AudioSource>();
+        }
+    }
+
+    private void StopLoopSFX()
+    {
+        if (_loopSfxSource != null && _loopSfxSource.isPlaying)
+        {
+            _loopSfxSource.Stop();
+            _loopSfxSource.clip = null;
+        }
+    }
+
+    private AudioSource GetOrCreateSFXSource()
+    {
+        if (sfxAudioSource != null) return sfxAudioSource;
+        AudioSource src = GetComponent<AudioSource>();
+        if (src == null) src = gameObject.AddComponent<AudioSource>();
+        sfxAudioSource = src;
+        return src;
     }
 
     public void PlayHitSound()
@@ -292,12 +423,20 @@ public class WeaponManager : MonoBehaviour
             StartCoroutine(SwitchWeaponWithVFX(firstWeapon, secondWeapon, vfxFirst, vfxSecond));
             currentWeapon = 1;
             HandleBarettaSwitch(secondWeapon);
+            // TEST: SixthWeaponLeftHand sadece ikinci silahta spawn
+            if (testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null)
+            {
+                sixthWeaponLeftHand.SetActive(true);
+                var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
+                if (laserOnLeft != null) laserOnLeft.enabled = true;
+            }
             Debug.Log($"First weapon kapatıldı, Second weapon açıldı ({enemyKillCount} kill).");
         }
         // Second -> Third
         else if (currentWeapon == 1 && enemyKillCount >= GetKillsRequiredForNextWeapon(2))
         {
             isSwitchingWeapon = true;
+            if (testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null) sixthWeaponLeftHand.SetActive(false);
             if (secondWeapon != null)
             {
                 secondWeapon.SetActive(false);
@@ -354,7 +493,8 @@ public class WeaponManager : MonoBehaviour
             StartCoroutine(SwitchWeaponWithVFX(fifthWeapon, sixthWeapon, vfxFifth, vfxSixth));
             currentWeapon = 5;
             HandleBarettaSwitch(sixthWeapon);
-            if (sixthWeaponLeftHand != null)
+            // TEST kapalıyken normal: 6. silahta sol el açılır
+            if (!testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null)
             {
                 sixthWeaponLeftHand.SetActive(true);
                 var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
@@ -452,6 +592,7 @@ public class WeaponManager : MonoBehaviour
 
     private IEnumerator SwitchWeaponWithVFX(GameObject currentWeaponObj, GameObject nextWeaponObj, GameObject currentWeaponVFX, GameObject nextWeaponVFX)
     {
+        StopLoopSFX();
         // Yeni silah null ise coroutine'i güvenli şekilde bitir (seventh weapon atanmamış olabilir)
         if (nextWeaponObj == null)
         {
@@ -568,7 +709,13 @@ public class WeaponManager : MonoBehaviour
 
     private void SetWeaponByIndex(int index)
     {
-        if (sixthWeaponLeftHand != null && index != 5) sixthWeaponLeftHand.SetActive(false);
+        if (currentWeapon == 5 || currentWeapon == 8) StopLoopSFX();
+        // TEST: sol el sadece index==1'de; normal modda sadece index==5'te açık
+        bool showSixthLeft = testSixthLeftHandOnSecondWeapon ? (index == 1) : (index == 5);
+        if (sixthWeaponLeftHand != null)
+        {
+            if (!showSixthLeft) sixthWeaponLeftHand.SetActive(false);
+        }
         for (int i = 0; i < 9; i++)
         {
             GameObject w = GetWeaponAt(i);
@@ -586,11 +733,11 @@ public class WeaponManager : MonoBehaviour
             GunFire nextGun = next.GetComponent<GunFire>();
             if (nextGun != null) nextGun.enabled = true;
         }
-        if (index == 5 && sixthWeaponLeftHand != null)
+        if (showSixthLeft && sixthWeaponLeftHand != null)
         {
             sixthWeaponLeftHand.SetActive(true);
             var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
-            if (laserOnLeft != null) laserOnLeft.enabled = true; // Sol trigger ile slow laser
+            if (laserOnLeft != null) laserOnLeft.enabled = true;
         }
         currentWeapon = index;
         UpdateWeaponUI();

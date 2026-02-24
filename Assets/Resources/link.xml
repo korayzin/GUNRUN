@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- IL2CPP Smaller Builds: Animator PPtr cast (AnimatorStateTransition/AnimatorTransition) hatalarını önlemek için -->
+<linker>
+  <assembly fullname="UnityEngine.AnimationModule" preserve="all"/>
+</linker>

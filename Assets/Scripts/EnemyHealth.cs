@@ -31,6 +31,8 @@ public class EnemyHealth : MonoBehaviour
     public string glowColorPropertyName = "_NeonColor"; // veya "_GlowColor", "_RimColor"
 
     public AudioClip damageSFX;
+    [Tooltip("Hasar sesi çalınırken kullanılacak ses seviyesi (0-1). AdvancedPortalSpawner her düşman tipi için ayrı ayarlar.")]
+    [Range(0f, 1f)] public float damageSFXVolume = 1f;
     public AudioClip deathSFX;
     private AudioSource audioSource;
 
@@ -131,9 +133,14 @@ public class EnemyHealth : MonoBehaviour
             Die();
         }
 
-        if (audioSource != null && damageSFX != null)
+        if (damageSFX != null)
         {
-            audioSource.PlayOneShot(damageSFX);
+            if (audioSource == null)
+                audioSource = GetComponent<AudioSource>();
+            if (audioSource != null)
+                audioSource.PlayOneShot(damageSFX, damageSFXVolume);
+            else
+                AudioSource.PlayClipAtPoint(damageSFX, hitCollider != null ? hitCollider.bounds.center : transform.position, damageSFXVolume);
         }
     }
 

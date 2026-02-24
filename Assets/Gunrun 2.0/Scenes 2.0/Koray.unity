@@ -5270,6 +5270,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f603ccb526f7a4949b5a51a818444912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponFireSFX:
+  - {fileID: 8300000, guid: 359e1c796096cee4d97aa6d0a3a46bfd, type: 3}
+  - {fileID: 8300000, guid: 359e1c796096cee4d97aa6d0a3a46bfd, type: 3}
+  - {fileID: 8300000, guid: 34cf9090fd5eebf4cbe31d80c8176ed1, type: 3}
+  - {fileID: 8300000, guid: d2844ff09e7b00c4eaec75cb1c26fb3e, type: 3}
+  - {fileID: 8300000, guid: 884ba5dbf0eb355448ca0ae641c14d95, type: 3}
+  - {fileID: 8300000, guid: 884ba5dbf0eb355448ca0ae641c14d95, type: 3}
+  - {fileID: 8300000, guid: 38443ea442319fe419dcfba711fb53b6, type: 3}
+  - {fileID: 8300000, guid: 0f1f00ced0106b748b6ec2374efa2806, type: 3}
+  - {fileID: 8300000, guid: eae638defa3d91246b6bbb1066aba3a6, type: 3}
+  weapon5ChargeReleaseSFX: {fileID: 8300000, guid: c694932af3a93dc4686296ed63aa84af,
+    type: 3}
+  weapon6SlowLaserSFX: {fileID: 0}
+  weapon7WhipSFX: {fileID: 8300000, guid: 8be3f7313b09bb849bae328d34925298, type: 3}
+  weapon8ToyFireSFX: {fileID: 8300000, guid: 884ba5dbf0eb355448ca0ae641c14d95, type: 3}
+  weapon9FlameSprayLoopSFX: {fileID: 8300000, guid: eae638defa3d91246b6bbb1066aba3a6,
+    type: 3}
+  weapon9FireballSFX: {fileID: 8300000, guid: a6092590522826c4b920df3432a764ae, type: 3}
+  sfxAudioSource: {fileID: 0}
   hitHapticStrength: 0.4
   hitHapticDuration: 0.06
   firstWeapon: {fileID: 828508232}
@@ -5310,6 +5329,7 @@ MonoBehaviour:
   killsToEighth: 82
   killsToNinth: 102
   vfxDelay: 0
+  testSixthLeftHandOnSecondWeapon: 1
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
   activeUIImageScale: 0.8
@@ -55700,11 +55720,14 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  backgroundMusicDuckVolume: 0.25
+  backgroundMusicDuckFadeDuration: 0.25
   portalOpenSound: {fileID: 0}
   stage1FirstEnemySpawnSound: {fileID: 0}
   stage2TransitionSound: {fileID: 0}
   stage3TransitionSound: {fileID: 0}
   stageSoundsAudioSource: {fileID: 0}
+  stagePortalSoundVolume: 2
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
@@ -58805,17 +58828,17 @@ PrefabInstance:
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       propertyPath: _maxPointsCount
-      value: 512
+      value: 1024
       objectReference: {fileID: 0}
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       propertyPath: _pointsPerUnitX
-      value: 32
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       propertyPath: _pointsPerUnitY
-      value: 32
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
@@ -61387,11 +61410,14 @@ MonoBehaviour:
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  backgroundMusicDuckVolume: 0.25
+  backgroundMusicDuckFadeDuration: 0.25
   portalOpenSound: {fileID: 0}
   stage1FirstEnemySpawnSound: {fileID: 0}
   stage2TransitionSound: {fileID: 0}
   stage3TransitionSound: {fileID: 0}
   stageSoundsAudioSource: {fileID: 0}
+  stagePortalSoundVolume: 2
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 120
   tutorialTimerDuration: 360
@@ -62909,7 +62935,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1341397035}
-  - component: {fileID: 1341397036}
   m_Layer: 0
   m_Name: Destructible
   m_TagString: Untagged
@@ -62937,25 +62962,6 @@ Transform:
   - {fileID: 354355718}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1341397036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1341397034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e10af715e8f7bd84995762d3b65cdbc3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destructibleGlobalMeshSpawner: {fileID: 1241246874}
-  targetPosition: {x: 0, y: 2, z: 0}
-  useLocalPosition: 1
-  reparentToThis: 1
-  playerOffset: {x: 0, y: 1.5, z: 0}
-  positionMode: 1
-  positionApplyDelayFrames: 3
 --- !u!1 &1344677897
 GameObject:
   m_ObjectHideFlags: 0
@@ -72527,12 +72533,21 @@ MonoBehaviour:
     type: 3}
   tur3Enemy: {fileID: 4377912173820595719, guid: a565f6d26fce2544f90a24e9a84f3015,
     type: 3}
-  tur4Enemy: {fileID: 919132149155446097, guid: 89c68c201bde49f4eb554ccb028ffa68,
+  tur4Enemy: {fileID: 4377912173820595719, guid: a565f6d26fce2544f90a24e9a84f3015,
     type: 3}
   floatingTextPrefab: {fileID: 7127387094801913698, guid: 0dd27ccc7d25e96458067037de82e456,
     type: 3}
+  tur1DamageSFX: {fileID: 8300000, guid: 1ffb05e71dc7c984cb1d87616435fdaa, type: 3}
+  tur1DamageSFXVolume: 0.5
+  tur2DamageSFX: {fileID: 8300000, guid: ee8503eb11f438d4baa9a02000bf161c, type: 3}
+  tur2DamageSFXVolume: 1
+  tur3DamageSFX: {fileID: 8300000, guid: 2485b7595e786fe4ba709bc0ceb93e1f, type: 3}
+  tur3DamageSFXVolume: 1
+  tur4DamageSFX: {fileID: 8300000, guid: 2485b7595e786fe4ba709bc0ceb93e1f, type: 3}
+  tur4DamageSFXVolume: 1
   delayBeforeFirstSpawn: 10
   spawnHeightOffset: 1
+  spawnLateralOffsetRange: 1.5
   stage2KillThreshold: 36
   stage3KillThreshold: 90
   stage1SpawnInterval: 2.5
@@ -85123,11 +85138,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 2a13a4245811a4c48aa656a48690e9c0, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.2
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -85226,7 +85241,9 @@ MonoBehaviour:
   secondaryScoreText: {fileID: 0}
   timerText: {fileID: 371876096}
   timeAndScorePanel: {fileID: 2087939525}
-  backgroundMusic: {fileID: 0}
+  backgroundMusic: {fileID: 1834682426}
+  backgroundMusicDuckVolume: 0
+  backgroundMusicDuckFadeDuration: 0.25
   portalOpenSound: {fileID: 8300000, guid: fa695e3e65e837b4cbcd20780920adf9, type: 3}
   stage1FirstEnemySpawnSound: {fileID: 8300000, guid: 89a1fdc161937454a966d1028c6d66df,
     type: 3}
@@ -85235,6 +85252,7 @@ MonoBehaviour:
   stage3TransitionSound: {fileID: 8300000, guid: 30867246ee57d2e43949f07345b858a5,
     type: 3}
   stageSoundsAudioSource: {fileID: 1834682426}
+  stagePortalSoundVolume: 3
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
   tutorialTimerDuration: 360

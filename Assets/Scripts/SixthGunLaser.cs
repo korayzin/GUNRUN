@@ -117,6 +117,7 @@ public class SixthGunLaser : MonoBehaviour
     // Enerji bar sistemi
     private float currentEnergy;
     private GameObject energyBarContainer;
+    private bool _spawnPointsRetriedInUpdate;
     private Canvas energyBarCanvas;
     private Image backgroundImage;
     private Image fillImage;
@@ -126,27 +127,50 @@ public class SixthGunLaser : MonoBehaviour
     private RectTransform progressDotRect;
     private bool isHittingEnemy = false;
 
-    private void Awake()
+    /// <summary>Build'de serialized referanslar bazen null olabiliyor; isimle bulmayı dene.</summary>
+    private void ResolveSpawnPoints()
     {
-        // Laser spawn point'i bul
         if (laserSpawnPoint == null)
         {
-            Transform laserChild = transform.Find("Laser");
-            if (laserChild != null)
-                laserSpawnPoint = laserChild;
+            laserSpawnPoint = FindInChildren(transform, "Laser");
+            if (laserSpawnPoint == null)
+                laserSpawnPoint = transform.Find("Laser");
         }
-        
-        // İkinci spawn point: Inspector'da atanmamışsa WeaponManager'dan sol el silahını dene
+        if (laserSpawnPoint2 == null)
+        {
+            laserSpawnPoint2 = FindInChildren(transform, "Laser (1)");
+            if (laserSpawnPoint2 == null)
+                laserSpawnPoint2 = transform.Find("Laser (1)");
+        }
+        // İkinci spawn point hâlâ yoksa sol el silahında ara (bu script sol eldeki SlowedGun üzerindeyse kendi transform'dayız)
         if (laserSpawnPoint2 == null && WeaponManager.Instance != null)
         {
             GameObject leftHand = WeaponManager.Instance.GetSixthWeaponLeftHand();
-            if (leftHand != null)
+            if (leftHand != null && leftHand != gameObject)
             {
-                Transform t = leftHand.transform.Find("Laser");
-                if (t == null) t = leftHand.transform.Find("Laser (1)");
+                Transform t = FindInChildren(leftHand.transform, "Laser (1)");
+                if (t == null) t = FindInChildren(leftHand.transform, "Laser");
                 if (t != null) laserSpawnPoint2 = t;
             }
         }
+    }
+
+    private static Transform FindInChildren(Transform root, string name)
+    {
+        if (root == null || string.IsNullOrEmpty(name)) return null;
+        if (root.name == name) return root;
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform t = FindInChildren(root.GetChild(i), name);
+            if (t != null) return t;
+        }
+        return null;
+    }
+
+    private void Awake()
+    {
+        ApplyBalanceFromManager();
+        ResolveSpawnPoints();
         useDualLaser = (laserSpawnPoint2 != null);
         
         // Laser container oluştur
@@ -171,27 +195,40 @@ public class SixthGunLaser : MonoBehaviour
         SetLaserActive(false);
     }
 
+    private void ApplyBalanceFromManager()
+    {
+        if (GameBalanceManager.Instance == null) return;
+        var d = GameBalanceManager.Instance.GetWeaponData(5);
+        damagePerTick = d.damage;
+        if (d.maxAmmo > 0) maxEnergy = d.maxAmmo;
+    }
+
     private void Start()
     {
-        if (!useDualLaser && laserSpawnPoint2 == null && WeaponManager.Instance != null)
+        // Build'de bazen referanslar/hierarchy bir frame sonra hazır oluyor; tekrar dene
+        bool hadSpawn1 = laserSpawnPoint != null;
+        bool hadSpawn2 = laserSpawnPoint2 != null;
+        ResolveSpawnPoints();
+        if (!hadSpawn2 && laserSpawnPoint2 != null)
         {
-            GameObject leftHand = WeaponManager.Instance.GetSixthWeaponLeftHand();
-            if (leftHand != null)
-            {
-                Transform t = leftHand.transform.Find("Laser");
-                if (t == null) t = leftHand.transform.Find("Laser (1)");
-                if (t != null)
-                {
-                    laserSpawnPoint2 = t;
-                    useDualLaser = true;
-                    CreateDualLaserBeams();
-                }
-            }
+            useDualLaser = true;
+            CreateDualLaserBeams();
         }
     }
 
     private void Update()
     {
+        // Build'de spawn point'ler bazen ilk frame'de null; bir kez daha dene
+        if (laserSpawnPoint == null && !_spawnPointsRetriedInUpdate)
+        {
+            _spawnPointsRetriedInUpdate = true;
+            ResolveSpawnPoints();
+            if (laserSpawnPoint2 != null && !useDualLaser)
+            {
+                useDualLaser = true;
+                CreateDualLaserBeams();
+            }
+        }
         if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
         if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSixthWeaponPhase && !TutorialIntroController.TutorialSixthWeaponSecondaryEnabled)
             return; // 15. diyalog bitmeden ikincil (yavaşlatma) kapalı
@@ -263,7 +300,9 @@ public class SixthGunLaser : MonoBehaviour
         if (useDualLaser)
             CreateDualLaserBeams();
 
-        UICameraStackSetup.SetLayerRecursivelyToUI(laserContainer);
+        // VR build'de (Quest standalone) UI Overlay bazen stereo'da çizilmiyor; laser'ı Default layer'da
+        // bırakıyoruz ki ana kamera her iki gözde çizsin. Link/Editor'da da görünür kalır.
+        // UICameraStackSetup.SetLayerRecursivelyToUI(laserContainer); // kapatıldı – build'de görünürlük için
     }
 
     private void CreateDualLaserBeams()
@@ -295,6 +334,8 @@ public class SixthGunLaser : MonoBehaviour
         rightCoreObj.transform.SetParent(laserContainer.transform);
         laserRightCore = rightCoreObj.AddComponent<LineRenderer>();
         SetupLaser(laserRightCore, coreWidth, coreColor, 2);
+        // Aynı sebep: Default layer'da kalsın, VR build'de görünsün.
+        // UICameraStackSetup.SetLayerRecursivelyToUI(laserContainer);
     }
 
     private void SetupLaser(LineRenderer line, float width, Color color, int sortingOrder)
@@ -400,6 +441,10 @@ public class SixthGunLaser : MonoBehaviour
         
         isLaserActive = active;
         
+        // Slow laser SFX (loop - açıkken çal, kapalıyken dur)
+        if (WeaponManager.Instance != null)
+            WeaponManager.Instance.PlayWeapon6SlowLaserSFX(active);
+        
         if (laserGlow != null) laserGlow.enabled = active;
         if (laserMain != null) laserMain.enabled = active;
         if (laserCore != null) laserCore.enabled = active;
@@ -497,15 +542,10 @@ public class SixthGunLaser : MonoBehaviour
         enemyBehavior.ApplySlow(slowMultiplier);
         slowedEnemies.Add(enemyBehavior);
         
-        // Buzlanma görsel efekti uygula
+        // Buzlanma görsel efekti uygula (SlowedGunLaser sadece yavaşlatır, hasar vermez)
         if (enemyHealth != null)
         {
             enemyHealth.ApplyFreezeEffect();
-            // Can azalma efekti - tüm düşman tiplerine (tur1, tur2, tur3, tur4) uygulanır
-            if (damagePerTick > 0f && hitCollider != null)
-            {
-                enemyHealth.TakeDamage(damagePerTick, hitCollider, fromFlameSpray: false, fromSecondary: true, tutorialWeaponIndex: 5);
-            }
         }
         
         if (TutorialIntroController.TutorialSixthWeaponPhase && TutorialIntroController.TutorialSixthWeaponSecondaryEnabled && !_tutorialSixthSecondaryUsed)
@@ -815,6 +855,12 @@ public class SixthGunLaser : MonoBehaviour
         return Sprite.Create(texture, new Rect(0, 0, resolution, resolution), new Vector2(0.5f, 0.5f), 100);
     }
     
+    private void OnDisable()
+    {
+        if (WeaponManager.Instance != null)
+            WeaponManager.Instance.PlayWeapon6SlowLaserSFX(false);
+    }
+
     private void OnDestroy()
     {
         // Tüm slow'ları temizle

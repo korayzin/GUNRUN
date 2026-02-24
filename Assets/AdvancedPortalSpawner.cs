@@ -32,11 +32,31 @@ public class AdvancedPortalSpawner : MonoBehaviour
     [Tooltip("Tek collider sistemli yeni düşmanlar için genel floating text")]
     public GameObject floatingTextPrefab;
 
+    [Header("Enemy Hit Sounds (mermi değdiğinde)")]
+    [Tooltip("Tur1 (Weak) düşmana mermi değdiğinde çalacak ses")]
+    public AudioClip tur1DamageSFX;
+    [Tooltip("Tur1 hasar sesi seviyesi (0-1)")]
+    [Range(0f, 1f)] public float tur1DamageSFXVolume = 1f;
+    [Tooltip("Tur2 (Medium) düşmana mermi değdiğinde çalacak ses")]
+    public AudioClip tur2DamageSFX;
+    [Tooltip("Tur2 hasar sesi seviyesi (0-1)")]
+    [Range(0f, 1f)] public float tur2DamageSFXVolume = 1f;
+    [Tooltip("Tur3 (Strong) düşmana mermi değdiğinde çalacak ses")]
+    public AudioClip tur3DamageSFX;
+    [Tooltip("Tur3 hasar sesi seviyesi (0-1)")]
+    [Range(0f, 1f)] public float tur3DamageSFXVolume = 1f;
+    [Tooltip("Tur4 (Tank) düşmana mermi değdiğinde çalacak ses")]
+    public AudioClip tur4DamageSFX;
+    [Tooltip("Tur4 hasar sesi seviyesi (0-1)")]
+    [Range(0f, 1f)] public float tur4DamageSFXVolume = 1f;
+
     [Header("Spawn Settings")]
     [Tooltip("Portallar açıldıktan sonra ilk düşman spawn'ı için bekleme süresi")]
-    public float delayBeforeFirstSpawn = 2f;
+    public float delayBeforeFirstSpawn = 3f;
     [Tooltip("Düşmanların portalın ne kadar yukarısından spawn olacağı (portalın ortasına hizalamak için)")]
     public float spawnHeightOffset = 1.5f;
+    [Tooltip("Spawn sırasında sağ/sol sapma (metre) - düşmanlar tek hizada gelmesin")]
+    public float spawnLateralOffsetRange = 1.5f;
 
     [Header("Stage (from GameBalanceManager when present; else fallbacks)")]
     [Tooltip("Stage 2 başlangıcı - fallback when no balance")]
@@ -74,7 +94,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     [Header("Portal Spawn Animation")]
     [Tooltip("Oyun başladıktan kaç saniye sonra portallar açılsın")]
-    public float portalSpawnStartDelay = 7.5f;
+    public float portalSpawnStartDelay = 10f;
     [Tooltip("Portal açılma animasyon süresi")]
     public float portalSpawnDuration = 1.5f;
     [Tooltip("Portallar arası açılma gecikmesi")]
@@ -176,8 +196,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         GameObject enemyPrefab = tur1Enemy != null ? tur1Enemy : tur2Enemy;
         if (enemyPrefab == null) return null;
 
-        Vector3 spawnPos = portalAPosition;
-        spawnPos.y += spawnHeightOffset;
+        Vector3 spawnPos = GetEnemySpawnPosition("A");
 
         Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
         directionToPlayer.y = 0;
@@ -234,13 +253,13 @@ public class AdvancedPortalSpawner : MonoBehaviour
         if (portalPrefabB != null)
         {
             GameObject portalB = Instantiate(portalPrefabB, portalBPosition, portalBRotation);
-            StartCoroutine(AnimatePortalSpawnUnscaled(portalB, portalBRotation));
+            StartCoroutine(AnimatePortalSpawnUnscaled(portalB, portalBRotation, playSound: true));
         }
         yield return new WaitForSecondsRealtime(portalSpawnDelay);
         if (portalPrefabC != null)
         {
             GameObject portalC = Instantiate(portalPrefabC, portalCPosition, portalCRotation);
-            yield return AnimatePortalSpawnUnscaled(portalC, portalCRotation);
+            yield return AnimatePortalSpawnUnscaled(portalC, portalCRotation, playSound: false);
         }
         _portalBAndCOpened = true;
         OnPortalBAndCOpened?.Invoke();
@@ -277,8 +296,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         while (!_stopTutorialPhase2aSpawning && !isGameOver)
         {
             string portal = bcPortals[Random.Range(0, bcPortals.Count)];
-            Vector3 spawnPos = GetPortalPosition(portal);
-            spawnPos.y += spawnHeightOffset;
+            Vector3 spawnPos = GetEnemySpawnPosition(portal);
 
             GameObject enemyPrefab = tur1Enemy != null ? tur1Enemy : tur2Enemy;
             if (enemyPrefab == null) break;
@@ -336,8 +354,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         for (int i = 0; i < openPortals.Count; i++)
         {
             string portal = openPortals[i];
-            Vector3 spawnPos = GetPortalPosition(portal);
-            spawnPos.y += spawnHeightOffset;
+            Vector3 spawnPos = GetEnemySpawnPosition(portal);
 
             GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
             if (enemyPrefab == null) continue;
@@ -369,8 +386,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
             GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
             string portal = GetPreferredPortalForEnemy(enemyPrefab);
-            Vector3 spawnPos = GetPortalPosition(portal);
-            spawnPos.y += spawnHeightOffset;
+            Vector3 spawnPos = GetEnemySpawnPosition(portal);
 
             if (enemyPrefab == null) break;
 
@@ -393,7 +409,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         }
     }
 
-    private IEnumerator AnimatePortalSpawnUnscaled(GameObject portal, Quaternion targetRotation)
+    private IEnumerator AnimatePortalSpawnUnscaled(GameObject portal, Quaternion targetRotation, bool playSound = true)
     {
         if (portal == null) yield break;
 
@@ -419,7 +435,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         portalTransform.rotation = targetRotation;
         yield return StartCoroutine(PulseEffectUnscaled(portalTransform, targetScale));
 
-        if (GameManager.Instance != null)
+        if (playSound && GameManager.Instance != null)
             GameManager.Instance.PlayPortalOpenSound();
     }
 
@@ -565,11 +581,11 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     IEnumerator SpawnPortalsWithAnimation()
     {
-        // Portal A
+        // Portal A (ses sadece ilk portaldan çalar)
         if (portalPrefabA != null)
         {
             GameObject portalA = Instantiate(portalPrefabA, portalAPosition, portalARotation);
-            StartCoroutine(AnimatePortalSpawn(portalA, portalARotation));
+            StartCoroutine(AnimatePortalSpawn(portalA, portalARotation, playSound: true));
         }
         
         yield return new WaitForSeconds(portalSpawnDelay);
@@ -578,7 +594,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         if (portalPrefabB != null)
         {
             GameObject portalB = Instantiate(portalPrefabB, portalBPosition, portalBRotation);
-            StartCoroutine(AnimatePortalSpawn(portalB, portalBRotation));
+            StartCoroutine(AnimatePortalSpawn(portalB, portalBRotation, playSound: false));
         }
         
         yield return new WaitForSeconds(portalSpawnDelay);
@@ -587,11 +603,11 @@ public class AdvancedPortalSpawner : MonoBehaviour
         if (portalPrefabC != null)
         {
             GameObject portalC = Instantiate(portalPrefabC, portalCPosition, portalCRotation);
-            StartCoroutine(AnimatePortalSpawn(portalC, portalCRotation));
+            StartCoroutine(AnimatePortalSpawn(portalC, portalCRotation, playSound: false));
         }
     }
 
-    IEnumerator AnimatePortalSpawn(GameObject portal, Quaternion targetRotation)
+    IEnumerator AnimatePortalSpawn(GameObject portal, Quaternion targetRotation, bool playSound = true)
     {
         if (portal == null) yield break;
 
@@ -633,7 +649,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         // Pulse efekti (tatlı bir son dokunuş)
         yield return StartCoroutine(PulseEffect(portalTransform, targetScale));
 
-        if (GameManager.Instance != null)
+        if (playSound && GameManager.Instance != null)
             GameManager.Instance.PlayPortalOpenSound();
     }
 
@@ -687,10 +703,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
         {
             GameObject enemyPrefab = GetRandomEnemyForStage(currentStage);
             string portal = GetPreferredPortalForEnemy(enemyPrefab);
-            Vector3 spawnPos = GetPortalPosition(portal);
-            
-            // Spawn yüksekliğini ayarla (portalın ortasına hizalama)
-            spawnPos.y += spawnHeightOffset;
+            Vector3 spawnPos = GetEnemySpawnPosition(portal);
 
             // Düşmanı oyuncuya bakacak şekilde spawn et (portaldan dönerek çıkmasını engeller)
             Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
@@ -876,6 +889,17 @@ public class AdvancedPortalSpawner : MonoBehaviour
         if (floatingTextPrefab != null && enemyHealth.floatingTextPrefab == null)
             enemyHealth.floatingTextPrefab = floatingTextPrefab;
 
+        // Hasar sesi ve seviyesi ata (4 düşman tipi için Inspector'dan atanabilir)
+        AudioClip damageClip = GetEnemyDamageSFX(prefab);
+        if (damageClip != null)
+        {
+            enemyHealth.damageSFX = damageClip;
+            enemyHealth.damageSFXVolume = GetEnemyDamageSFXVolume(prefab);
+            var src = enemy.GetComponent<AudioSource>();
+            if (src == null)
+                enemy.AddComponent<AudioSource>();
+        }
+
         // 4. Rigidbody ekle/kontrol et (kinematic olarak)
         Rigidbody rb = enemy.GetComponent<Rigidbody>();
         if (rb == null)
@@ -912,6 +936,24 @@ public class AdvancedPortalSpawner : MonoBehaviour
         if (prefab == tur3Enemy) return 2;
         if (prefab == tur4Enemy) return 3;
         return 2;
+    }
+
+    AudioClip GetEnemyDamageSFX(GameObject prefab)
+    {
+        if (prefab == tur1Enemy) return tur1DamageSFX;
+        if (prefab == tur2Enemy) return tur2DamageSFX;
+        if (prefab == tur3Enemy) return tur3DamageSFX;
+        if (prefab == tur4Enemy) return tur4DamageSFX;
+        return tur2DamageSFX;
+    }
+
+    float GetEnemyDamageSFXVolume(GameObject prefab)
+    {
+        if (prefab == tur1Enemy) return tur1DamageSFXVolume;
+        if (prefab == tur2Enemy) return tur2DamageSFXVolume;
+        if (prefab == tur3Enemy) return tur3DamageSFXVolume;
+        if (prefab == tur4Enemy) return tur4DamageSFXVolume;
+        return tur2DamageSFXVolume;
     }
 
     string GetPreferredPortalForEnemy(GameObject enemy)
@@ -971,6 +1013,26 @@ public class AdvancedPortalSpawner : MonoBehaviour
             default:
                 return portalAPosition;
         }
+    }
+
+    /// <summary>Portal pozisyonu + yükseklik + sağ/sol rastgele sapma. Düşmanlar tek hizada gelmesin.</summary>
+    private Vector3 GetEnemySpawnPosition(string portal)
+    {
+        Vector3 pos = GetPortalPosition(portal);
+        pos.y += spawnHeightOffset;
+
+        if (spawnLateralOffsetRange > 0.001f && Camera.main != null)
+        {
+            Vector3 dirToPlayer = Camera.main.transform.position - pos;
+            dirToPlayer.y = 0;
+            if (dirToPlayer.sqrMagnitude > 0.001f)
+            {
+                Vector3 right = Vector3.Cross(Vector3.up, dirToPlayer.normalized);
+                float offset = Random.Range(-spawnLateralOffsetRange, spawnLateralOffsetRange);
+                pos += right * offset;
+            }
+        }
+        return pos;
     }
 
     public void StopSpawning()

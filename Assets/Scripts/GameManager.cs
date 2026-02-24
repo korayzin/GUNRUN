@@ -18,8 +18,16 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI secondaryScoreText;
     public TextMeshProUGUI timerText;
     public GameObject timeAndScorePanel;
+    [Header("Background Music")]
     public AudioSource backgroundMusic;
+    [Tooltip("Portal/stage sesi çalarken müziğin kısılacağı oran (0-1, AudioSource volume'un bu kadarı kalır)")]
+    [Range(0f, 1f)]
+    public float backgroundMusicDuckVolume = 0.25f;
+    [Tooltip("Müziğin kısılma süresi (saniye)")]
+    public float backgroundMusicDuckFadeDuration = 0.25f;
+    
     private AdvancedPortalSpawner portalSpawner;
+    private Coroutine _duckCoroutine;
     
     [Header("Portal Sounds")]
     [Tooltip("Portallar açıldığında çalacak ses (her portal için bir kez)")]
@@ -32,8 +40,11 @@ public class GameManager : MonoBehaviour
     public AudioClip stage2TransitionSound;
     [Tooltip("Stage 3: Stage 3'e geçildiğinde çalacak ses")]
     public AudioClip stage3TransitionSound;
-    [Tooltip("Stage sesleri için AudioSource - boşsa PlayClipAtPoint kullanılır")]
+    [Tooltip("Stage/portal sesleri için AudioSource. ÖNEMLİ: backgroundMusic ile AYNI olmamalı! Boş veya aynıysa PlayClipAtPoint kullanılır.")]
     public AudioSource stageSoundsAudioSource;
+    [Tooltip("Portal ve stage seslerinin çalma seviyesi (1 = normal, 5 = 5x güçlü)")]
+    [Range(0.5f, 5f)]
+    public float stagePortalSoundVolume = 2f;
     
     [Header("Hand Ray UI Interactor")]
     [Tooltip("Retry menüsünde el ray etkileşimi için - otomatik bulunur eğer atanmazsa")]
@@ -231,22 +242,20 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Portal açılma sesini çalar. Inspector'dan portalOpenSound atayın.
+    /// Ana müzik bu sırada yavaşça kısılır.
+    /// NOT: stageSoundsAudioSource, backgroundMusic ile AYNI olmamalı - yoksa duck sırasında SFX de kısılır.
     /// </summary>
     public void PlayPortalOpenSound()
     {
         if (portalOpenSound == null) return;
-        if (stageSoundsAudioSource != null)
-            stageSoundsAudioSource.PlayOneShot(portalOpenSound);
-        else
-        {
-            Vector3 pos = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
-            AudioSource.PlayClipAtPoint(portalOpenSound, pos);
-        }
+        DuckBackgroundForSFX(portalOpenSound);
+        PlayStagePortalSFX(portalOpenSound);
     }
 
     /// <summary>
     /// Stage değişim anlarında ses çalar. stage: 1 = ilk düşman spawn, 2 = stage2 geçişi, 3 = stage3 geçişi.
     /// Inspector'dan stage1FirstEnemySpawnSound, stage2TransitionSound, stage3TransitionSound atayın.
+    /// Ana müzik bu sırada yavaşça kısılır.
     /// </summary>
     public void PlayStageSound(int stage)
     {
@@ -259,15 +268,72 @@ public class GameManager : MonoBehaviour
         };
         if (clip == null) return;
 
-        if (stageSoundsAudioSource != null)
+        DuckBackgroundForSFX(clip);
+        PlayStagePortalSFX(clip);
+    }
+
+    /// <summary>
+    /// Portal/stage SFX çalar. backgroundMusic ile aynı AudioSource kullanılmaz (duck çakışmasını önler).
+    /// </summary>
+    private void PlayStagePortalSFX(AudioClip clip)
+    {
+        bool useDedicatedSource = stageSoundsAudioSource != null && stageSoundsAudioSource != backgroundMusic;
+        if (useDedicatedSource)
         {
-            stageSoundsAudioSource.PlayOneShot(clip);
+            stageSoundsAudioSource.PlayOneShot(clip, stagePortalSoundVolume);
         }
         else
         {
             Vector3 pos = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
-            AudioSource.PlayClipAtPoint(clip, pos);
+            AudioSource.PlayClipAtPoint(clip, pos, Mathf.Min(1f, stagePortalSoundVolume));
         }
+    }
+
+    /// <summary>
+    /// Portal veya stage sesi çalarken ana müziği yavaşça kısar, ses bitince geri yükseltir.
+    /// </summary>
+    private void DuckBackgroundForSFX(AudioClip clip)
+    {
+        if (backgroundMusic == null || !backgroundMusic.isPlaying) return;
+        if (_duckCoroutine != null)
+            StopCoroutine(_duckCoroutine);
+        _duckCoroutine = StartCoroutine(DuckBackgroundCoroutine(clip));
+    }
+
+    private System.Collections.IEnumerator DuckBackgroundCoroutine(AudioClip clip)
+    {
+        float normalVolume = backgroundMusic.volume; // Inspector'daki değer
+        float targetVolume = normalVolume * backgroundMusicDuckVolume;
+        float duration = Mathf.Max(0.05f, backgroundMusicDuckFadeDuration);
+        float clipLength = clip != null ? clip.length : 0.5f;
+        float waitTime = Mathf.Max(clipLength * 0.8f, 0.3f);
+
+        // Kıs
+        float elapsed = 0f;
+        float startVol = backgroundMusic.volume;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            backgroundMusic.volume = Mathf.Lerp(startVol, targetVolume, t);
+            yield return null;
+        }
+        backgroundMusic.volume = targetVolume;
+
+        yield return new WaitForSecondsRealtime(waitTime);
+
+        // Geri yükselt (Inspector'daki orijinal değere)
+        elapsed = 0f;
+        startVol = backgroundMusic.volume;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            backgroundMusic.volume = Mathf.Lerp(startVol, normalVolume, t);
+            yield return null;
+        }
+        backgroundMusic.volume = normalVolume;
+        _duckCoroutine = null;
     }
 
     private void UpdateTimerUI()

@@ -170,9 +170,17 @@ public class ToyHelper : MonoBehaviour
     private float lastCooldownPercent = -1f;
     private float lastCooldownUIUpdate;
 
+    private void ApplyBalanceFromManager()
+    {
+        if (GameBalanceManager.Instance == null) return;
+        var d = GameBalanceManager.Instance.GetWeaponData(7);
+        damagePerTick = d.damage;
+    }
+
     private void Awake()
     {
         gunFire = GetComponent<GunFire>();
+        ApplyBalanceFromManager();
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -596,9 +604,12 @@ public class ToyHelper : MonoBehaviour
                     eh.TakeDamage(damagePerTick, rayHit.collider, fromFlameSpray: false, fromSecondary: true, tutorialWeaponIndex: 7);
                     didHitAny = true;
                     float now = Time.time;
-                    if (now - lastLaserHitSfxTime >= laserHitSfxThrottle && laserHitSfx != null && audioSource != null)
+                    if (now - lastLaserHitSfxTime >= laserHitSfxThrottle)
                     {
-                        audioSource.PlayOneShot(laserHitSfx);
+                        if (WeaponManager.Instance != null)
+                            WeaponManager.Instance.PlayWeapon8ToyFireSFX();
+                        if (laserHitSfx != null && audioSource != null)
+                            audioSource.PlayOneShot(laserHitSfx);
                         lastLaserHitSfxTime = now;
                     }
                     float lastHaptic = -99f;

@@ -120,7 +120,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 30
-  speed: 10
+  isFromSecondary: 0
+  weaponIndex: -1
+  sourceGunFire: {fileID: 0}
+  speed: 17
+  useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
 --- !u!54 &5486784748580091409

@@ -135,9 +135,18 @@ public class SeventhGunWhip : MonoBehaviour
     private List<Image> batterySegments = new List<Image>(); // 5 segment
     private TextMeshPro countText;
     
+    private void ApplyBalanceFromManager()
+    {
+        if (GameBalanceManager.Instance == null) return;
+        var d = GameBalanceManager.Instance.GetWeaponData(6);
+        damage = d.damage;
+        if (d.maxAmmo > 0) maxWhipShots = d.maxAmmo;
+    }
+    
     void Start()
     {
         gunFire = GetComponent<GunFire>();
+        ApplyBalanceFromManager();
         
         // Whip spawn point'i bul
         if (whipSpawnPoint == null)
@@ -297,6 +306,10 @@ public class SeventhGunWhip : MonoBehaviour
         
         // Haptic feedback
         StartCoroutine(HapticFeedback());
+        
+        // Kırbaç SFX
+        if (WeaponManager.Instance != null)
+            WeaponManager.Instance.PlayWeapon7WhipSFX();
         
         // Whip animasyonunu başlat
         if (whipCoroutine != null)
