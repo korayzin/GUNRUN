@@ -23888,6 +23888,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44,
         type: 3}
+      propertyPath: EnableWorldLock
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44,
+        type: 3}
       propertyPath: SceneSettings.DataSource
       value: 4
       objectReference: {fileID: 0}
@@ -59028,17 +59033,17 @@ PrefabInstance:
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       propertyPath: _maxPointsCount
-      value: 512
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       propertyPath: _pointsPerUnitX
-      value: 32
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       propertyPath: _pointsPerUnitY
-      value: 32
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5201637225824680237, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
@@ -59132,11 +59137,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5201637225824680224, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1241246876}
+      addedObject: {fileID: 1241246877}
     - targetCorrespondingSourceObject: {fileID: 5201637225824680224, guid: d211279b66f25334e984011a5ebfce5b,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1241246877}
+      addedObject: {fileID: 1241246878}
   m_SourcePrefab: {fileID: 100100000, guid: d211279b66f25334e984011a5ebfce5b, type: 3}
 --- !u!114 &1241246874 stripped
 MonoBehaviour:
@@ -59156,22 +59161,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1241246873}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1241246876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 784998457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5aa35b86128bd9e42a12902d514a9f0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxPointsCount: 1024
-  pointsPerUnitX: 64
-  pointsPerUnitY: 64
-  spawner: {fileID: 1241246874}
 --- !u!114 &1241246877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59191,6 +59180,30 @@ MonoBehaviour:
   playerOffset: {x: 0, y: 0, z: 0}
   positionMode: 0
   positionApplyDelayFrames: 3
+  moveRoomToPlayerWhenNotLocal: 0
+--- !u!114 &1241246878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784998457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa35b86128bd9e42a12902d514a9f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyOnlyOnBuild: 0
+  useTargetSegmentCount: 1
+  targetSegmentCount: 600
+  segmentOvershoot: 1
+  maxTrianglesPerSegment: 5
+  singleTrianglePerSegment: 0
+  maxPointsCount: 256
+  pointsPerUnitX: 2
+  pointsPerUnitY: 2
+  overrideSpawnerPointSettings: 0
+  spawner: {fileID: 1241246874}
 --- !u!1 &1244761644
 GameObject:
   m_ObjectHideFlags: 0
