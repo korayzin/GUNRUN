@@ -384,8 +384,10 @@ public class UserNameController : MonoBehaviour
 
     private void LoadNextScene()
     {
-        if (string.IsNullOrEmpty(nextSceneName))
-            nextSceneName = "UI";
-        SceneManager.LoadScene(nextSceneName);
+        string sceneName = string.IsNullOrEmpty(nextSceneName) ? "UI" : nextSceneName.Trim();
+        // Build'de "MainMenu" yok; yanlış ayarlanmışsa UI kullan (quit/crash önlemi)
+        if (string.IsNullOrEmpty(sceneName) || sceneName.Equals("MainMenu", System.StringComparison.OrdinalIgnoreCase))
+            sceneName = "UI";
+        SceneManager.LoadScene(sceneName);
     }
 }

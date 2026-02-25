@@ -387,6 +387,12 @@ public class TutorialIntroController : MonoBehaviour
     [Tooltip("Konuşma bitince ekstra bekleme süresi (saniye) - okuma için")]
     public float dialogueEndBuffer = 1f;
 
+    [Header("Tutorial / Username akışı")]
+    [Tooltip("Açık: Tutorial tamamlandıysa ve username set ise UI'ya yönlendir; değilse Tutorial → UserName → UI. Kapalı: Build sırasına göre aç, yönlendirme yapma.")]
+    [SerializeField] private bool useTutorialAndUserNameFlow = true;
+    [Tooltip("UserName sahnesindeki 'Cihaz başına bir kez' ile aynı tutun. Kapalı: Username set olsa bile uygulama UserName sahnesi ile açılır.")]
+    [SerializeField] private bool showUserNameOnlyOncePerDevice = true;
+
     [Header("Ana Menü Geçişi")]
     [Tooltip("TEST: true ise 2. diyalog bitince Y tuşu ile ana menüye dönüş aktif olur (test için)")]
     public bool testMainMenuReturnAfterDialogue2 = true;
@@ -438,11 +444,19 @@ public class TutorialIntroController : MonoBehaviour
         {
             ForceShowTutorialThisLoad = false;
         }
-        // Tutorial daha önce tamamlandıysa doğrudan ana menüye geç (uygulama ilk açılışında atla)
-        else if (PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
+        // Tik açıksa: tutorial tamamlandıysa ve username set ise; "cihaz başına 1 kez" açıksa UI'ya, kapalıysa UserName ile aç
+        if (useTutorialAndUserNameFlow && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1 && PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) == 1)
         {
-            string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName;
-            SceneManager.LoadScene(targetScene);
+            if (showUserNameOnlyOncePerDevice)
+                SceneManager.LoadScene(string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName);
+            else
+                SceneManager.LoadScene(string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName);
+            return;
+        }
+        // Tik açıksa ve tutorial tamamlandıysa ama username henüz set değilse UserName'e gönder
+        if (useTutorialAndUserNameFlow && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
+        {
+            SceneManager.LoadScene(string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName);
             return;
         }
 
@@ -1469,10 +1483,13 @@ public class TutorialIntroController : MonoBehaviour
         PlayerPrefs.Save();
 
         Time.timeScale = 1f;
-        // İlk kez: username henüz set değilse UserName sahnesine, değilse ana menü (UI)
-        string targetScene = PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) != 1
-            ? (string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName)
-            : (string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName);
+        string targetScene;
+        if (!useTutorialAndUserNameFlow)
+            targetScene = string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName;
+        else
+            targetScene = PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) != 1
+                ? (string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName)
+                : (string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName);
         SceneManager.LoadScene(targetScene);
     }
 

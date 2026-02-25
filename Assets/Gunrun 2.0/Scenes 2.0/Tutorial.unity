@@ -34275,9 +34275,13 @@ MonoBehaviour:
   holographicWeaponHUD: {fileID: 1917262746}
   countdownTextUI: {fileID: 0}
   dialogueEndBuffer: 1
+  useTutorialAndUserNameFlow: 1
+  showUserNameOnlyOncePerDevice: 0
   testMainMenuReturnAfterDialogue2: 0
+  userNameSceneName: UserName
   mainMenuSceneName: UI
   mainMenuFadeOutDuration: 1.5
+  skipTutorialEnabled: 1
 --- !u!4 &518243603
 Transform:
   m_ObjectHideFlags: 0
