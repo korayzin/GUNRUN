@@ -5329,7 +5329,7 @@ MonoBehaviour:
   killsToEighth: 82
   killsToNinth: 102
   vfxDelay: 0
-  testSixthLeftHandOnSecondWeapon: 1
+  testSixthLeftHandOnSecondWeapon: 0
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
   activeUIImageScale: 0.8
@@ -97018,6 +97018,7 @@ MonoBehaviour:
   raycastLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  baseLaserMaterial: {fileID: 0}
   laserColor: {r: 0, g: 0.7, b: 1, a: 1}
   glowColor: {r: 0, g: 0.4, b: 1, a: 0.4}
   coreColor: {r: 1, g: 1, b: 1, a: 1}
