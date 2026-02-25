@@ -59197,7 +59197,7 @@ MonoBehaviour:
   useTargetSegmentCount: 1
   targetSegmentCount: 600
   segmentOvershoot: 1
-  maxTrianglesPerSegment: 5
+  maxTrianglesPerSegment: 20
   singleTrianglePerSegment: 0
   maxPointsCount: 256
   pointsPerUnitX: 2

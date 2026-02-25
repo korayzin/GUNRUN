@@ -17,11 +17,11 @@ public class DestructibleMeshSegmentSettings : MonoBehaviour
     [SerializeField] private bool useTargetSegmentCount = true;
 
     [Tooltip("Hedef segment sayısı. Override açıkken gönderilen nokta sayısı buna göre ayarlanır (≈ bu kadar segment gelir, boşluksuz).")]
-    [SerializeField] [Min(32)] private int targetSegmentCount = 512;
+    [SerializeField] [Min(32)] private int targetSegmentCount = 1000;
     [Tooltip("Hedef için nokta çarpanı (1 = hedefe yakın segment, boşluksuz; 1.5-2 = biraz fazla nokta).")]
     [SerializeField] [Range(1f, 2f)] private float segmentOvershoot = 1f;
-    [Tooltip("Segment başına max üçgen. Aşanlar bölünür. Tek üçgen kapalıyken segment boyutu bu değeri geçmez.")]
-    [SerializeField] [Min(0)] private int maxTrianglesPerSegment = 150;
+    [Tooltip("Segment başına max üçgen. Aşanlar bölünür. Sayı düşükse (örn. 150) bölme çok olur ve segment sayısı artar; ~1000 segment için 400-500 kullan.")]
+    [SerializeField] [Min(0)] private int maxTrianglesPerSegment = 450;
     [Tooltip("Açıksa her segment 1 üçgen olur (segment sayısı mesh üçgen sayısına eşitlenir, çok artar). Boşluksuz + az segment için KAPALI bırak.")]
     [SerializeField] private bool singleTrianglePerSegment = false;
 
