@@ -447,21 +447,29 @@ public class TutorialIntroController : MonoBehaviour
         // Tik açıksa: tutorial tamamlandıysa ve username set ise; "cihaz başına 1 kez" açıksa UI'ya, kapalıysa UserName ile aç
         if (useTutorialAndUserNameFlow && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1 && PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) == 1)
         {
-            if (showUserNameOnlyOncePerDevice)
-                SceneManager.LoadScene(string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName);
-            else
-                SceneManager.LoadScene(string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName);
+            string target = showUserNameOnlyOncePerDevice
+                ? (string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName)
+                : (string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName);
+            StartCoroutine(DelayedRedirectToScene(target));
             return;
         }
         // Tik açıksa ve tutorial tamamlandıysa ama username henüz set değilse UserName'e gönder
         if (useTutorialAndUserNameFlow && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
         {
-            SceneManager.LoadScene(string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName);
+            string target = string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName;
+            StartCoroutine(DelayedRedirectToScene(target));
             return;
         }
 
         Time.timeScale = 0f;
         TutorialActive = true;
+    }
+
+    /// <summary>XR/OVR bir kare hazır olsun diye yönlendirmeyi bir kare geciktirir (UserName sahnesinde butonların tetiklenmesi için).</summary>
+    private IEnumerator DelayedRedirectToScene(string sceneName)
+    {
+        yield return null;
+        SceneManager.LoadScene(sceneName);
     }
 
     /// <summary>Tutorial sahnesinde miyiz (WeaponSwitchCountdownUI için).</summary>
