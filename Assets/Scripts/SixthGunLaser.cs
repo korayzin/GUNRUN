@@ -16,7 +16,6 @@ public class SixthGunLaser : MonoBehaviour
     [Tooltip("İkinci laser çıkış noktası (sol el silahı). Boşsa tek laser, doluysa iki laser karşıya doğru gider.")]
     public Transform laserSpawnPoint2;
     
-    
     [Tooltip("Laser menzili")]
     public float laserRange = 100f;
     
@@ -36,6 +35,9 @@ public class SixthGunLaser : MonoBehaviour
     public LayerMask raycastLayerMask = -1; // Tüm layer'lar
     
     [Header("=== LASER GÖRSELİ ===")]
+    [Tooltip("Inspector'dan Unlit/Color veya URP Unlit kullanan bir materyal sürükleyin.")]
+    public Material baseLaserMaterial;
+    
     [Tooltip("Ana laser rengi")]
     public Color laserColor = new Color(0f, 0.7f, 1f, 1f); // Parlak mavi
     
@@ -357,13 +359,30 @@ public class SixthGunLaser : MonoBehaviour
 
     private Material CreateLaserMaterial(Color color)
     {
-        Material mat = new Material(Shader.Find("Unlit/Color"));
-        if (mat.shader.name == "Hidden/InternalErrorShader")
+        // Eğer Inspector'dan materyal atanmamışsa, Editor içinde çalışması için eski yönteme dön (Fallback)
+        if (baseLaserMaterial == null)
         {
-            mat = new Material(Shader.Find("Sprites/Default"));
+            Debug.LogWarning("SixthGunLaser: baseLaserMaterial atanmamış! Fallback shader kullanılıyor (Build'de görünmeyebilir).");
+            Material fallbackMat = new Material(Shader.Find("Unlit/Color"));
+            if (fallbackMat.shader.name == "Hidden/InternalErrorShader")
+            {
+                fallbackMat = new Material(Shader.Find("Sprites/Default"));
+            }
+            fallbackMat.color = color;
+            if (fallbackMat.HasProperty("_Color")) fallbackMat.SetColor("_Color", color);
+            return fallbackMat;
         }
-        mat.SetColor("_Color", color);
+
+        // Inspector'dan atanan materyalin bir kopyasını (instance) oluştur
+        Material mat = new Material(baseLaserMaterial);
+        
+        // Standart render veya URP'ye göre rengi ayarla
         mat.color = color;
+        if (mat.HasProperty("_Color")) 
+            mat.SetColor("_Color", color);
+        else if (mat.HasProperty("_BaseColor")) 
+            mat.SetColor("_BaseColor", color); // URP desteği
+            
         return mat;
     }
 
