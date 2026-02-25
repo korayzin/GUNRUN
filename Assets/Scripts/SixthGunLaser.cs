@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
@@ -35,7 +36,7 @@ public class SixthGunLaser : MonoBehaviour
     public LayerMask raycastLayerMask = -1; // Tüm layer'lar
     
     [Header("=== LASER GÖRSELİ ===")]
-    [Tooltip("Inspector'dan Unlit/Color veya URP Unlit kullanan bir materyal sürükleyin.")]
+    [Tooltip("Opsiyonel. Boş bırakılırsa laser sadece seçilen renkle çizilir (fallback shader). Özel görünüm için Unlit/URP Unlit materyal sürükleyebilirsiniz.")]
     public Material baseLaserMaterial;
     
     [Tooltip("Ana laser rengi")]
@@ -232,8 +233,13 @@ public class SixthGunLaser : MonoBehaviour
             }
         }
         if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
-        if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSixthWeaponPhase && !TutorialIntroController.TutorialSixthWeaponSecondaryEnabled)
-            return; // 15. diyalog bitmeden ikincil (yavaşlatma) kapalı
+        // Tutorial'da laser: sırası geldiğinde (15. diyalog sonrası) veya testte 1. silahtayken açılabilsin; diğer sahnede her zaman
+        bool inTutorialScene = SceneManager.GetActiveScene().name == "Tutorial" || FindObjectOfType<TutorialIntroController>() != null;
+        bool tutorialSecondaryAllowed = TutorialIntroController.TutorialSixthWeaponSecondaryEnabled; // sırası geldi
+        bool testFirstSlot = WeaponManager.Instance != null && WeaponManager.Instance.testSixthLeftHandOnSecondWeapon && WeaponManager.Instance.GetCurrentWeaponIndex() == 0; // testte 1. silah
+        bool blockTutorialLaser = inTutorialScene && !TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSixthWeaponPhase && !tutorialSecondaryAllowed && !testFirstSlot;
+        if (blockTutorialLaser)
+            return; // 15. diyalog bitmeden ve testte 1. silah değilken ikincil (yavaşlatma) kapalı
         
         // B/Y tuşları veya sol kontrolcü trigger ile toggle (SlowedGun sol elde tutulurken)
         if (OVRInput.GetDown(OVRInput.Button.Two) || OVRInput.GetDown(OVRInput.Button.Three) || OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
@@ -362,14 +368,18 @@ public class SixthGunLaser : MonoBehaviour
         // Eğer Inspector'dan materyal atanmamışsa, Editor içinde çalışması için eski yönteme dön (Fallback)
         if (baseLaserMaterial == null)
         {
-            Debug.LogWarning("SixthGunLaser: baseLaserMaterial atanmamış! Fallback shader kullanılıyor (Build'de görünmeyebilir).");
-            Material fallbackMat = new Material(Shader.Find("Unlit/Color"));
+            // Materyal atanmazsa sadece çizilen renk gösterilir (Unlit/URP Unlit); Inspector'da materyal zorunlu değil
+            // Quest/URP build'de Unlit/Color strip edilebilir; önce URP Unlit dene
+            Shader shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
+            if (shader == null) shader = Shader.Find("Sprites/Default");
+            Material fallbackMat = shader != null ? new Material(shader) : new Material(Shader.Find("Sprites/Default"));
             if (fallbackMat.shader.name == "Hidden/InternalErrorShader")
             {
                 fallbackMat = new Material(Shader.Find("Sprites/Default"));
             }
             fallbackMat.color = color;
             if (fallbackMat.HasProperty("_Color")) fallbackMat.SetColor("_Color", color);
+            if (fallbackMat.HasProperty("_BaseColor")) fallbackMat.SetColor("_BaseColor", color);
             return fallbackMat;
         }
 
@@ -728,7 +738,11 @@ public class SixthGunLaser : MonoBehaviour
         // World Space Canvas
         energyBarCanvas = energyBarContainer.AddComponent<Canvas>();
         energyBarCanvas.renderMode = RenderMode.WorldSpace;
-        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(energyBarCanvas);
+        // Quest standalone build'de UI Overlay bazen stack'e eklenmediği için enerji bar görünmüyor; sadece PC/Editor'da overlay kullan
+        if (Application.platform != RuntimePlatform.Android)
+            UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(energyBarCanvas);
+        else
+            energyBarCanvas.worldCamera = null; // Camera.main ile çizilsin, Default layer'da kalsın
         
         RectTransform canvasRect = energyBarCanvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(2, 2);

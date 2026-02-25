@@ -88,8 +88,8 @@ public class WeaponManager : MonoBehaviour
     public int killsToNinth = 102;
     public float vfxDelay = 0.5f;
 
-    [Header("TEST - Sixth Left Hand on Second Weapon")]
-    [Tooltip("true = SixthWeaponLeftHand sadece 2. silahta (ikinci silah) açılır. false = normal (6. silahta açılır).")]
+    [Header("TEST - Sixth Left Hand on First Weapon")]
+    [Tooltip("true = SixthWeaponLeftHand sadece 1. silahta açılır (test). false = normal (6. silahta açılır).")]
     public bool testSixthLeftHandOnSecondWeapon = true;
 
     [Header("Weapon Scale Settings")]
@@ -300,7 +300,17 @@ public class WeaponManager : MonoBehaviour
         if (fourthWeapon != null) fourthWeapon.SetActive(false);
         if (fifthWeapon != null) fifthWeapon.SetActive(false);
         if (sixthWeapon != null) sixthWeapon.SetActive(false);
-        if (sixthWeaponLeftHand != null) sixthWeaponLeftHand.SetActive(false);
+        if (sixthWeaponLeftHand != null)
+        {
+            if (testSixthLeftHandOnSecondWeapon)
+            {
+                sixthWeaponLeftHand.SetActive(true);
+                var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
+                if (laserOnLeft != null) laserOnLeft.enabled = true;
+            }
+            else
+                sixthWeaponLeftHand.SetActive(false);
+        }
         if (seventhWeapon != null) seventhWeapon.SetActive(false);
         if (eighthWeapon != null) eighthWeapon.SetActive(false);
         if (ninthWeapon != null) ninthWeapon.SetActive(false);
@@ -423,13 +433,8 @@ public class WeaponManager : MonoBehaviour
             StartCoroutine(SwitchWeaponWithVFX(firstWeapon, secondWeapon, vfxFirst, vfxSecond));
             currentWeapon = 1;
             HandleBarettaSwitch(secondWeapon);
-            // TEST: SixthWeaponLeftHand sadece ikinci silahta spawn
-            if (testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null)
-            {
-                sixthWeaponLeftHand.SetActive(true);
-                var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
-                if (laserOnLeft != null) laserOnLeft.enabled = true;
-            }
+            // TEST: 1. silahtan 2'ye geçince SlowedGun kapat (testte sadece 1. silahta açık)
+            if (testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null) sixthWeaponLeftHand.SetActive(false);
             Debug.Log($"First weapon kapatıldı, Second weapon açıldı ({enemyKillCount} kill).");
         }
         // Second -> Third
@@ -710,8 +715,8 @@ public class WeaponManager : MonoBehaviour
     private void SetWeaponByIndex(int index)
     {
         if (currentWeapon == 5 || currentWeapon == 8) StopLoopSFX();
-        // TEST: sol el sadece index==1'de; normal modda sadece index==5'te açık
-        bool showSixthLeft = testSixthLeftHandOnSecondWeapon ? (index == 1) : (index == 5);
+        // TEST: sol el sadece 1. silahta (index 0); normal modda sadece 6. silahta (index 5) açık
+        bool showSixthLeft = testSixthLeftHandOnSecondWeapon ? (index == 0) : (index == 5);
         if (sixthWeaponLeftHand != null)
         {
             if (!showSixthLeft) sixthWeaponLeftHand.SetActive(false);
