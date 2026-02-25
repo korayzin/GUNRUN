@@ -447,6 +447,8 @@ public class TutorialIntroController : MonoBehaviour
         // Tik açıksa: tutorial tamamlandıysa ve username set ise; "cihaz başına 1 kez" açıksa UI'ya, kapalıysa UserName ile aç
         if (useTutorialAndUserNameFlow && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1 && PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) == 1)
         {
+            if (!showUserNameOnlyOncePerDevice)
+                UserNameController.ForceShowFormThisLoad = true; // UserName sahnesinde kurulum atlanmasın, butonlar çalışsın
             string target = showUserNameOnlyOncePerDevice
                 ? (string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName)
                 : (string.IsNullOrEmpty(userNameSceneName) ? "UserName" : userNameSceneName);
@@ -465,9 +467,10 @@ public class TutorialIntroController : MonoBehaviour
         TutorialActive = true;
     }
 
-    /// <summary>XR/OVR bir kare hazır olsun diye yönlendirmeyi bir kare geciktirir (UserName sahnesinde butonların tetiklenmesi için).</summary>
+    /// <summary>XR/OVR hazır olsun diye yönlendirmeyi 2 kare geciktirir (UserName sahnesinde ray/butonların tetiklenmesi için).</summary>
     private IEnumerator DelayedRedirectToScene(string sceneName)
     {
+        yield return null;
         yield return null;
         SceneManager.LoadScene(sceneName);
     }

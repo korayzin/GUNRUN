@@ -49,14 +49,8 @@ public class UserNameRayClick : MonoBehaviour
             enabled = false;
             return;
         }
-
         _hand = useLeftHand ? ovrRig.leftHandOnControllerAnchor : ovrRig.rightHandOnControllerAnchor;
-        if (_hand == null)
-        {
-            Debug.LogError("[UserNameRayClick] Hand anchor bulunamadı.");
-            enabled = false;
-            return;
-        }
+        // Hand bazen ilk karede null (Tutorial'dan yönlendirme); Update'te tekrar denenecek, script kapatılmaz
 
         if (canvas == null)
         {
@@ -86,6 +80,12 @@ public class UserNameRayClick : MonoBehaviour
 
     private void Update()
     {
+        // Tutorial'dan yönlendirme sonrası OVR bazen geç hazır olur; hand null ise tekrar dene
+        if (_hand == null)
+        {
+            if (ovrRig == null) ovrRig = FindObjectOfType<OVRCameraRig>();
+            if (ovrRig != null) _hand = useLeftHand ? ovrRig.leftHandOnControllerAnchor : ovrRig.rightHandOnControllerAnchor;
+        }
         if (_hand == null || _raycaster == null || _cam == null) return;
 
         Vector3 origin = _hand.position;

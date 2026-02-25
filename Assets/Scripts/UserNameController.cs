@@ -10,6 +10,9 @@ public class UserNameController : MonoBehaviour
 {
     public const string UserNameSetKey = "UserNameSet";
     public const string PlayerNameKey = "PlayerName";
+
+    /// <summary>Tutorial'dan "username ile aç" ile gönderildiyse true; UserName sahnesinde kurulum atlanmaz, butonlar çalışır.</summary>
+    public static bool ForceShowFormThisLoad = false;
     private const int MaxNameLength = 20;
     private const float RayDistance = 50f;
 
@@ -52,7 +55,11 @@ public class UserNameController : MonoBehaviour
 
     private void Start()
     {
-        if (showOnlyOncePerDevice && PlayerPrefs.GetInt(UserNameSetKey, 0) == 1)
+        // Tutorial'dan bilinçle UserName'e gönderildiyse (ForceShowFormThisLoad) kurulumu atlama; username=1 olsa da form göster
+        bool skipBecauseAlreadySet = showOnlyOncePerDevice && !ForceShowFormThisLoad && PlayerPrefs.GetInt(UserNameSetKey, 0) == 1;
+        if (ForceShowFormThisLoad)
+            ForceShowFormThisLoad = false;
+        if (skipBecauseAlreadySet)
         {
             LoadNextScene();
             return;
@@ -200,6 +207,8 @@ public class UserNameController : MonoBehaviour
         {
             var ovrRig = Object.FindObjectOfType<OVRCameraRig>();
             if (ovrRig == null) return null;
+            // Meta Quest / OVR'da genelde rightHandOnControllerAnchor dolu; UserNameRayClick ve diğer scriptler bunu kullanıyor
+            if (ovrRig.rightHandOnControllerAnchor != null) return ovrRig.rightHandOnControllerAnchor;
             if (ovrRig.rightHandAnchor != null) return ovrRig.rightHandAnchor;
             if (ovrRig.rightControllerAnchor != null) return ovrRig.rightControllerAnchor;
             Transform t = ovrRig.transform.Find("TrackingSpace/RightHandAnchor");
@@ -246,7 +255,17 @@ public class UserNameController : MonoBehaviour
 
     private void Update()
     {
-        if (rayOrigin == null) return;
+        // OVR bazen ilk karede hazır olmaz; rayOrigin null ise tekrar dene (Tutorial'dan hemen yönlendirme sonrası)
+        if (rayOrigin == null)
+        {
+            rayOrigin = FindHandRayOrigin();
+            if (rayOrigin != null)
+            {
+                SetupRayLine();
+                DisableOtherRays();
+            }
+            return;
+        }
 
         Ray ray = new Ray(rayOrigin.position, rayOrigin.forward);
         float hitDistance = RayDistance;
