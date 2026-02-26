@@ -387,11 +387,15 @@ public class TutorialIntroController : MonoBehaviour
     [Tooltip("Konuşma bitince ekstra bekleme süresi (saniye) - okuma için")]
     public float dialogueEndBuffer = 1f;
 
+    [Header("Cihaz başına bir kez")]
+    [Tooltip("Açık: Daha önce tutorial tamamlandıysa bu sahne atlanır (cihaz başına 1 kez). Kapalı: Tutorial her seferinde gösterilir. / Show Only Once Per Device")]
+    [SerializeField] private bool showOnlyOncePerDevice = true;
+
     [Header("Ana Menü Geçişi")]
     [Tooltip("TEST: true ise 2. diyalog bitince Y tuşu ile ana menüye dönüş aktif olur (test için)")]
     public bool testMainMenuReturnAfterDialogue2 = true;
     [Tooltip("Y tuşuna basılı tutunca yüklenecek sahne adı (Build Settings'te ekli olmalı)")]
-    public string mainMenuSceneName = "MainMenu";
+    public string mainMenuSceneName = "UserName";
     [Tooltip("Y tuşuna basılı tutunca fade out süresi (sn)")]
     public float mainMenuFadeOutDuration = 1.5f;
 
@@ -432,8 +436,8 @@ public class TutorialIntroController : MonoBehaviour
         {
             ForceShowTutorialThisLoad = false;
         }
-        // Tutorial daha önce tamamlandıysa doğrudan ana menüye geç (uygulama ilk açılışında atla)
-        else if (PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
+        // Cihaz başına bir kez açıksa ve tutorial daha önce tamamlandıysa doğrudan ana menüye geç
+        else if (showOnlyOncePerDevice && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
         {
             string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName;
             SceneManager.LoadScene(targetScene);
@@ -1487,8 +1491,37 @@ public class TutorialIntroController : MonoBehaviour
         _tutorialBot.position = targetPos;
     }
 
+    /// <summary>Sol el grip ile çağrılır: tutorial atlanır, 24. diyalog gösterilir, ardından Y ile ana menüye dönülebilir.</summary>
+    private void SkipTutorialToLastDialogue()
+    {
+        if (_tutorialRetryInProgress) return;
+        StartCoroutine(SkipToLastDialogueCoroutine());
+    }
+
+    private IEnumerator SkipToLastDialogueCoroutine()
+    {
+        _tutorialRetryInProgress = true;
+        Time.timeScale = 0f;
+        if (dialoguePanel != null) dialoguePanel.SetActive(true);
+        if (dialogueTextUI != null) dialogueTextUI.gameObject.SetActive(true);
+        if (!string.IsNullOrEmpty(dialogueText24))
+            yield return ShowDialogueCoroutine(dialogueText24, botVoiceClip24);
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+        if (dialogueTextUI != null) dialogueTextUI.gameObject.SetActive(false);
+        _tutorialRetryInProgress = false;
+        _tutorialFinalPhaseEnded = true;
+        Time.timeScale = 1f;
+    }
+
     private void Update()
     {
+        // Sol el grip: tutorial'ı atla, son diyaloğa (24) git, ardından Y ile ana menüye dönülebilir
+        if (!_tutorialFinalPhaseEnded && OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger, OVRInput.Controller.LTouch))
+        {
+            SkipTutorialToLastDialogue();
+            return;
+        }
+
         // 24. diyalog bittikten sonra: sol kontrolcü Y tuşuna basılı tutarak ana menüye dön
         if (_tutorialFinalPhaseEnded && OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.LTouch))
         {

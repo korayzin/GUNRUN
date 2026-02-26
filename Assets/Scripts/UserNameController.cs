@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -14,7 +15,8 @@ public class UserNameController : MonoBehaviour
     private const float RayDistance = 50f;
 
     [Header("Sonraki sahne")]
-    [SerializeField] private string nextSceneName = "UI";
+    [Tooltip("Continue/Devam sonrası yüklenecek sahne adı (Build Settings'te olmalı).")]
+    [SerializeField] private string nextSceneName = "Deneme";
 
     [Header("Cihaz başına bir kez")]
     [Tooltip("Açık: Daha önce isim kaydedildiyse bu sahne atlanır (cihaz başına 1 kez). Kapalı: Bu sahne her seferinde gösterilir.")]
@@ -379,13 +381,60 @@ public class UserNameController : MonoBehaviour
         if (FirebaseLeaderboardManager.Instance != null)
             FirebaseLeaderboardManager.Instance.SetPlayerName(name);
 
-        LoadNextScene();
+        StartCoroutine(LoadNextSceneCoroutine());
+    }
+
+    /// <summary>Build'de senkron LoadScene bazen çökmeye neden oluyor; async yükleme kullanıyoruz.</summary>
+    private System.Collections.IEnumerator LoadNextSceneCoroutine()
+    {
+        string sceneName = string.IsNullOrEmpty(nextSceneName) ? "Deneme" : nextSceneName.Trim();
+        if (string.IsNullOrEmpty(sceneName))
+            sceneName = "Deneme";
+
+        // Bir frame bekle (Quest build'de sahne geçişi öncesi stabilite için)
+        yield return null;
+
+        int buildIndex = -1;
+        int count = SceneManager.sceneCountInBuildSettings;
+        for (int i = 0; i < count; i++)
+        {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            string nameInBuild = Path.GetFileNameWithoutExtension(path);
+            if (string.Equals(nameInBuild, sceneName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                buildIndex = i;
+                break;
+            }
+        }
+
+        if (buildIndex >= 0)
+        {
+            var op = SceneManager.LoadSceneAsync(buildIndex, LoadSceneMode.Single);
+            if (op == null)
+            {
+                Debug.LogError("[UserNameController] LoadSceneAsync(buildIndex) null döndü.");
+                yield break;
+            }
+            op.allowSceneActivation = true;
+            while (!op.isDone)
+                yield return null;
+            yield break;
+        }
+
+        Debug.LogWarning("[UserNameController] Build'de sahne bulunamadı: \"" + sceneName + "\", isimle async yükleniyor.");
+        var opByName = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+        if (opByName != null)
+        {
+            opByName.allowSceneActivation = true;
+            while (!opByName.isDone)
+                yield return null;
+        }
+        else
+            Debug.LogError("[UserNameController] LoadSceneAsync(isim) null döndü: " + sceneName);
     }
 
     private void LoadNextScene()
     {
-        if (string.IsNullOrEmpty(nextSceneName))
-            nextSceneName = "UI";
-        SceneManager.LoadScene(nextSceneName);
+        StartCoroutine(LoadNextSceneCoroutine());
     }
 }
