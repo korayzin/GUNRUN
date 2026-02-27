@@ -51,12 +51,22 @@ public class LeaderboardUI : MonoBehaviour
     
     private System.Collections.IEnumerator ShowLeaderboardOnStart()
     {
-        // UI'ların tam yüklenmesi için kısa bir bekleme
+        // Quest build'de Firebase/UI init daha uzun sürebilir
+#if UNITY_ANDROID && !UNITY_EDITOR
+        yield return new WaitForSeconds(0.5f);
+#else
         yield return new WaitForSeconds(0.1f);
-        
-        // Leaderboard'u göster
+#endif
+        EnsureCanvasWorldCamera();
         ShowLeaderboard();
-        Debug.Log("✅ Leaderboard otomatik olarak açıldı (Start metodundan)");
+    }
+
+    private void EnsureCanvasWorldCamera()
+    {
+        if (leaderboardPanel == null) return;
+        var canvas = leaderboardPanel.GetComponentInParent<Canvas>(true);
+        if (canvas != null && canvas.renderMode == RenderMode.WorldSpace && canvas.worldCamera == null && Camera.main != null)
+            canvas.worldCamera = Camera.main;
     }
     
     // TEST FONKSIYONU: Test oyuncuları ekle

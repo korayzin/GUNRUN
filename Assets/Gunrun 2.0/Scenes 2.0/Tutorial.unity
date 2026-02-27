@@ -5329,7 +5329,7 @@ MonoBehaviour:
   killsToEighth: 82
   killsToNinth: 102
   vfxDelay: 0
-  testSixthLeftHandOnSecondWeapon: 1
+  testSixthLeftHandOnSecondWeapon: 0
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
   activeUIImageScale: 0.8
@@ -34275,7 +34275,7 @@ MonoBehaviour:
   holographicWeaponHUD: {fileID: 1917262746}
   countdownTextUI: {fileID: 0}
   dialogueEndBuffer: 1
-  showOnlyOncePerDevice: 0
+  showOnlyOncePerDevice: 1
   testMainMenuReturnAfterDialogue2: 0
   mainMenuSceneName: UserName
   mainMenuFadeOutDuration: 1.5
@@ -48672,12 +48672,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 87444287605753292, guid: 219291cae7ec88b42879ba62dee74e0f,
     type: 3}
   m_PrefabInstance: {fileID: 908495306}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &911151362 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4060938240063826061, guid: ee8efac66317faa4190c88084a344472,
-    type: 3}
-  m_PrefabInstance: {fileID: 2443542293831071704}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &914649028
 GameObject:
@@ -96921,7 +96915,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 923490923054299161, guid: ee8efac66317faa4190c88084a344472, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 990552901244723077, guid: ee8efac66317faa4190c88084a344472,
         type: 3}
@@ -97010,7 +97005,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff1645266c76ec4f8ef4b50381b6ee7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laserSpawnPoint: {fileID: 911151362}
+  laserSpawnPoint: {fileID: 0}
   laserSpawnPoint2: {fileID: 0}
   laserRange: 100
   slowMultiplier: 0.4

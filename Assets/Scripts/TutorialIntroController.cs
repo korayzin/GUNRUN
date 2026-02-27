@@ -436,10 +436,21 @@ public class TutorialIntroController : MonoBehaviour
         {
             ForceShowTutorialThisLoad = false;
         }
-        // Cihaz başına bir kez açıksa ve tutorial daha önce tamamlandıysa doğrudan ana menüye geç
+        // Per device: Tutorial VE Username ikisi de tamamlandıysa direkt Deneme'ye geç (ikisini de atla)
+        else if (showOnlyOncePerDevice && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1 && PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) == 1)
+        {
+            SceneManager.LoadScene("Deneme");
+            return;
+        }
+        // Per device: Sadece tutorial tamamlandıysa UserName'e geç (username henüz yok)
         else if (showOnlyOncePerDevice && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
         {
-            string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName;
+            string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UserName" : mainMenuSceneName;
+            if (string.Equals(targetScene, "UserName", System.StringComparison.OrdinalIgnoreCase))
+            {
+                SceneManager.LoadScene("UserName");
+                return;
+            }
             SceneManager.LoadScene(targetScene);
             return;
         }
@@ -1467,7 +1478,10 @@ public class TutorialIntroController : MonoBehaviour
         PlayerPrefs.Save();
 
         Time.timeScale = 1f;
-        SceneManager.LoadScene(string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName);
+        string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName;
+        if (string.Equals(targetScene, "UserName", System.StringComparison.OrdinalIgnoreCase) && PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) == 1)
+            targetScene = "Deneme";
+        SceneManager.LoadScene(targetScene);
     }
 
     private IEnumerator MoveBotToPositionCoroutine(Vector3 targetPos, float duration)

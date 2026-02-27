@@ -2,6 +2,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 /// <summary>
@@ -52,13 +53,23 @@ public class UserNameController : MonoBehaviour
     private Camera _mainCam;
     private Button _currentHoveredButton;
 
-    private void Start()
+    private void Awake()
     {
+        // Per device: İsim zaten kayıtlıysa sahne hiç render edilmeden direkt Deneme'ye geç
         if (showOnlyOncePerDevice && PlayerPrefs.GetInt(UserNameSetKey, 0) == 1)
         {
-            LoadNextScene();
+            LoadNextSceneImmediate();
             return;
         }
+    }
+
+    private void Start()
+    {
+        // Awake'te skip edildiyse buraya gelmeyiz; gelindiyse sahne gösterilecek
+        if (showOnlyOncePerDevice && PlayerPrefs.GetInt(UserNameSetKey, 0) == 1)
+            return;
+
+        EnsureEventSystemExists();
 
         randomButton?.onClick.AddListener(OnRandomClick);
         confirmButton?.onClick.AddListener(OnConfirmClick);
@@ -124,6 +135,20 @@ public class UserNameController : MonoBehaviour
             if (lr == rayLine) continue;
             lr.enabled = false;
         }
+    }
+
+    /// <summary>
+    /// EventSystem yoksa oluşturur - Editor'da veya eksik sahnede tıklama çalışsın.
+    /// </summary>
+    private void EnsureEventSystemExists()
+    {
+        if (EventSystem.current != null) return;
+        var existing = Object.FindObjectOfType<EventSystem>();
+        if (existing != null) return;
+
+        var go = new GameObject("EventSystem");
+        go.AddComponent<EventSystem>();
+        go.AddComponent<StandaloneInputModule>();
     }
 
     /// <summary>
@@ -436,5 +461,25 @@ public class UserNameController : MonoBehaviour
     private void LoadNextScene()
     {
         StartCoroutine(LoadNextSceneCoroutine());
+    }
+
+    /// <summary>Per device atlama: Username sahnesi hiç render edilmeden aynı frame'de sonraki sahneye geçer.</summary>
+    private void LoadNextSceneImmediate()
+    {
+        string sceneName = string.IsNullOrEmpty(nextSceneName) ? "Deneme" : nextSceneName.Trim();
+        if (string.IsNullOrEmpty(sceneName)) sceneName = "Deneme";
+
+        int count = SceneManager.sceneCountInBuildSettings;
+        for (int i = 0; i < count; i++)
+        {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            string nameInBuild = Path.GetFileNameWithoutExtension(path);
+            if (string.Equals(nameInBuild, sceneName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                SceneManager.LoadScene(i, LoadSceneMode.Single);
+                return;
+            }
+        }
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 }

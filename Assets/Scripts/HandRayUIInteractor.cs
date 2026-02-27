@@ -89,10 +89,11 @@ public class HandRayUIInteractor : MonoBehaviour
         // GraphicRaycaster'ı bul
         if (targetCanvas != null)
         {
+            if (targetCanvas.renderMode == RenderMode.WorldSpace && targetCanvas.worldCamera == null && Camera.main != null)
+                targetCanvas.worldCamera = Camera.main;
             graphicRaycaster = targetCanvas.GetComponent<GraphicRaycaster>();
             if (graphicRaycaster == null)
             {
-                Debug.LogWarning("[HandRayUIInteractor] Target Canvas'ta GraphicRaycaster bulunamadı, ekleniyor...");
                 graphicRaycaster = targetCanvas.gameObject.AddComponent<GraphicRaycaster>();
             }
         }

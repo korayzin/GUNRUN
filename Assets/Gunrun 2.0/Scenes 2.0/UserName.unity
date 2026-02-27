@@ -3249,8 +3249,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cf96e96efd33b547accd3456fd8b7e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: UI
-  showOnlyOncePerDevice: 0
+  nextSceneName: Deneme
+  showOnlyOncePerDevice: 1
   nameInputTMP: {fileID: 0}
   nameInputLegacy: {fileID: 1206589162}
   randomButton: {fileID: 0}
@@ -4593,7 +4593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextSceneName: Deneme
-  showOnlyOncePerDevice: 0
+  showOnlyOncePerDevice: 1
   nameInputTMP: {fileID: 0}
   nameInputLegacy: {fileID: 1514470122}
   randomButton: {fileID: 1591776070}

@@ -52,6 +52,8 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
+        EnsureVRUIConfiguration();
+        ResolveMissingReferences();
         _contentPanels = new List<GameObject>();
         if (optionsPanel != null) _contentPanels.Add(optionsPanel);
         if (weaponPanel != null) _contentPanels.Add(weaponPanel);
@@ -64,6 +66,41 @@ public class UIManager : MonoBehaviour
         WireButtons();
         // Başlangıçta Leaderboard paneli açık
         ShowLeaderboard();
+    }
+
+    /// <summary>
+    /// Quest build'de EventSystem/OVRInputModule ve Canvas.worldCamera ayarlarını düzeltir.
+    /// Editor'da Link ile çalışır, standalone Quest'te UI'ın çalışması için kritik.
+    /// </summary>
+    private void EnsureVRUIConfiguration()
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        var eventSystem = UnityEngine.EventSystems.EventSystem.current;
+        if (eventSystem != null)
+        {
+            var ovrModule = eventSystem.GetComponent<OVRInputModule>();
+            if (ovrModule != null)
+                ovrModule.allowActivationOnMobileDevice = true;
+        }
+#endif
+        var canvases = FindObjectsOfType<Canvas>(true);
+        var mainCam = Camera.main;
+        foreach (var c in canvases)
+        {
+            if (c.renderMode == RenderMode.WorldSpace && c.worldCamera == null && mainCam != null)
+                c.worldCamera = mainCam;
+        }
+    }
+
+    /// <summary>
+    /// Build'de serialized referanslar kaybolursa fallback ile bul.
+    /// </summary>
+    private void ResolveMissingReferences()
+    {
+        if (localCanvas == null && countdownPanel != null)
+            localCanvas = countdownPanel.transform.parent;
+        if (leaderboardPanel == null)
+            leaderboardPanel = GameObject.Find("LeaderboardPanel") ?? GameObject.Find("Leaderboard");
     }
 
     private void WireButtons()

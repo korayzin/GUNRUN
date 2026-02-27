@@ -14,19 +14,21 @@ public class BestScoreManager : MonoBehaviour
 
     private void LoadBestScores()
     {
-        List<ScoreEntry> bestScores = GetBestScores();
+        if (bestScoreTexts == null || bestScoreDates == null) return;
 
-        for (int i = 0; i < bestScoreTexts.Length; i++)
+        List<ScoreEntry> bestScores = GetBestScores();
+        int textCount = bestScoreTexts.Length;
+        int dateCount = bestScoreDates != null ? bestScoreDates.Length : 0;
+
+        for (int i = 0; i < textCount; i++)
         {
-            if (i < bestScores.Count)
+            if (bestScoreTexts[i] != null)
             {
-                bestScoreTexts[i].text = bestScores[i].score.ToString();
-                bestScoreDates[i].text = bestScores[i].date; 
+                bestScoreTexts[i].text = (i < bestScores.Count) ? bestScores[i].score.ToString() : "0";
             }
-            else
+            if (i < dateCount && bestScoreDates[i] != null)
             {
-                bestScoreTexts[i].text = "0"; 
-                bestScoreDates[i].text = "--/--/----"; 
+                bestScoreDates[i].text = (i < bestScores.Count) ? bestScores[i].date : "--/--/----";
             }
         }
     }
