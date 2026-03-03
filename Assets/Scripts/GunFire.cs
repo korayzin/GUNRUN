@@ -339,8 +339,11 @@ public class GunFire : MonoBehaviour
         Bullet bulletScript = spawnedBullet.GetComponent<Bullet>();
         if (bulletScript != null)
         {
+            // Fireball (weapon 8) dahil tüm silahlar: Tutorial'da da normal oyunla aynı hasar (GameBalanceManager)
             if (GameBalanceManager.Instance != null)
                 bulletScript.damage = GameBalanceManager.Instance.GetWeaponData(weaponBalanceIndex).damage;
+            else if (weaponBalanceIndex == 8)
+                bulletScript.damage = 12f; // LastGun fireball default (GameBalanceManager.GetDefaultWeaponData(8))
             bulletScript.hitSound = bulletHitSound;
             bulletScript.damageEffectPrefab = damageEffectPrefab;
             bulletScript.isFromSecondary = _nextShotIsFromSecondary;

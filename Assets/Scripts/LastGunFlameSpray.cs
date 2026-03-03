@@ -136,12 +136,19 @@ public class LastGunFlameSpray : MonoBehaviour
     private Image progressDotImage;
     private RectTransform progressDotRect;
 
+    /// <summary>GameBalanceManager'dan normal oyun değerlerini al. Tutorial da dahil her zaman aynı hasar kullanılır.</summary>
     private void ApplyBalanceFromManager()
     {
         if (GameBalanceManager.Instance == null) return;
         var d = GameBalanceManager.Instance.GetWeaponData(8);
         damagePerSecond = d.damage;
         if (d.maxAmmo > 0) maxSprayEnergy = d.maxAmmo;
+    }
+
+    private void OnEnable()
+    {
+        // GameBalanceManager geç yüklenirse (Tutorial scene order) değerleri tekrar uygula - fire damage normal oyunla aynı olsun
+        ApplyBalanceFromManager();
     }
 
     void Start()

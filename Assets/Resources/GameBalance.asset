@@ -55,7 +55,7 @@ MonoBehaviour:
     maxAmmo: 20
     fireCooldown: 0.5
   - weaponName: LastGun
-    damage: 12
+    damage: 10000
     bulletVelocity: 10
     maxAmmo: 100
     fireCooldown: 0.08
