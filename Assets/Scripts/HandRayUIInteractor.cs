@@ -288,15 +288,22 @@ public class HandRayUIInteractor : MonoBehaviour
         }
         
         // Ray rengini normale döndür
-        lineRenderer.startColor = rayColor;
-        lineRenderer.endColor = rayColor;
+        if (lineRenderer != null)
+        {
+            lineRenderer.startColor = rayColor;
+            lineRenderer.endColor = rayColor;
+        }
     }
 
     /// <summary>
     /// Ray'i etkinleştir (Game Over durumunda çağrılır)
+    /// Retry sonrası ikinci kez açıldığında referanslar yenilenir - ray'in çalışması için kritik.
     /// </summary>
     public void EnableRay()
     {
+        // Retry sonrası sahne yeniden yüklendiğinde referanslar stale olabilir - hepsini yenile
+        RefreshReferences();
+        
         isRayEnabled = true;
         
         if (lineRenderer != null)
@@ -308,9 +315,46 @@ public class HandRayUIInteractor : MonoBehaviour
         if (targetCanvas != null && graphicRaycaster == null)
         {
             graphicRaycaster = targetCanvas.GetComponent<GraphicRaycaster>();
+            if (graphicRaycaster == null)
+                graphicRaycaster = targetCanvas.gameObject.AddComponent<GraphicRaycaster>();
         }
 
         Debug.Log("[HandRayUIInteractor] Ray etkinleştirildi");
+    }
+    
+    /// <summary>
+    /// Tüm referansları yeniden alır. Retry sonrası ikinci Game Over'da ray çalışması için gerekli.
+    /// </summary>
+    private void RefreshReferences()
+    {
+        if (ovrCameraRig == null)
+            ovrCameraRig = FindObjectOfType<OVRCameraRig>();
+        
+        if (ovrCameraRig != null)
+        {
+            handAnchor = useLeftHand 
+                ? ovrCameraRig.leftHandOnControllerAnchor 
+                : ovrCameraRig.rightHandOnControllerAnchor;
+        }
+
+        if (eventSystem == null)
+        {
+            eventSystem = EventSystem.current;
+            if (eventSystem == null)
+                eventSystem = FindObjectOfType<EventSystem>();
+        }
+
+        if (targetCanvas != null)
+        {
+            if (targetCanvas.renderMode == RenderMode.WorldSpace && targetCanvas.worldCamera == null && Camera.main != null)
+                targetCanvas.worldCamera = Camera.main;
+            if (graphicRaycaster == null)
+            {
+                graphicRaycaster = targetCanvas.GetComponent<GraphicRaycaster>();
+                if (graphicRaycaster == null)
+                    graphicRaycaster = targetCanvas.gameObject.AddComponent<GraphicRaycaster>();
+            }
+        }
     }
 
     /// <summary>

@@ -451,7 +451,9 @@ public class GameManager : MonoBehaviour
             // Restart canvas açıldıktan SONRA score'u güncelle (UI aktif olmalı)
             StartCoroutine(UpdateScoreAfterCanvasActive());
             
-            // Hand Ray UI Interactor'ı etkinleştir
+            // Hand Ray UI Interactor'ı etkinleştir (Retry sonrası ikinci Game Over'da da çalışması için)
+            if (handRayInteractor == null)
+                handRayInteractor = FindObjectOfType<HandRayUIInteractor>();
             if (handRayInteractor != null)
             {
                 // Canvas referansını ayarla (eğer atanmamışsa)
