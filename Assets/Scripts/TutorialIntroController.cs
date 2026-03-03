@@ -1478,9 +1478,9 @@ public class TutorialIntroController : MonoBehaviour
         PlayerPrefs.Save();
 
         Time.timeScale = 1f;
-        string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UI" : mainMenuSceneName;
-        if (string.Equals(targetScene, "UserName", System.StringComparison.OrdinalIgnoreCase) && PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) == 1)
-            targetScene = "Deneme";
+        string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UserName" : mainMenuSceneName;
+        // UserName sahnesine yönlendir - UserNameController kendi showOnlyOncePerDevice ayarına göre
+        // skip/atla kararını verecek; burada otomatik Deneme'ye yönlendirme yapma.
         SceneManager.LoadScene(targetScene);
     }
 

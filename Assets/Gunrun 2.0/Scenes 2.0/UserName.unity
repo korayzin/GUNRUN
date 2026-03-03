@@ -4593,7 +4593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextSceneName: Deneme
-  showOnlyOncePerDevice: 1
+  showOnlyOncePerDevice: 0
   nameInputTMP: {fileID: 0}
   nameInputLegacy: {fileID: 1514470122}
   randomButton: {fileID: 1591776070}

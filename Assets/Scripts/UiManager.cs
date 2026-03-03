@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -75,20 +76,30 @@ public class UIManager : MonoBehaviour
     private void EnsureVRUIConfiguration()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        var eventSystem = UnityEngine.EventSystems.EventSystem.current;
-        if (eventSystem != null)
+        try
         {
-            var ovrModule = eventSystem.GetComponent<OVRInputModule>();
-            if (ovrModule != null)
-                ovrModule.allowActivationOnMobileDevice = true;
+            var eventSystem = UnityEngine.EventSystems.EventSystem.current;
+            if (eventSystem != null)
+            {
+                var ovrModule = eventSystem.GetComponent<OVRInputModule>();
+                if (ovrModule != null)
+                    ovrModule.allowActivationOnMobileDevice = true;
+            }
+        }
+        catch (System.Exception e)
+        {
+            UnityEngine.Debug.LogWarning("[UIManager] EnsureVR OVRInputModule: " + e.Message);
         }
 #endif
-        var canvases = FindObjectsOfType<Canvas>(true);
+        var canvases = UnityEngine.Object.FindObjectsOfType<Canvas>(true);
         var mainCam = Camera.main;
-        foreach (var c in canvases)
+        if (canvases != null)
         {
-            if (c.renderMode == RenderMode.WorldSpace && c.worldCamera == null && mainCam != null)
-                c.worldCamera = mainCam;
+            foreach (var c in canvases)
+            {
+                if (c != null && c.renderMode == RenderMode.WorldSpace && c.worldCamera == null && mainCam != null)
+                    c.worldCamera = mainCam;
+            }
         }
     }
 
