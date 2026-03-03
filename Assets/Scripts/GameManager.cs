@@ -66,13 +66,13 @@ public class GameManager : MonoBehaviour
     /// <summary>Retry ekranı aktif mi? Bu durumda sadece HandRayUIInteractor ile Retry/Main Menu butonlarına tıklanabilir, ateş vb. kapalı.</summary>
     public static bool IsRetryScreenActive => Instance != null && Instance.isGameOver;
 
-    /// <summary>Tutorial 9. diyalogdan sonra süreyi başlat. Pause'da otomatik durur (Time.deltaTime=0).</summary>
+    /// <summary>Tutorial 9. diyalogdan sonra süreyi başlat. Pause'da otomatik durur (Time.deltaTime=0).
+    /// NOT: Score and Time Panel 23. diyalog sonrasına kadar kapalı kalır (freetime verildikten sonra açılır).</summary>
     public void StartTutorialTimer()
     {
         _tutorialTimerActive = true;
         gameTimer = tutorialTimerDuration;
-        if (timeAndScorePanel != null)
-            timeAndScorePanel.SetActive(true);
+        // Panel 23. diyalog sonrası StartTutorialFinalPhaseTimer ile açılacak
         UpdateTimerUI();
     }
 
@@ -122,6 +122,11 @@ public class GameManager : MonoBehaviour
         if (IsTutorialScene())
         {
             portalSpawner = FindObjectOfType<AdvancedPortalSpawner>();
+            if (timeAndScorePanel == null)
+                timeAndScorePanel = GameObject.Find("Score and Time Panel") ?? GameObject.Find("UIAnchor") ?? GameObject.Find("InGameUI") ?? GameObject.Find("GameUI");
+            // Score and Time Panel 23. diyalog sonrası (freetime) açılacak; başlangıçta kapalı
+            if (timeAndScorePanel != null)
+                timeAndScorePanel.SetActive(false);
             UpdateScoreUI();
             return;
         }
