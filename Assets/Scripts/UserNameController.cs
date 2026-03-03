@@ -52,6 +52,7 @@ public class UserNameController : MonoBehaviour
 
     private Camera _mainCam;
     private Button _currentHoveredButton;
+    private TouchScreenKeyboard _keyboard;
 
     private void Awake()
     {
@@ -182,22 +183,53 @@ public class UserNameController : MonoBehaviour
 
     /// <summary>
     /// İsim input alanına BoxCollider ekler - ray ile tıklanınca klavye açılır.
+    /// RectTransform boyutuna göre collider ayarlanır (World Space Canvas için gerekli).
     /// </summary>
     private void SetupInputFieldCollider()
     {
         var go = nameInputTMP != null ? nameInputTMP.gameObject : (nameInputLegacy != null ? nameInputLegacy.gameObject : null);
         if (go == null) return;
 
+        var rect = go.GetComponent<RectTransform>();
+        if (rect == null) return;
+
         var col = go.GetComponent<BoxCollider>();
         if (col == null)
             col = go.AddComponent<BoxCollider>();
 
-        // Collider boyutu/merkezi sahnedeki sizin ayarlarınız kullanılır; kod ile üzerine yazılmaz.
+        float w = rect.rect.width;
+        float h = rect.rect.height;
+        if (w < 1f) w = 450f;
+        if (h < 1f) h = 48f;
+
+        col.size = new Vector3(w, h, 100f);
+        col.center = new Vector3(0, -h * 0.5f, 0);
         col.isTrigger = true;
+        col.enabled = true;
     }
 
+    /// <summary>
+    /// Ray ile input alanına tıklanınca TouchScreenKeyboard açar. Quest, PC Link ve Android'de çalışır.
+    /// </summary>
     private void FocusNameInputAndShowKeyboard()
     {
+        if (_keyboard != null && _keyboard.active)
+            return;
+
+        string currentText = GetInputText() ?? "";
+        _keyboard = TouchScreenKeyboard.Open(
+            currentText,
+            TouchScreenKeyboardType.Default,
+            autocorrection: false,
+            multiline: false,
+            secure: false,
+            alert: false,
+            textPlaceholder: "İsim",
+            characterLimit: MaxNameLength
+        );
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+        // PC / Editor: Fiziksel klavye girişi için InputField'ı da aktive et (TouchScreenKeyboard.text bazen boş kalır)
         if (nameInputTMP != null)
         {
             nameInputTMP.ActivateInputField();
@@ -207,6 +239,36 @@ public class UserNameController : MonoBehaviour
         {
             nameInputLegacy.ActivateInputField();
             nameInputLegacy.Select();
+        }
+#endif
+    }
+
+    private void UpdateKeyboardInput()
+    {
+        if (_keyboard == null) return;
+
+#if !UNITY_EDITOR && !UNITY_STANDALONE
+        // Quest / Android: TouchScreenKeyboard'dan metni InputField'a yaz (anlık güncelleme)
+        if (_keyboard.active)
+        {
+            string text = _keyboard.text ?? "";
+            if (text.Length > MaxNameLength) text = text.Substring(0, MaxNameLength);
+            if (nameInputTMP != null) nameInputTMP.text = text;
+            else if (nameInputLegacy != null) nameInputLegacy.text = text;
+        }
+#endif
+
+        if (_keyboard.status == TouchScreenKeyboard.Status.Done || _keyboard.status == TouchScreenKeyboard.Status.Canceled)
+        {
+            if (_keyboard.status == TouchScreenKeyboard.Status.Done)
+            {
+                string finalText = _keyboard.text ?? "";
+                if (finalText.Length > MaxNameLength) finalText = finalText.Substring(0, MaxNameLength);
+                if (nameInputTMP != null) nameInputTMP.text = finalText;
+                else if (nameInputLegacy != null) nameInputLegacy.text = finalText;
+            }
+            // Canceled: metni değiştirme, sadece klavyeyi kapat
+            _keyboard = null;
         }
     }
 
@@ -273,6 +335,8 @@ public class UserNameController : MonoBehaviour
 
     private void Update()
     {
+        UpdateKeyboardInput();
+
         if (rayOrigin == null) return;
 
         Ray ray = new Ray(rayOrigin.position, rayOrigin.forward);
