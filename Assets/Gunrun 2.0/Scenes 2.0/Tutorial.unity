@@ -34377,7 +34377,7 @@ MonoBehaviour:
   holographicWeaponHUD: {fileID: 1917262746}
   countdownTextUI: {fileID: 0}
   dialogueEndBuffer: 1
-  showOnlyOncePerDevice: 0
+  showOnlyOncePerDevice: 1
   testMainMenuReturnAfterDialogue2: 0
   mainMenuSceneName: UserName
   mainMenuFadeOutDuration: 1.5

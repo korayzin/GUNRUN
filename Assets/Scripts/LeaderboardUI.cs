@@ -424,12 +424,18 @@ public class LeaderboardUI : MonoBehaviour
         // Başlık ekle
         CreateHeaderEntry();
 
+        // Kendi playerId ve ismimizi al (ismimizin parlaması için)
+        string myPlayerId = FirebaseLeaderboardManager.Instance != null ? FirebaseLeaderboardManager.Instance.GetPlayerId() : "";
+        string myPlayerName = FirebaseLeaderboardManager.Instance != null ? FirebaseLeaderboardManager.Instance.GetPlayerName() : "";
+        
         // Tüm entry'leri göster
         for (int i = 0; i < entries.Count; i++)
         {
             LeaderboardEntry entry = entries[i];
-            Debug.Log($"   {i + 1}. {entry.playerName} - {entry.maxScore} puan");
-            CreateLeaderboardEntry(i + 1, entry);
+            bool isMe = (string.IsNullOrEmpty(myPlayerId) == false && string.IsNullOrEmpty(entry.playerId) == false && entry.playerId == myPlayerId)
+                || (string.IsNullOrEmpty(myPlayerName) == false && string.Equals(entry.playerName, myPlayerName, System.StringComparison.OrdinalIgnoreCase));
+            Debug.Log($"   {i + 1}. {entry.playerName} - {entry.maxScore} puan{(isMe ? " (SEN)" : "")}");
+            CreateLeaderboardEntry(i + 1, entry, isMe);
         }
         
         Debug.Log($"✅ Leaderboard başarıyla gösterildi! Toplam {entries.Count} oyuncu");
@@ -555,7 +561,7 @@ public class LeaderboardUI : MonoBehaviour
         return headerObj;
     }
     
-    private void CreateLeaderboardEntry(int rank, LeaderboardEntry entry)
+    private void CreateLeaderboardEntry(int rank, LeaderboardEntry entry, bool isCurrentPlayer = false)
     {
         GameObject entryObj;
         
@@ -580,8 +586,8 @@ public class LeaderboardUI : MonoBehaviour
             Debug.Log($"   LeaderboardEntryUI component eklendi");
         }
         
-        // Entry'yi set et
-        entryUI.SetEntry(rank, entry);
+        // Entry'yi set et (kendi ismin parlasın)
+        entryUI.SetEntry(rank, entry, isCurrentPlayer);
     }
     
     private GameObject CreateDefaultEntry(int rank, LeaderboardEntry entry)

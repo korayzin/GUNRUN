@@ -68,6 +68,11 @@ public class FirebaseLeaderboardManager : MonoBehaviour
         return playerName;
     }
     
+    public string GetPlayerId()
+    {
+        return playerId;
+    }
+    
     // Max score'u Firebase'e kaydet
     public void SaveMaxScore(int score, Action<bool> onComplete = null)
     {

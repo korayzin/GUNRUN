@@ -86,7 +86,7 @@ public class UserNameController : MonoBehaviour
         if (setupButtonCollidersAtRuntime)
         {
             SetupButtonColliders();
-            SetupInputFieldCollider();
+            StartCoroutine(SetupInputFieldColliderDelayed());
         }
         if (rayOrigin != null)
         {
@@ -181,9 +181,15 @@ public class UserNameController : MonoBehaviour
         col.isTrigger = true;
     }
 
+    private System.Collections.IEnumerator SetupInputFieldColliderDelayed()
+    {
+        yield return null; // Bir frame bekle - Canvas layout tamamlansın
+        SetupInputFieldCollider();
+    }
+
     /// <summary>
-    /// İsim input alanına BoxCollider ekler - ray ile tıklanınca klavye açılır.
-    /// RectTransform boyutuna göre collider ayarlanır (World Space Canvas için gerekli).
+    /// İsim input alanına BoxCollider ekler - ray ile tıklanınca Meta klavyesi açılır.
+    /// World Space Canvas için RectTransform bounds kullanır.
     /// </summary>
     private void SetupInputFieldCollider()
     {
@@ -197,19 +203,24 @@ public class UserNameController : MonoBehaviour
         if (col == null)
             col = go.AddComponent<BoxCollider>();
 
-        float w = rect.rect.width;
-        float h = rect.rect.height;
-        if (w < 1f) w = 450f;
-        if (h < 1f) h = 48f;
+        // Canvas layout'u güncelle (rect değerleri doğru olsun)
+        Canvas.ForceUpdateCanvases();
 
-        col.size = new Vector3(w, h, 100f);
-        col.center = new Vector3(0, -h * 0.5f, 0);
+        // RectTransform boyutunu al - World Space için scale dahil
+        Vector2 rectSize = rect.rect.size;
+        float w = Mathf.Max(Mathf.Abs(rectSize.x), 0.5f);
+        float h = Mathf.Max(Mathf.Abs(rectSize.y), 0.1f);
+        if (w < 10f) w = 4f;   // World Space için minimum
+        if (h < 10f) h = 0.5f;
+
+        col.size = new Vector3(w, h, 2f); // Z derinliği ray için yeterli
+        col.center = Vector3.zero;
         col.isTrigger = true;
         col.enabled = true;
     }
 
     /// <summary>
-    /// Ray ile input alanına tıklanınca TouchScreenKeyboard açar. Quest, PC Link ve Android'de çalışır.
+    /// Ray ile input alanına tıklanınca Meta/System klavyesi açar. Quest, PC Link ve Android'de çalışır.
     /// </summary>
     private void FocusNameInputAndShowKeyboard()
     {
@@ -228,8 +239,7 @@ public class UserNameController : MonoBehaviour
             characterLimit: MaxNameLength
         );
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-        // PC / Editor: Fiziksel klavye girişi için InputField'ı da aktive et (TouchScreenKeyboard.text bazen boş kalır)
+        // InputField'ı aktive et - Meta Quest system keyboard ile senkron için gerekli
         if (nameInputTMP != null)
         {
             nameInputTMP.ActivateInputField();
@@ -240,7 +250,6 @@ public class UserNameController : MonoBehaviour
             nameInputLegacy.ActivateInputField();
             nameInputLegacy.Select();
         }
-#endif
     }
 
     private void UpdateKeyboardInput()
