@@ -10,7 +10,7 @@ public class LeaderboardEntryUI : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public Image backgroundImage;
     
-    public void SetEntry(int rank, LeaderboardEntry entry)
+    public void SetEntry(int rank, LeaderboardEntry entry, bool isCurrentPlayer = false)
     {
         // Önce otomatik bul (eğer atanmamışsa)
         if (rankText == null || nameText == null || scoreText == null)
@@ -55,6 +55,13 @@ public class LeaderboardEntryUI : MonoBehaviour
             {
                 backgroundImage = GetComponent<Image>();
             }
+        }
+        
+        // Kendi ismin parlasın - özel highlight
+        if (isCurrentPlayer)
+        {
+            ApplyCurrentPlayerGlow(rank, entry);
+            return;
         }
         
         // Özel renk ve emoji için ilk 3 sırayı vurgula
@@ -129,5 +136,65 @@ public class LeaderboardEntryUI : MonoBehaviour
                 scoreText.fontStyle = FontStyles.Bold;
             }
         }
+    }
+    
+    private void ApplyCurrentPlayerGlow(int rank, LeaderboardEntry entry)
+    {
+        // Daha parlak renk - diğer satırlardan belirgin şekilde ayrılsın
+        Color glowColor = new Color(1f, 1f, 0.6f); // Parlak sarı-beyaz
+        
+        // Arka plan - daha parlak ve vurgulu
+        if (backgroundImage != null)
+        {
+            backgroundImage.color = new Color(1f, 1f, 0.5f, 0.4f);
+        }
+        
+        // Format diğer satırlarla aynı: rankPrefix + sayı + nokta (emoji yok, kare/karışıklık önlenir)
+        string rankPrefix = rank switch
+        {
+            1 => "🥇 ",
+            2 => "🥈 ",
+            3 => "🥉 ",
+            _ => ""
+        };
+        
+        if (rankText != null)
+        {
+            rankText.text = $"{rankPrefix}{rank}.";
+            rankText.color = glowColor;
+            rankText.fontStyle = FontStyles.Bold;
+        }
+        
+        if (nameText != null)
+        {
+            // Diğerleriyle aynı format: sadece isim + parantez içinde You (emoji yok)
+            nameText.text = entry.playerName + " (You)";
+            nameText.color = glowColor;
+            nameText.fontStyle = FontStyles.Bold;
+            ApplyTextGlow(nameText);
+        }
+        
+        if (scoreText != null)
+        {
+            scoreText.text = $"{entry.maxScore:N0}";
+            scoreText.color = glowColor;
+            scoreText.fontStyle = FontStyles.Bold;
+        }
+    }
+    
+    private void ApplyTextGlow(TextMeshProUGUI text)
+    {
+        if (text == null) return;
+        // TMP outline ile daha parlak parlama efekti
+        try
+        {
+            Material mat = text.fontMaterial;
+            if (mat != null && mat.HasProperty("_OutlineWidth"))
+            {
+                mat.SetFloat("_OutlineWidth", 0.25f);
+                mat.SetColor("_OutlineColor", new Color(1f, 1f, 0.5f, 1f));
+            }
+        }
+        catch { /* Outline desteklenmiyorsa sessizce geç */ }
     }
 }

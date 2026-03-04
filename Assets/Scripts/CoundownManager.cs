@@ -8,9 +8,9 @@ public class CountdownManager : MonoBehaviour
     public static CountdownManager Instance;
 
     public TextMeshProUGUI countdownText;
-    [Tooltip("Gerçek geri say?m süresi (saniye)")]
+    [Tooltip("Gerï¿½ek geri say?m sï¿½resi (saniye)")]
     public float countdownTime = 5f;
-    [Tooltip("Countdown sonras? yüklenecek sahne ad?")]
+    [Tooltip("Countdown sonras? yï¿½klenecek sahne ad?")]
     public string sceneToLoad = "Koray";
 
     private void Awake()
