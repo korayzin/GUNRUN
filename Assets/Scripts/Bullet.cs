@@ -98,6 +98,9 @@ public class Bullet : MonoBehaviour
             ShotgunBullet shotgunBullet = GetComponent<ShotgunBullet>();
             if (shotgunBullet != null && shotgunBullet.enableHitEffect)
                 shotgunBullet.SpawnHitEffect(hitPoint);
+            FirstGunBulletHitEffect firstGunHit = GetComponent<FirstGunBulletHitEffect>();
+            if (firstGunHit != null && firstGunHit.enableHitEffect)
+                firstGunHit.SpawnHitEffect(hitPoint);
             
             Debug.Log("Dusmana hasar verildi: " + damage);
             int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);
@@ -154,6 +157,9 @@ public class Bullet : MonoBehaviour
             ShotgunBullet shotgunBullet = GetComponent<ShotgunBullet>();
             if (shotgunBullet != null && shotgunBullet.enableHitEffect)
                 shotgunBullet.SpawnHitEffect(hitPoint);
+            FirstGunBulletHitEffect firstGunHit = GetComponent<FirstGunBulletHitEffect>();
+            if (firstGunHit != null && firstGunHit.enableHitEffect)
+                firstGunHit.SpawnHitEffect(hitPoint);
             
             Debug.Log("Dusmana hasar verildi: " + damage);
             int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1234567890000000004}
   - component: {fileID: 1234567890000000005}
   - component: {fileID: 2879803618673433111}
+  - component: {fileID: -1004780928670462126}
   m_Layer: 5
   m_Name: shotgun_ammo
   m_TagString: Untagged
@@ -127,11 +128,41 @@ MonoBehaviour:
   trailEndWidth: 0
   trailStartColor: {r: 1, g: 0.8, b: 0.3, a: 1}
   trailEndColor: {r: 1, g: 0.5, b: 0.1, a: 0}
-  enablePaintSplash: 1
-  splashMainColor: {r: 1, g: 0.7, b: 0.2, a: 0.9}
-  splashAccentColor: {r: 1, g: 0.4, b: 0.1, a: 0.85}
-  splashRadius: 0.15
-  splashParticleCount: 20
+  enableHitEffect: 1
+  hitParticleCount: 70
+  hitLifetime: {x: 0.35, y: 0.55}
+  hitSpeed: {x: 5, y: 9.5}
+  hitSize: {x: 0.1, y: 0.21}
+  hitColorStart: {r: 1, g: 1, b: 0.85, a: 1}
+  hitColorEnd: {r: 1, g: 0.75, b: 0.25, a: 1}
+  hitGravityModifier: 0.2
+  hitEffectDuration: 0.8
+--- !u!114 &-1004780928670462126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234567890000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8de6f1d92c2ed1e48b81a6a6327b570b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 5
+  centerDamage: 25
+  falloffPower: 1.2
+  minDamageRatio: 0.2
+  hitEffectPerEnemy: 1
+  explosionEffect: 1
+  damageDelayAfterExpand: 0.15
+  sphereCloseDelayAfterDamage: 1.5
+  sphereCooldownSeconds: 3
+  enemyShakeDuration: 1
+  enemyShakeIntensity: 0.1
+  lightningOnAreaTargets: 1
+  lightningHeight: 100
+  showAreaDamageText: 0
 --- !u!1001 &453002343088657968
 PrefabInstance:
   m_ObjectHideFlags: 0

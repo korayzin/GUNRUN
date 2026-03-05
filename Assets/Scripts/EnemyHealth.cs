@@ -29,6 +29,10 @@ public class EnemyHealth : MonoBehaviour
     [Header("Health Glow System")]
     public bool useHealthGlow = true;
     public string glowColorPropertyName = "_NeonColor"; // veya "_GlowColor", "_RimColor"
+    [Tooltip("Hasar alınca kısa süreli renk flash'ı - hasarı görsel olarak hissetmek için")]
+    public bool useHitFlash = true;
+    [Tooltip("Hit flash süresi (saniye)")]
+    public float hitFlashDuration = 0.25f;
 
     public AudioClip damageSFX;
     [Tooltip("Hasar sesi çalınırken kullanılacak ses seviyesi (0-1). AdvancedPortalSpawner her düşman tipi için ayrı ayarlar.")]
@@ -58,6 +62,9 @@ public class EnemyHealth : MonoBehaviour
 
     // BURNED (ateş püskürtme) sadece renk - yazı yok
     private bool isBurned = false;
+
+    // Hit flash - hasar alınca kısa süreli kırmızı parlama
+    private float _hitFlashEndTime;
 
     void Start()
     {
@@ -123,6 +130,8 @@ public class EnemyHealth : MonoBehaviour
 
         //GameManager.Instance.AddScore((int)adjustedDamage);
 
+        if (useHitFlash)
+            _hitFlashEndTime = Time.time + hitFlashDuration;
         UpdateHealthGlow();
 
         if (currentHealth <= 0)
@@ -232,6 +241,8 @@ public class EnemyHealth : MonoBehaviour
                 if (r == null) continue;
                 r.GetPropertyBlock(propertyBlock);
                 propertyBlock.SetColor(glowColorPropertyName, burnRed);
+                propertyBlock.SetColor("_BaseColor", burnRed);
+                propertyBlock.SetColor("_Color", burnRed);
                 r.SetPropertyBlock(propertyBlock);
             }
             return;
@@ -251,12 +262,27 @@ public class EnemyHealth : MonoBehaviour
             healthColor.g = Mathf.Min(healthColor.g + 0.3f, 1f);
             healthColor.b = Mathf.Min(healthColor.b + 0.4f, 1f);
         }
+        
+        // Hit flash: hasar alınca kısa süre parlak kırmızı/turuncu - tüm düşmanlarda görünür olsun
+        bool inFlash = useHitFlash && Time.time < _hitFlashEndTime;
+        if (inFlash)
+        {
+            float t = 1f - ((_hitFlashEndTime - Time.time) / hitFlashDuration);
+            Color flashColor = new Color(1f, 0.25f, 0.1f, 1f);
+            healthColor = Color.Lerp(healthColor, flashColor, Mathf.Lerp(0.95f, 0f, t));
+        }
+        
         foreach (Renderer renderer in enemyRenderers)
         {
             if (renderer != null && renderer.sharedMaterial != null)
             {
                 renderer.GetPropertyBlock(propertyBlock);
                 propertyBlock.SetColor(glowColorPropertyName, healthColor);
+                if (inFlash)
+                {
+                    propertyBlock.SetColor("_BaseColor", healthColor);
+                    propertyBlock.SetColor("_Color", healthColor);
+                }
                 renderer.SetPropertyBlock(propertyBlock);
             }
         }
@@ -343,8 +369,9 @@ public class EnemyHealth : MonoBehaviour
 
     private void Update()
     {
-        // SLOWED yazısı parent'a bağlı olduğu için otomatik olarak düşmanla birlikte hareket eder
-        // Sadece pozisyonu güncellemeye gerek yok, local position kullanıyoruz
+        // Hit flash sırasında renk geçişi için her frame güncelle
+        if (useHitFlash && useHealthGlow && Time.time < _hitFlashEndTime)
+            UpdateHealthGlow();
     }
     
     private void CreateFreezeParticles()
