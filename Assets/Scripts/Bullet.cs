@@ -94,6 +94,11 @@ public class Bullet : MonoBehaviour
         EnemyHealth enemyHealth = other.GetComponentInParent<EnemyHealth>();
         if (enemyHealth != null)
         {
+            Vector3 hitPoint = other.ClosestPoint(transform.position);
+            ShotgunBullet shotgunBullet = GetComponent<ShotgunBullet>();
+            if (shotgunBullet != null && shotgunBullet.enableHitEffect)
+                shotgunBullet.SpawnHitEffect(hitPoint);
+            
             Debug.Log("Dusmana hasar verildi: " + damage);
             int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);
             enemyHealth.TakeDamage(damage, other, fromFlameSpray: false, fromSecondary: isFromSecondary, tutorialWeaponIndex: tw);
@@ -145,6 +150,11 @@ public class Bullet : MonoBehaviour
         EnemyHealth enemyHealth = other.GetComponentInParent<EnemyHealth>();
         if (enemyHealth != null)
         {
+            Vector3 hitPoint = collision.GetContact(0).point;
+            ShotgunBullet shotgunBullet = GetComponent<ShotgunBullet>();
+            if (shotgunBullet != null && shotgunBullet.enableHitEffect)
+                shotgunBullet.SpawnHitEffect(hitPoint);
+            
             Debug.Log("Dusmana hasar verildi: " + damage);
             int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);
             enemyHealth.TakeDamage(damage, other, fromFlameSpray: false, fromSecondary: isFromSecondary, tutorialWeaponIndex: tw);

@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velocity: 100
-  bulletPrefab: {fileID: 4858235730514071926, guid: 394911edc6b548747a1abc01b82d45c6,
+  bulletPrefab: {fileID: 1234567890000000001, guid: e3f7ea6af2f53224e86737e523bbfc35,
     type: 3}
   barrel1: {fileID: 4312222150132683062}
   barrel2: {fileID: 2306472886510502069}

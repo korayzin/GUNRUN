@@ -321,6 +321,16 @@ public class WeaponManager : MonoBehaviour
         _allWeaponsUnlockedPermanent = false;
 
         SetWeaponBalanceIndices();
+
+        // 1. silah baretta ve sol el versiyonu varsa sol eli aç; diğer sol el barettaları kapat
+        for (int i = 1; i <= 8; i++)
+            SetLeftHandBarettaActiveForWeaponIndex(i, false);
+        if (firstWeapon != null)
+        {
+            var gf = firstWeapon.GetComponent<GunFire>();
+            if (gf != null && gf.isBaretta)
+                SetLeftHandBarettaActiveForWeaponIndex(0, true);
+        }
     }
 
     private void SetWeaponBalanceIndices()
@@ -341,6 +351,21 @@ public class WeaponManager : MonoBehaviour
         var gunFire = weaponObj.GetComponent<GunFire>();
         if (gunFire != null)
             gunFire.SetWeaponBalanceIndex(index);
+    }
+
+    /// <summary>Verilen silah indeksine ait sol el baretta'yı açar veya kapatır. isBaretta ve isLeftHanded olan, aynı weaponBalanceIndex'e sahip silah bulunur.</summary>
+    private void SetLeftHandBarettaActiveForWeaponIndex(int weaponIndex, bool active)
+    {
+        GunFire[] all = FindObjectsOfType<GunFire>(true);
+        foreach (GunFire g in all)
+        {
+            if (g.isBaretta && g.isLeftHanded && g.WeaponBalanceIndex == weaponIndex)
+            {
+                g.gameObject.SetActive(active);
+                g.enabled = active;
+                return;
+            }
+        }
     }
 
     private void OnEnable()
@@ -608,6 +633,14 @@ public class WeaponManager : MonoBehaviour
             yield break;
         }
 
+        // Önceki silahın sol el baretta'sını kapat (2. ve 3. silahta sol el açıksa kapansın)
+        if (currentWeaponObj != null)
+        {
+            var prevGun = currentWeaponObj.GetComponent<GunFire>();
+            if (prevGun != null)
+                SetLeftHandBarettaActiveForWeaponIndex(prevGun.WeaponBalanceIndex, false);
+        }
+
         // Önceki silah zaten CheckWeaponSwitch'te kapatıldı, burada sadece VFX'i kapat
         if (currentWeaponVFX != null)
         {
@@ -642,6 +675,8 @@ public class WeaponManager : MonoBehaviour
         if (nextGunFire != null)
         {
             nextGunFire.enabled = true;
+            if (nextGunFire.isBaretta)
+                SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
             Debug.Log($"{nextWeaponObj.name} silahı açıldı.");
         }
 
@@ -715,6 +750,9 @@ public class WeaponManager : MonoBehaviour
     private void SetWeaponByIndex(int index)
     {
         if (currentWeapon == 5 || currentWeapon == 8) StopLoopSFX();
+        // Tüm sol el barettaları kapat (sadece mevcut silahın sol eli sonra açılacak)
+        for (int i = 0; i < 9; i++)
+            SetLeftHandBarettaActiveForWeaponIndex(i, false);
         // TEST: sol el sadece 1. silahta (index 0); normal modda sadece 6. silahta (index 5) açık
         bool showSixthLeft = testSixthLeftHandOnSecondWeapon ? (index == 0) : (index == 5);
         if (sixthWeaponLeftHand != null)
@@ -736,7 +774,12 @@ public class WeaponManager : MonoBehaviour
         {
             next.SetActive(true);
             GunFire nextGun = next.GetComponent<GunFire>();
-            if (nextGun != null) nextGun.enabled = true;
+            if (nextGun != null)
+            {
+                nextGun.enabled = true;
+                if (nextGun.isBaretta)
+                    SetLeftHandBarettaActiveForWeaponIndex(index, true);
+            }
         }
         if (showSixthLeft && sixthWeaponLeftHand != null)
         {

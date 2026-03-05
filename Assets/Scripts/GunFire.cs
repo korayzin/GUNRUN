@@ -46,6 +46,8 @@ public class GunFire : MonoBehaviour
     [Header("Balance (per-weapon from GameBalanceManager)")]
     [Tooltip("0=FirstGun, 8=LastGun. Set by WeaponManager or Inspector.")]
     [SerializeField] private int weaponBalanceIndex = 0;
+    /// <summary>Sol el baretta eşleşmesi için WeaponManager tarafından kullanılır.</summary>
+    public int WeaponBalanceIndex => weaponBalanceIndex;
 
     [Header("Dual Shot (altlı üstlü 2 mermi)")]
     [Tooltip("Açıkken her atışta 2 mermi atar (üst + alt), yine 1 mermi harcanır.")]

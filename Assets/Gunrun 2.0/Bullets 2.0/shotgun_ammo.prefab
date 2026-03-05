@@ -101,7 +101,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 40
+  isFromSecondary: 0
+  weaponIndex: -1
+  sourceGunFire: {fileID: 0}
   speed: 20
+  useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
 --- !u!114 &2879803618673433111
@@ -123,6 +127,11 @@ MonoBehaviour:
   trailEndWidth: 0
   trailStartColor: {r: 1, g: 0.8, b: 0.3, a: 1}
   trailEndColor: {r: 1, g: 0.5, b: 0.1, a: 0}
+  enablePaintSplash: 1
+  splashMainColor: {r: 1, g: 0.7, b: 0.2, a: 0.9}
+  splashAccentColor: {r: 1, g: 0.4, b: 0.1, a: 0.85}
+  splashRadius: 0.15
+  splashParticleCount: 20
 --- !u!1001 &453002343088657968
 PrefabInstance:
   m_ObjectHideFlags: 0
