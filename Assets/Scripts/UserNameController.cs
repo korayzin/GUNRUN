@@ -19,10 +19,6 @@ public class UserNameController : MonoBehaviour
     [Tooltip("Continue/Devam sonrası yüklenecek sahne adı (Build Settings'te olmalı).")]
     [SerializeField] private string nextSceneName = "Deneme";
 
-    [Header("Cihaz başına bir kez")]
-    [Tooltip("Açık: Daha önce isim kaydedildiyse bu sahne atlanır (cihaz başına 1 kez). Kapalı: Bu sahne her seferinde gösterilir.")]
-    [SerializeField] private bool showOnlyOncePerDevice = true;
-
     [Header("İsim girişi")]
     [SerializeField] private TMP_InputField nameInputTMP;
     [SerializeField] private InputField nameInputLegacy;
@@ -54,22 +50,8 @@ public class UserNameController : MonoBehaviour
     private Button _currentHoveredButton;
     private TouchScreenKeyboard _keyboard;
 
-    private void Awake()
-    {
-        // Per device: İsim zaten kayıtlıysa sahne hiç render edilmeden direkt Deneme'ye geç
-        if (showOnlyOncePerDevice && PlayerPrefs.GetInt(UserNameSetKey, 0) == 1)
-        {
-            LoadNextSceneImmediate();
-            return;
-        }
-    }
-
     private void Start()
     {
-        // Awake'te skip edildiyse buraya gelmeyiz; gelindiyse sahne gösterilecek
-        if (showOnlyOncePerDevice && PlayerPrefs.GetInt(UserNameSetKey, 0) == 1)
-            return;
-
         EnsureEventSystemExists();
 
         randomButton?.onClick.AddListener(OnRandomClick);
@@ -531,28 +513,4 @@ public class UserNameController : MonoBehaviour
             Debug.LogError("[UserNameController] LoadSceneAsync(isim) null döndü: " + sceneName);
     }
 
-    private void LoadNextScene()
-    {
-        StartCoroutine(LoadNextSceneCoroutine());
-    }
-
-    /// <summary>Per device atlama: Username sahnesi hiç render edilmeden aynı frame'de sonraki sahneye geçer.</summary>
-    private void LoadNextSceneImmediate()
-    {
-        string sceneName = string.IsNullOrEmpty(nextSceneName) ? "Deneme" : nextSceneName.Trim();
-        if (string.IsNullOrEmpty(sceneName)) sceneName = "Deneme";
-
-        int count = SceneManager.sceneCountInBuildSettings;
-        for (int i = 0; i < count; i++)
-        {
-            string path = SceneUtility.GetScenePathByBuildIndex(i);
-            string nameInBuild = Path.GetFileNameWithoutExtension(path);
-            if (string.Equals(nameInBuild, sceneName, System.StringComparison.OrdinalIgnoreCase))
-            {
-                SceneManager.LoadScene(i, LoadSceneMode.Single);
-                return;
-            }
-        }
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-    }
 }

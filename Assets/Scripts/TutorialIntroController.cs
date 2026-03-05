@@ -18,8 +18,6 @@ using TMPro;
 /// </summary>
 public class TutorialIntroController : MonoBehaviour
 {
-    private const string TutorialCompletedKey = "TutorialCompleted";
-
     /// <summary>Info butonuyla yüklendiyse true - tutorial atlanmaz, tekrar izlenebilir.</summary>
     public static bool ForceShowTutorialThisLoad = false;
 
@@ -387,10 +385,6 @@ public class TutorialIntroController : MonoBehaviour
     [Tooltip("Konuşma bitince ekstra bekleme süresi (saniye) - okuma için")]
     public float dialogueEndBuffer = 1f;
 
-    [Header("Cihaz başına bir kez")]
-    [Tooltip("Açık: Daha önce tutorial tamamlandıysa bu sahne atlanır (cihaz başına 1 kez). Kapalı: Tutorial her seferinde gösterilir. / Show Only Once Per Device")]
-    [SerializeField] private bool showOnlyOncePerDevice = true;
-
     [Header("Ana Menü Geçişi")]
     [Tooltip("TEST: true ise 2. diyalog bitince Y tuşu ile ana menüye dönüş aktif olur (test için)")]
     public bool testMainMenuReturnAfterDialogue2 = true;
@@ -435,24 +429,6 @@ public class TutorialIntroController : MonoBehaviour
         if (ForceShowTutorialThisLoad)
         {
             ForceShowTutorialThisLoad = false;
-        }
-        // Per device: Tutorial VE Username ikisi de tamamlandıysa direkt Deneme'ye geç (ikisini de atla)
-        else if (showOnlyOncePerDevice && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1 && PlayerPrefs.GetInt(UserNameController.UserNameSetKey, 0) == 1)
-        {
-            SceneManager.LoadScene("Deneme");
-            return;
-        }
-        // Per device: Sadece tutorial tamamlandıysa UserName'e geç (username henüz yok)
-        else if (showOnlyOncePerDevice && PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1)
-        {
-            string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UserName" : mainMenuSceneName;
-            if (string.Equals(targetScene, "UserName", System.StringComparison.OrdinalIgnoreCase))
-            {
-                SceneManager.LoadScene("UserName");
-                return;
-            }
-            SceneManager.LoadScene(targetScene);
-            return;
         }
 
         Time.timeScale = 0f;
@@ -1473,14 +1449,8 @@ public class TutorialIntroController : MonoBehaviour
         }
         image.color = new Color(0f, 0f, 0f, 1f);
 
-        // Tutorial tamamlandı - bir daha oyun tutorial ile başlamasın
-        PlayerPrefs.SetInt(TutorialCompletedKey, 1);
-        PlayerPrefs.Save();
-
         Time.timeScale = 1f;
         string targetScene = string.IsNullOrEmpty(mainMenuSceneName) ? "UserName" : mainMenuSceneName;
-        // UserName sahnesine yönlendir - UserNameController kendi showOnlyOncePerDevice ayarına göre
-        // skip/atla kararını verecek; burada otomatik Deneme'ye yönlendirme yapma.
         SceneManager.LoadScene(targetScene);
     }
 
