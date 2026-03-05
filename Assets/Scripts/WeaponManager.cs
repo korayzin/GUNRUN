@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class WeaponManager : MonoBehaviour
@@ -58,6 +59,22 @@ public class WeaponManager : MonoBehaviour
     [Header("Weapon VFX")]
     public GameObject vfxFirst;
     public GameObject vfxSecond;
+
+    [Header("Tutorial - VFX Pozisyonu (Sağ/Sol El)")]
+    [Tooltip("Atanırsa silah değişim VFX bu Transform'un child'ı olarak oynatılır (sağ el)")]
+    public Transform tutorialWeaponChangeVFXParentRight;
+    [Tooltip("Atanırsa sol elde silah varsa VFX bu Transform'un child'ı olarak oynatılır")]
+    public Transform tutorialWeaponChangeVFXParentLeft;
+
+    [Header("Tutorial - Silah Değişim Süreleri (saniye)")]
+    [Tooltip("Hangi silah index'i çift elde (Baretta). Sadece bu indeks için el VFX her iki elde oynar.")]
+    public int tutorialBarettaWeaponIndex = 1;
+    [Tooltip("Mevcut silahın elinden kaybolma süresi")]
+    public float tutorialDespawnDuration = 0.5f;
+    [Tooltip("Despawn ile spawn arasındaki bekleme")]
+    public float tutorialDelayBetweenWeapons = 0.3f;
+    [Tooltip("Yeni silahın elde belirme süresi")]
+    public float tutorialSpawnDuration = 0.7f;
     public GameObject vfxThird;
     public GameObject vfxFourth;
     public GameObject vfxFifth;
@@ -701,6 +718,192 @@ public class WeaponManager : MonoBehaviour
     public void SetJoystickWeaponSwitchEnabled(bool enabled)
     {
         _allWeaponsUnlockedPermanent = enabled;
+    }
+
+    /// <summary>
+    /// Sadece newtutorial sahnesi için. Kill şartı olmadan silaha geçiş + VFX.
+    /// Ana oyun bu metodu çağırmaz - sahne adı kontrolü ile korunur.
+    /// </summary>
+    public void TutorialOnly_SwitchToWeaponWithVFX(int targetIndex)
+    {
+        if (SceneManager.GetActiveScene().name != "newtutorial") return;
+        if (targetIndex < 0 || targetIndex > 8) return;
+        if (targetIndex == currentWeapon) return;
+        if (isSwitchingWeapon) return;
+
+        GameObject currentObj = GetWeaponAt(currentWeapon);
+        GameObject nextObj = GetWeaponAt(targetIndex);
+        if (nextObj == null) return;
+
+        isSwitchingWeapon = true;
+
+        if (currentObj != null)
+        {
+            var gf = currentObj.GetComponent<GunFire>();
+            if (gf != null) gf.enabled = false;
+        }
+
+        if (currentWeapon == 1) DisableAllBarettaWeapons();
+        if (testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null && currentWeapon == 0)
+            sixthWeaponLeftHand.SetActive(false);
+
+        HandleBarettaSwitch(nextObj);
+
+        GameObject currentVFX = GetVFXAt(currentWeapon);
+        GameObject nextVFX = GetVFXAt(targetIndex);
+        currentWeapon = targetIndex;
+        StartCoroutine(TutorialSwitchWeaponWithVFX(currentObj, nextObj, currentVFX, nextVFX));
+    }
+
+    /// <summary>Tutorial için: Silah mesh dissolve (yukarıdan aşağı gider / aşağıdan yukarı gelir) + el VFX.</summary>
+    private IEnumerator TutorialSwitchWeaponWithVFX(GameObject currentWeaponObj, GameObject nextWeaponObj, GameObject currentWeaponVFX, GameObject nextWeaponVFX)
+    {
+        StopLoopSFX();
+        if (nextWeaponObj == null)
+        {
+            Debug.LogError("WeaponManager: Geçilecek silah (nextWeaponObj) atanmamış!");
+            UpdateWeaponUI();
+            isSwitchingWeapon = false;
+            OnWeaponChanged?.Invoke(currentWeapon);
+            yield break;
+        }
+
+        GunFire nextGun = nextWeaponObj.GetComponent<GunFire>();
+        bool useBothHands = (currentWeapon == tutorialBarettaWeaponIndex) && (tutorialWeaponChangeVFXParentRight != null && tutorialWeaponChangeVFXParentLeft != null);
+        bool isLeftHanded = nextGun != null && nextGun.isLeftHanded;
+
+        bool useHandParent = false; // El partikülleri kapatıldı - sadece dissolve kullanılıyor
+        GameObject[] vfxToPlay = null;
+        bool mustInstantiate = nextWeaponVFX != null && !nextWeaponVFX.scene.IsValid();
+
+        if (useHandParent)
+        {
+            if (useBothHands)
+            {
+                var cloneRight = Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentRight);
+                cloneRight.transform.localPosition = Vector3.zero;
+                cloneRight.transform.localRotation = Quaternion.identity;
+                var cloneLeft = Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentLeft);
+                cloneLeft.transform.localPosition = Vector3.zero;
+                cloneLeft.transform.localRotation = Quaternion.identity;
+                vfxToPlay = new[] { cloneRight, cloneLeft };
+            }
+            else if (!useBothHands && isLeftHanded && tutorialWeaponChangeVFXParentLeft != null)
+            {
+                var vfx = mustInstantiate ? Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentLeft) : nextWeaponVFX;
+                if (!mustInstantiate) vfx.transform.SetParent(tutorialWeaponChangeVFXParentLeft);
+                vfx.transform.localPosition = Vector3.zero;
+                vfx.transform.localRotation = Quaternion.identity;
+                vfxToPlay = new[] { vfx };
+            }
+            else if (!useBothHands && tutorialWeaponChangeVFXParentRight != null)
+            {
+                var vfx = mustInstantiate ? Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentRight) : nextWeaponVFX;
+                if (!mustInstantiate) vfx.transform.SetParent(tutorialWeaponChangeVFXParentRight);
+                vfx.transform.localPosition = Vector3.zero;
+                vfx.transform.localRotation = Quaternion.identity;
+                vfxToPlay = new[] { vfx };
+            }
+            else
+            {
+                vfxToPlay = nextWeaponVFX != null ? new[] { nextWeaponVFX } : null;
+            }
+        }
+
+        if (currentWeaponObj != null)
+        {
+            var prevGun = currentWeaponObj.GetComponent<GunFire>();
+            if (prevGun != null)
+                SetLeftHandBarettaActiveForWeaponIndex(prevGun.WeaponBalanceIndex, false);
+        }
+
+        if (currentWeaponVFX != null)
+        {
+            if (currentWeaponVFX.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
+                ps.Stop();
+            currentWeaponVFX.SetActive(false);
+        }
+
+        var dissolveCurrent = currentWeaponObj != null ? (currentWeaponObj.GetComponent<WeaponDissolveEffect>() ?? currentWeaponObj.AddComponent<WeaponDissolveEffect>()) : null;
+        if (dissolveCurrent != null)
+        {
+            yield return dissolveCurrent.PlayDespawn(tutorialDespawnDuration);
+        }
+        else
+        {
+            yield return new WaitForSeconds(tutorialDespawnDuration);
+        }
+        if (currentWeaponObj != null)
+        {
+            currentWeaponObj.SetActive(false);
+        }
+
+        yield return new WaitForSeconds(tutorialDelayBetweenWeapons);
+
+        nextWeaponObj.SetActive(true);
+        var dissolveNext = nextWeaponObj.GetComponent<WeaponDissolveEffect>() ?? nextWeaponObj.AddComponent<WeaponDissolveEffect>();
+        var gunFire = nextWeaponObj.GetComponent<GunFire>();
+        if (gunFire != null) gunFire.enabled = false;
+
+        GameObject[] activeVfxArr = vfxToPlay;
+        if (activeVfxArr == null && nextWeaponVFX != null && useHandParent)
+            activeVfxArr = mustInstantiate ? new[] { Object.Instantiate(nextWeaponVFX) } : new[] { nextWeaponVFX };
+
+        if (activeVfxArr != null)
+        {
+            foreach (var vfx in activeVfxArr)
+            {
+                if (vfx == null) continue;
+                vfx.SetActive(true);
+                if (vfx.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
+                    ps.Play();
+            }
+        }
+
+        yield return dissolveNext.PlaySpawn(tutorialSpawnDuration);
+
+        float vfxDur = 0f;
+        if (activeVfxArr != null)
+        {
+            foreach (var vfx in activeVfxArr)
+            {
+                if (vfx != null && vfx.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
+                    vfxDur = Mathf.Max(vfxDur, ps.main.duration);
+            }
+            if (vfxDur > 0f) yield return new WaitForSeconds(vfxDur);
+            foreach (var vfx in activeVfxArr)
+            {
+                if (vfx == null) continue;
+                if (vfx.TryGetComponent<ParticleSystem>(out ParticleSystem pps))
+                    pps.Stop();
+                if (vfx != nextWeaponVFX)
+                    Object.Destroy(vfx);
+            }
+        }
+        if (nextWeaponVFX != null && useHandParent && !useBothHands && !mustInstantiate)
+            nextWeaponVFX.transform.SetParent(null);
+
+        if (gunFire != null)
+        {
+            gunFire.enabled = true;
+            if (gunFire != null && gunFire.isBaretta)
+                SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
+        }
+
+        UpdateWeaponUI();
+        isSwitchingWeapon = false;
+        OnWeaponChanged?.Invoke(currentWeapon);
+    }
+
+    private GameObject GetVFXAt(int index)
+    {
+        switch (index)
+        {
+            case 0: return vfxFirst; case 1: return vfxSecond; case 2: return vfxThird;
+            case 3: return vfxFourth; case 4: return vfxFifth; case 5: return vfxSixth;
+            case 6: return vfxSeventh; case 7: return vfxEighth; case 8: return vfxNinth;
+            default: return null;
+        }
     }
 
     /// <summary>Mevcut silahı yenile. Baretta ise partner da yenilenir. Tutorial mermi bitti retry için.</summary>

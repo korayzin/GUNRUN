@@ -213,6 +213,51 @@ public class AdvancedPortalSpawner : MonoBehaviour
     }
 
     /// <summary>
+    /// newtutorial: A/B/C portallarından tek düşman spawn eder.
+    /// moveDuration/moveDistance > 0 ise TutorialSequenceEnemyBehavior eklenir (yürü-dur). Ana oyun bu metodu kullanmaz.
+    /// </summary>
+    /// <param name="portalId">"A", "B" veya "C"</param>
+    /// <param name="moveDuration">Düşmanın kaç saniye yürüyeceği (0 = sadece moveDistance)</param>
+    /// <param name="moveDistance">Düşmanın kaç metre gideceği (0 = sadece moveDuration)</param>
+    /// <param name="customSpeed">Özel hız; -1 veya 0 ise GetEnemySpeed() kullanılır</param>
+    public GameObject SpawnSingleEnemyAtPortal(string portalId, float moveDuration, float moveDistance, float customSpeed = -1f)
+    {
+        if (string.IsNullOrEmpty(portalId)) portalId = "A";
+        portalId = portalId.ToUpperInvariant();
+        if (portalId != "A" && portalId != "B" && portalId != "C") portalId = "A";
+
+        GameObject enemyPrefab = tur1Enemy != null ? tur1Enemy : tur2Enemy;
+        if (enemyPrefab == null) return null;
+
+        Vector3 spawnPos = GetEnemySpawnPosition(portalId);
+
+        Vector3 directionToPlayer = Camera.main != null ? Camera.main.transform.position - spawnPos : Vector3.forward;
+        directionToPlayer.y = 0;
+        Quaternion spawnRotation = directionToPlayer != Vector3.zero ? Quaternion.LookRotation(directionToPlayer) : Quaternion.identity;
+
+        GameObject enemy = Instantiate(enemyPrefab, spawnPos, spawnRotation);
+        enemy.tag = "Enemy";
+        SetupEnemyComponents(enemy, spawnPos, enemyPrefab);
+
+        if (customSpeed > 0f)
+        {
+            var agent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
+            var eb = enemy.GetComponent<EnemyBehavior>();
+            if (agent != null) agent.speed = customSpeed;
+            if (eb != null) eb.speed = customSpeed;
+        }
+
+        if (moveDuration > 0f || moveDistance > 0f)
+        {
+            var seqBehavior = enemy.GetComponent<TutorialSequenceEnemyBehavior>();
+            if (seqBehavior == null) seqBehavior = enemy.AddComponent<TutorialSequenceEnemyBehavior>();
+            seqBehavior.SetParams(moveDuration, moveDistance);
+        }
+
+        return enemy;
+    }
+
+    /// <summary>
     /// Tutorial: Portal B'yi aç. Pause sırasında da çalışır.
     /// </summary>
     public void OpenPortalB()
