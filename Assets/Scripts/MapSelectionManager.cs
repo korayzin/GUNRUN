@@ -31,6 +31,8 @@ public class MapSelectionManager : MonoBehaviour
     [SerializeField] private UIManager uiManager;
     [Tooltip("Physics ray başlangıcı (manuel collider'lar için). Boşsa Camera.main kullanılır.")]
     [SerializeField] private Transform rayOrigin;
+    [Tooltip("HandRayUIInteractor varsa hover/tıklama onun tarafından yapılır; bu manager'ın raycast'i atlanır.")]
+    [SerializeField] private HandRayUIInteractor handRayUIInteractor;
 
     [Header("Mapler (Inspector'dan ekleyebilirsin)")]
     [SerializeField] private MapEntry[] maps = new MapEntry[]
@@ -40,6 +42,7 @@ public class MapSelectionManager : MonoBehaviour
 
     private readonly List<CanvasGroup> _dimmedGroups = new List<CanvasGroup>();
     private readonly List<float> _originalAlphas = new List<float>();
+    private readonly List<(GameObject obj, bool wasActive)> _hiddenSiblings = new List<(GameObject, bool)>();
 
     private Button _currentHoveredButton;
 
@@ -48,11 +51,25 @@ public class MapSelectionManager : MonoBehaviour
         if (countdownManager == null) countdownManager = FindObjectOfType<CountdownManager>();
         if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
         if (rayOrigin == null && Camera.main != null) rayOrigin = Camera.main.transform;
+        if (handRayUIInteractor == null) handRayUIInteractor = FindObjectOfType<HandRayUIInteractor>(true);
+    }
+
+    /// <summary>HandRayUIInteractor bu panelin canvas'ını hedefliyorsa true. Çakışmayı önlemek için.</summary>
+    private bool IsHandRayHandlingPanel()
+    {
+        if (handRayUIInteractor == null || !handRayUIInteractor.enabled || handRayUIInteractor.targetCanvas == null)
+            return false;
+        Canvas panelCanvas = mapSelectionPanel.GetComponentInParent<Canvas>();
+        return panelCanvas != null && panelCanvas.rootCanvas == handRayUIInteractor.targetCanvas.rootCanvas;
     }
 
     private void Update()
     {
         if (mapSelectionPanel == null || !mapSelectionPanel.activeInHierarchy) return;
+
+        // HandRayUIInteractor varsa ve bu paneli hedefliyorsa, raycast'i atla (çakışma = titreme)
+        if (IsHandRayHandlingPanel())
+            return;
 
         Transform origin = rayOrigin != null ? rayOrigin : (Camera.main != null ? Camera.main.transform : null);
         if (origin == null) return;
@@ -102,17 +119,48 @@ public class MapSelectionManager : MonoBehaviour
     /// <summary>
     /// Harita seçim panelini açar. Play butonuna basıldığında çağrılır.
     /// Arkadaki öğelerin alpha'sı yarıya iner, odak panelde olur.
+    /// LocalCanvas içindeki Buttons, Options, Countdown, LeaderboardPanel gizlenir.
     /// </summary>
     public void OpenMapSelection()
     {
         if (mapSelectionPanel == null) return;
         ClearHover();
+        HideLocalCanvasSiblings();
         if (uiManager != null)
             uiManager.ShowPanel(mapSelectionPanel);
         else
             mapSelectionPanel.SetActive(true);
 
         DimBackground();
+    }
+
+    /// <summary>LocalCanvas içindeki MapSelectionPanel dışındaki tüm alt objeleri gizler.</summary>
+    private void HideLocalCanvasSiblings()
+    {
+        RestoreLocalCanvasSiblings();
+        Transform canvas = (uiManager != null && uiManager.localCanvas != null)
+            ? uiManager.localCanvas
+            : (mapSelectionPanel != null ? mapSelectionPanel.transform.parent : null);
+        if (canvas == null) return;
+
+        for (int i = 0; i < canvas.childCount; i++)
+        {
+            Transform child = canvas.GetChild(i);
+            if (child.gameObject == mapSelectionPanel) continue;
+            _hiddenSiblings.Add((child.gameObject, child.gameObject.activeSelf));
+            child.gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>OpenMapSelection'da gizlenen objeleri eski durumuna getirir.</summary>
+    private void RestoreLocalCanvasSiblings()
+    {
+        foreach (var (obj, wasActive) in _hiddenSiblings)
+        {
+            if (obj != null)
+                obj.SetActive(wasActive);
+        }
+        _hiddenSiblings.Clear();
     }
 
     private void DimBackground()
@@ -160,6 +208,7 @@ public class MapSelectionManager : MonoBehaviour
         if (countdownManager != null)
             countdownManager.sceneToLoad = sceneName;
         RestoreBackground();
+        _hiddenSiblings.Clear();
         if (mapSelectionPanel != null)
             mapSelectionPanel.SetActive(false);
         if (uiManager != null)
@@ -174,6 +223,7 @@ public class MapSelectionManager : MonoBehaviour
     public void CloseMapSelection()
     {
         RestoreBackground();
+        RestoreLocalCanvasSiblings();
         if (mapSelectionPanel != null)
             mapSelectionPanel.SetActive(false);
         if (uiManager != null)

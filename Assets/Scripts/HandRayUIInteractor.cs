@@ -38,6 +38,10 @@ public class HandRayUIInteractor : MonoBehaviour
     [Header("Hover Efekti")]
     [Tooltip("Hover durumunda buton scale çarpanı")]
     public float hoverScaleMultiplier = 1.1f;
+    
+    [Tooltip("Hover çıkışı için gereken ardışık 'isabet yok' frame sayısı (VR jitter önleme)")]
+    [Range(1, 8)]
+    public int hoverExitDelayFrames = 3;
 
     [Header("Başlangıç")]
     [Tooltip("UI menüsü için ray baştan açık olsun")]
@@ -54,6 +58,7 @@ public class HandRayUIInteractor : MonoBehaviour
     private Button currentHoveredButton;
     private Vector3 originalButtonScale;
     private bool isRayEnabled = false;
+    private int hoverMissFrameCount;
 
     private void Awake()
     {
@@ -144,7 +149,10 @@ public class HandRayUIInteractor : MonoBehaviour
     private void UpdateRayVisual()
     {
         Vector3 startPos = handAnchor.position;
-        Vector3 endPos = startPos + handAnchor.forward * rayLength;
+        Vector3 handForward = handAnchor.forward;
+
+        // Ray canvas düzleminde kesilsin, panelin içinden geçip arkaya gitmesin (titreme önlenir)
+        Vector3 endPos = GetRayCanvasIntersection(startPos, handForward);
 
         lineRenderer.SetPosition(0, startPos);
         lineRenderer.SetPosition(1, endPos);
@@ -202,30 +210,39 @@ public class HandRayUIInteractor : MonoBehaviour
             }
         }
 
-        if (hitButton != null && hitButton != currentHoveredButton)
+        if (hitButton != null)
         {
-            ClearHoverEffect();
-            currentHoveredButton = hitButton;
-            var mapHover = currentHoveredButton.GetComponent<MapSelectionButtonHover>();
-            if (mapHover != null)
-                mapHover.OnHoverEnter();
-            else
+            hoverMissFrameCount = 0;
+            if (hitButton != currentHoveredButton)
             {
-                var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
-                if (animator != null)
-                    animator.OnHoverEnter();
+                ClearHoverEffect();
+                currentHoveredButton = hitButton;
+                var mapHover = currentHoveredButton.GetComponent<MapSelectionButtonHover>();
+                if (mapHover != null)
+                    mapHover.OnHoverEnter();
                 else
                 {
-                    originalButtonScale = currentHoveredButton.transform.localScale;
-                    currentHoveredButton.transform.localScale = originalButtonScale * hoverScaleMultiplier;
+                    var animator = currentHoveredButton.GetComponent<ButtonRayAnimator>();
+                    if (animator != null)
+                        animator.OnHoverEnter();
+                    else
+                    {
+                        originalButtonScale = currentHoveredButton.transform.localScale;
+                        currentHoveredButton.transform.localScale = originalButtonScale * hoverScaleMultiplier;
+                    }
                 }
+                lineRenderer.startColor = rayHoverColor;
+                lineRenderer.endColor = rayHoverColor;
             }
-            lineRenderer.startColor = rayHoverColor;
-            lineRenderer.endColor = rayHoverColor;
         }
-        else if (hitButton == null)
+        else if (currentHoveredButton != null)
         {
-            ClearHoverEffect();
+            hoverMissFrameCount++;
+            if (hoverMissFrameCount >= hoverExitDelayFrames)
+            {
+                ClearHoverEffect();
+                hoverMissFrameCount = 0;
+            }
         }
     }
 
@@ -271,6 +288,7 @@ public class HandRayUIInteractor : MonoBehaviour
 
     private void ClearHoverEffect()
     {
+        hoverMissFrameCount = 0;
         if (currentHoveredButton != null)
         {
             var mapHover = currentHoveredButton.GetComponent<MapSelectionButtonHover>();
