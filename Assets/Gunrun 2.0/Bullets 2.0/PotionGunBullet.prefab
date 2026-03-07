@@ -201,7 +201,7 @@ MonoBehaviour:
   useGravity: 1
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
-  destructibleMeshAreaDamage: 0
+  destructibleMeshAreaDamage: 1
 --- !u!54 &6983863725061713380
 Rigidbody:
   m_ObjectHideFlags: 0

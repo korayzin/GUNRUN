@@ -245,6 +245,7 @@ public class FireballEffect : MonoBehaviour
             _lineMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
             _lineMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
         }
+        _lineMaterial.renderQueue = 3000; // Transparent – passthrough overlay'de görünsün
         return _lineMaterial;
     }
 
@@ -279,6 +280,7 @@ public class FireballEffect : MonoBehaviour
             _glowMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
             _glowMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
         }
+        _glowMaterial.renderQueue = 3000; // Transparent – passthrough overlay'de görünsün
         return _glowMaterial;
     }
 

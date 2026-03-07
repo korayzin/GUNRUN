@@ -253,13 +253,31 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject);
     }
 
-    /// <summary>Mermi büyüklüğüne göre destructible mesh kırma yarıçapı (SphereCollider.radius * scale).</summary>
+    /// <summary>Mermi büyüklüğüne göre destructible mesh kırma yarıçapı. SphereCollider, CapsuleCollider veya MeshFilter bounds kullanır.</summary>
     private float GetDestructibleMeshAreaRadius()
     {
-        SphereCollider sc = GetComponent<SphereCollider>();
-        if (sc == null) return 0.5f;
         float maxScale = Mathf.Max(transform.lossyScale.x, transform.lossyScale.y, transform.lossyScale.z);
-        return sc.radius * maxScale;
+
+        SphereCollider sc = GetComponent<SphereCollider>();
+        if (sc != null)
+            return sc.radius * maxScale;
+
+        CapsuleCollider cc = GetComponent<CapsuleCollider>();
+        if (cc != null)
+        {
+            float effectiveRadius = Mathf.Max(cc.radius, cc.height * 0.5f);
+            return effectiveRadius * maxScale;
+        }
+
+        MeshFilter mf = GetComponentInChildren<MeshFilter>();
+        if (mf != null && mf.sharedMesh != null)
+        {
+            Bounds b = mf.sharedMesh.bounds;
+            float maxExtent = Mathf.Max(b.extents.x, b.extents.y, b.extents.z);
+            return maxExtent * maxScale;
+        }
+
+        return 0.5f;
     }
 
     public void SetGameOverState(bool state)

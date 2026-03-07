@@ -5120,7 +5120,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -17.57901, y: 0, z: -17.568222, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -6653,7 +6653,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 557219807}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: LoadTutorial
+        m_MethodName: LoadNewTutorial
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

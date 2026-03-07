@@ -59,6 +59,7 @@ public class EightAmmoHitEffect : MonoBehaviour
 
         GameObject root = new GameObject("EightAmmo_PuffHitEffect");
         root.transform.position = position;
+        UICameraStackSetup.SetLayerRecursivelyToUI(root);
 
         Material puffMat = CreatePuffMaterial();
 

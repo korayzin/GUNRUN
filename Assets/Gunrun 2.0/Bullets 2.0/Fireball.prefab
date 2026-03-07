@@ -155,7 +155,7 @@ MonoBehaviour:
   useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
-  destructibleMeshAreaDamage: 0
+  destructibleMeshAreaDamage: 1
 --- !u!114 &-2687763342565378327
 MonoBehaviour:
   m_ObjectHideFlags: 0
