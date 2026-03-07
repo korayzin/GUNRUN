@@ -445,6 +445,8 @@ public class WeaponManager : MonoBehaviour
 
     private void DisableAllBarettaWeapons()
     {
+        // newtutorial'da dissolve VFX coroutine silahları kapatacak - burada erken kapatma
+        if (SceneManager.GetActiveScene().name == "newtutorial") return;
         GunFire[] allGuns = FindObjectsOfType<GunFire>();
         foreach (GunFire gun in allGuns)
         {
@@ -757,7 +759,7 @@ public class WeaponManager : MonoBehaviour
             if (gf != null) gf.enabled = false;
         }
 
-        if (currentWeapon == 1) DisableAllBarettaWeapons();
+        // 2. silahtan (Baretta) çıkarken DisableAllBarettaWeapons ÇAĞIRMA - dissolve VFX coroutine içinde oynatılacak
         if (testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null && currentWeapon == 0)
             sixthWeaponLeftHand.SetActive(false);
 
@@ -825,7 +827,8 @@ public class WeaponManager : MonoBehaviour
         }
 
         var prevGun = currentWeaponObj != null ? currentWeaponObj.GetComponent<GunFire>() : null;
-        GameObject leftHandBaretta = (prevGun != null && prevGun.isBaretta) ? GetLeftHandBarettaGameObject(prevGun.WeaponBalanceIndex) : null;
+        int prevWeaponIndex = prevGun != null ? prevGun.WeaponBalanceIndex : -1;
+        GameObject leftHandBaretta = (prevGun != null && HasLeftHandBarettaForWeaponIndex(prevWeaponIndex)) ? GetLeftHandBarettaGameObject(prevWeaponIndex) : null;
 
         if (currentWeaponVFX != null)
         {
@@ -843,15 +846,17 @@ public class WeaponManager : MonoBehaviour
         {
             yield return new WaitForSeconds(tutorialDespawnDuration);
         }
-        // Sağ eli hemen gizle - sol el dissolve sırasında tekrar görünmesin
-        if (currentWeaponObj != null)
-            currentWeaponObj.SetActive(false);
 
+        // Sol el despawn - sağ eli gizlemeden ÖNCE yap (sol el sağ elin child'ı olabilir, gizlenince activeSelf false olur)
         if (leftHandBaretta != null && leftHandBaretta.activeSelf)
         {
             var dissolveLeft = leftHandBaretta.GetComponent<WeaponDissolveEffect>() ?? leftHandBaretta.AddComponent<WeaponDissolveEffect>();
             yield return dissolveLeft.PlayDespawn(tutorialDespawnDuration);
         }
+
+        // Sağ eli gizle (sol el despawn tamamlandıktan sonra)
+        if (currentWeaponObj != null)
+            currentWeaponObj.SetActive(false);
 
         if (prevGun != null)
             SetLeftHandBarettaActiveForWeaponIndex(prevGun.WeaponBalanceIndex, false);
@@ -921,7 +926,20 @@ public class WeaponManager : MonoBehaviour
         {
             gunFire.enabled = true;
             if (gunFire.isBaretta || HasLeftHandBarettaForWeaponIndex(currentWeapon))
-                SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
+            {
+                GameObject leftHandNew = GetLeftHandBarettaGameObject(currentWeapon);
+                if (leftHandNew != null)
+                {
+                    leftHandNew.SetActive(true);
+                    var dissolveLeftNew = leftHandNew.GetComponent<WeaponDissolveEffect>() ?? leftHandNew.AddComponent<WeaponDissolveEffect>();
+                    yield return dissolveLeftNew.PlaySpawn(tutorialSpawnDuration);
+                    SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
+                }
+                else
+                {
+                    SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
+                }
+            }
         }
 
         if (currentWeapon == 5 && !testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null)
