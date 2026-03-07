@@ -390,6 +390,12 @@ public class GunFire : MonoBehaviour
 
         GameObject spawnedBullet = Instantiate(bulletPrefab, spawnPos, finalRotation);
         Vector3 targetDirection = (target.position - barrel.position).normalized;
+
+        // Pompalı saçma: ShotgunBullet varsa her mermiye rastgele koni içi sapma uygula
+        ShotgunBullet shotgunBullet = spawnedBullet.GetComponent<ShotgunBullet>();
+        if (shotgunBullet != null)
+            targetDirection = ApplyShotgunSpread(targetDirection, shotgunBullet.spreadConeAngleDeg);
+
         spawnedBullet.GetComponent<Rigidbody>().velocity = velocity * targetDirection;
 
         Bullet bulletScript = spawnedBullet.GetComponent<Bullet>();
@@ -421,6 +427,22 @@ public class GunFire : MonoBehaviour
         }
 
         Destroy(spawnedBullet, 2f);
+    }
+
+    /// <summary>Pompalı saçma: verilen yönü koni içinde rastgele sapma ile döndürür (derece).</summary>
+    private static Vector3 ApplyShotgunSpread(Vector3 direction, float coneAngleDeg)
+    {
+        if (coneAngleDeg <= 0f) return direction;
+        // Koni içinde rastgele açı: yatay ve dikey sapma
+        float halfAngle = coneAngleDeg * 0.5f * Mathf.Deg2Rad;
+        float randomAngle = Random.Range(0f, halfAngle);
+        float randomRotation = Random.Range(0f, 2f * Mathf.PI);
+        Vector3 right = Vector3.Cross(direction, Vector3.up);
+        if (right.sqrMagnitude < 0.01f) right = Vector3.Cross(direction, Vector3.forward);
+        right.Normalize();
+        Vector3 up = Vector3.Cross(right, direction).normalized;
+        Vector3 offset = (right * Mathf.Sin(randomAngle) * Mathf.Cos(randomRotation) + up * Mathf.Sin(randomAngle) * Mathf.Sin(randomRotation));
+        return (direction + offset).normalized;
     }
 
     private IEnumerator HapticFeedback()

@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 1234567890000000004}
   - component: {fileID: 1234567890000000005}
   - component: {fileID: 2879803618673433111}
-  - component: {fileID: -1004780928670462126}
   m_Layer: 5
   m_Name: shotgun_ammo
   m_TagString: Untagged
@@ -137,34 +136,6 @@ MonoBehaviour:
   hitColorEnd: {r: 1, g: 0.75, b: 0.25, a: 1}
   hitGravityModifier: 0.2
   hitEffectDuration: 0.8
---- !u!114 &-1004780928670462126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1234567890000000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8de6f1d92c2ed1e48b81a6a6327b570b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 5
-  centerDamage: 25
-  falloffPower: 1.2
-  minDamageRatio: 0.2
-  hitEffectPerEnemy: 1
-  explosionEffect: 1
-  damageDelayAfterExpand: 0.15
-  sphereCloseDelayAfterDamage: 1.5
-  sphereCooldownSeconds: 3
-  enemyShakeDuration: 1
-  enemyShakeIntensity: 0.1
-  lightningOnAreaTargets: 1
-  lightningDamage: 45
-  lightningHeight: 100
-  lightningKillExplosion: 1
-  showAreaDamageText: 0
 --- !u!1001 &453002343088657968
 PrefabInstance:
   m_ObjectHideFlags: 0

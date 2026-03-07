@@ -6,6 +6,10 @@ using UnityEngine;
 /// </summary>
 public class ShotgunBullet : MonoBehaviour
 {
+    [Header("Spread (GunFire tarafından kullanılır)")]
+    [Tooltip("Pompalı saçma koni açısı (derece). Her mermi bu açı içinde rastgele sapar. 0 = sapma yok.")]
+    [Range(0f, 15f)] public float spreadConeAngleDeg = 6f;
+
     [Header("Rotation Settings")]
     [Tooltip("Dönüş hızı (derece/saniye). 720 = saniyede 2 tam tur")]
     public float rotationSpeed = 720f;
@@ -56,6 +60,16 @@ public class ShotgunBullet : MonoBehaviour
     
     [Tooltip("Efekt nesnesinin yok edilme süresi (sn)")]
     [Range(0.3f, 2f)] public float hitEffectDuration = 0.8f;
+
+    [Header("Pompalı saçma çarpma efekti")]
+    [Tooltip("Düşmana çarptığında patlayıp en yakın düşmanlara doğru saçılma")]
+    public bool enablePelletBurstEffect = true;
+    [Tooltip("En yakın düşmanları aramak için yarıçap")]
+    [Range(1f, 10f)] public float nearbyEnemySearchRadius = 4f;
+    [Tooltip("Kaç düşmana doğru ayrı koni atılacak (en yakındakiler)")]
+    [Range(1, 6)] public int maxEnemiesToTarget = 4;
+    [Tooltip("Düşmana doğru giden koni açısı (derece)")]
+    [Range(10f, 45f)] public float pelletBurstConeAngle = 28f;
     
     private void Start()
     {
@@ -94,12 +108,135 @@ public class ShotgunBullet : MonoBehaviour
         }
     }
     
-    /// <summary>Düşman üstünde mermi patladığını net gösteren hit efekti.</summary>
+    /// <summary>Düşman üstünde patlama; saçmalar en yakın düşmanlara doğru dağılır (yerçekimi yok).</summary>
     public void SpawnHitEffect(Vector3 position)
+    {
+        if (enablePelletBurstEffect)
+        {
+            // Merkezde kısa bir patlama (her yöne, aşağı değil)
+            SpawnCentralExplosion(position);
+            // En yakın düşmanları bul, her birine doğru koni at
+            Collider[] cols = Physics.OverlapSphere(position, nearbyEnemySearchRadius);
+            var enemiesWithDist = new System.Collections.Generic.List<(EnemyHealth eh, float dist)>();
+            foreach (Collider c in cols)
+            {
+                EnemyHealth eh = c.GetComponentInParent<EnemyHealth>();
+                if (eh == null) continue;
+                Vector3 enemyCenter = eh.transform.position;
+                float d = Vector3.Distance(position, enemyCenter);
+                if (d < 0.15f) continue; // çarptığımız düşmanı atla (isteğe bağlı)
+                enemiesWithDist.Add((eh, d));
+            }
+            enemiesWithDist.Sort((a, b) => a.dist.CompareTo(b.dist));
+            int count = Mathf.Min(maxEnemiesToTarget, enemiesWithDist.Count);
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 toEnemy = (enemiesWithDist[i].eh.transform.position - position).normalized;
+                SpawnPelletBurstToward(position, toEnemy);
+            }
+            // Hiç yakın düşman yoksa yine de birkaç rastgele yöne koni at (patlama hissi)
+            if (count == 0)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    float angle = (i / 3f) * 360f * Mathf.Deg2Rad;
+                    Vector3 dir = (Vector3.right * Mathf.Cos(angle) + Vector3.forward * Mathf.Sin(angle)).normalized;
+                    SpawnPelletBurstToward(position, dir);
+                }
+            }
+        }
+        else
+        {
+            SpawnSingleHitEffect(position, ParticleSystemShapeType.Sphere, 0.02f, Vector3.forward);
+        }
+    }
+
+    /// <summary>Merkez patlama – küre, yerçekimi 0.</summary>
+    private void SpawnCentralExplosion(Vector3 position)
+    {
+        GameObject hitObj = new GameObject("ShotgunCentralExplosion");
+        hitObj.transform.position = position;
+
+        ParticleSystem ps = hitObj.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.duration = 0.04f;
+        main.loop = false;
+        main.startLifetime = new ParticleSystem.MinMaxCurve(hitLifetime.x * 0.8f, hitLifetime.y * 0.9f);
+        main.startSpeed = new ParticleSystem.MinMaxCurve(hitSpeed.x, hitSpeed.y);
+        main.startSize = new ParticleSystem.MinMaxCurve(hitSize.x * 0.9f, hitSize.y);
+        main.startColor = new ParticleSystem.MinMaxGradient(hitColorStart, hitColorEnd);
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles = 40;
+        main.gravityModifier = 0f;
+        main.playOnAwake = true;
+        main.stopAction = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.enabled = true;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 40) });
+
+        var shape = ps.shape;
+        shape.shapeType = ParticleSystemShapeType.Sphere;
+        shape.radius = 0.02f;
+
+        AddCommonParticleModules(ps);
+        var renderer = ps.GetComponent<ParticleSystemRenderer>();
+        renderer.material = CreateSoftParticleMaterial();
+        renderer.renderMode = ParticleSystemRenderMode.Billboard;
+        renderer.sortingOrder = 20;
+        ps.Play();
+        Destroy(hitObj, hitEffectDuration);
+    }
+
+    /// <summary>Belirli bir yöne (en yakın düşmana) koni ile saçma – yerçekimi 0. Unity Cone -Z yönde emit eder.</summary>
+    private void SpawnPelletBurstToward(Vector3 position, Vector3 directionTowardTarget)
+    {
+        GameObject hitObj = new GameObject("ShotgunPelletBurstToward");
+        hitObj.transform.position = position;
+        // Cone -Z yönde emit eder; biz directionTowardTarget'a gitmesini istiyoruz => forward = -directionTowardTarget
+        hitObj.transform.rotation = Quaternion.LookRotation(-directionTowardTarget);
+
+        ParticleSystem ps = hitObj.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.duration = 0.05f;
+        main.loop = false;
+        main.startLifetime = new ParticleSystem.MinMaxCurve(hitLifetime.x * 1.1f, hitLifetime.y * 1.2f);
+        main.startSpeed = new ParticleSystem.MinMaxCurve(hitSpeed.x * 1.2f, hitSpeed.y * 1.4f);
+        main.startSize = new ParticleSystem.MinMaxCurve(hitSize.x, hitSize.y);
+        main.startColor = new ParticleSystem.MinMaxGradient(hitColorStart, hitColorEnd);
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles = 50;
+        main.gravityModifier = 0f;
+        main.playOnAwake = true;
+        main.stopAction = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.enabled = true;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 50) });
+
+        var shape = ps.shape;
+        shape.shapeType = ParticleSystemShapeType.Cone;
+        shape.angle = pelletBurstConeAngle * 0.5f * Mathf.Deg2Rad;
+        shape.radius = 0.02f;
+        shape.rotation = Vector3.zero;
+        shape.length = 0.05f;
+
+        AddCommonParticleModules(ps);
+        var renderer = ps.GetComponent<ParticleSystemRenderer>();
+        renderer.material = CreateSoftParticleMaterial();
+        renderer.renderMode = ParticleSystemRenderMode.Billboard;
+        renderer.sortingOrder = 20;
+        ps.Play();
+        Destroy(hitObj, hitEffectDuration * 1.1f);
+    }
+
+    private void SpawnSingleHitEffect(Vector3 position, ParticleSystemShapeType shapeType, float radius, Vector3 shapeDir)
     {
         GameObject hitObj = new GameObject("BulletHitEffect");
         hitObj.transform.position = position;
-        
+
         ParticleSystem ps = hitObj.AddComponent<ParticleSystem>();
         var main = ps.main;
         main.duration = 0.05f;
@@ -113,16 +250,27 @@ public class ShotgunBullet : MonoBehaviour
         main.gravityModifier = hitGravityModifier;
         main.playOnAwake = true;
         main.stopAction = ParticleSystemStopAction.Destroy;
-        
+
         var emission = ps.emission;
         emission.enabled = true;
         emission.rateOverTime = 0;
         emission.SetBursts(new[] { new ParticleSystem.Burst(0f, hitParticleCount) });
-        
+
         var shape = ps.shape;
-        shape.shapeType = ParticleSystemShapeType.Sphere;
-        shape.radius = 0.02f;
-        
+        shape.shapeType = shapeType;
+        shape.radius = radius;
+
+        AddCommonParticleModules(ps);
+        var renderer = ps.GetComponent<ParticleSystemRenderer>();
+        renderer.material = CreateSoftParticleMaterial();
+        renderer.renderMode = ParticleSystemRenderMode.Billboard;
+        renderer.sortingOrder = 20;
+        ps.Play();
+        Destroy(hitObj, hitEffectDuration);
+    }
+
+    private static void AddCommonParticleModules(ParticleSystem ps)
+    {
         var sizeOverLifetime = ps.sizeOverLifetime;
         sizeOverLifetime.enabled = true;
         AnimationCurve sizeCurve = new AnimationCurve();
@@ -131,7 +279,7 @@ public class ShotgunBullet : MonoBehaviour
         sizeCurve.AddKey(0.8f, 0.5f);
         sizeCurve.AddKey(1f, 0f);
         sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
-        
+
         var colorOverLifetime = ps.colorOverLifetime;
         colorOverLifetime.enabled = true;
         Gradient gradient = new Gradient();
@@ -150,15 +298,6 @@ public class ShotgunBullet : MonoBehaviour
             }
         );
         colorOverLifetime.color = gradient;
-        
-        var renderer = ps.GetComponent<ParticleSystemRenderer>();
-        Material particleMat = CreateSoftParticleMaterial();
-        renderer.material = particleMat;
-        renderer.renderMode = ParticleSystemRenderMode.Billboard;
-        renderer.sortingOrder = 20;
-        
-        ps.Play();
-        Destroy(hitObj, hitEffectDuration);
     }
     
     private static Material _softParticleMat;

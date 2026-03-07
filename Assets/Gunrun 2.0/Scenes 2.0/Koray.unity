@@ -83880,6 +83880,7 @@ GameObject:
   - component: {fileID: 1705471536}
   - component: {fileID: 1705471538}
   - component: {fileID: 1705471537}
+  - component: {fileID: 1705471539}
   m_Layer: 5
   m_Name: Score and Time Panel
   m_TagString: Untagged
@@ -83950,6 +83951,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1705471535}
   m_CullTransparentMesh: 1
+--- !u!114 &1705471539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705471535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c721986d99a648746bd098d905bc6323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  glowColor: {r: 0, g: 0.8, b: 1, a: 1}
+  speed: 400
+  lineLength: 150
+  lineThickness: 6
+  clockwise: 1
 --- !u!1 &1712943062
 GameObject:
   m_ObjectHideFlags: 0

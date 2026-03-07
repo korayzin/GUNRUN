@@ -137,7 +137,7 @@ public class UIManager : MonoBehaviour
 
     private void OnInfoClicked()
     {
-        LoadTutorial();
+        LoadNewTutorial();
     }
 
     private void OnOptionsClicked()
@@ -167,14 +167,14 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 5-4-3-2-1 geri sayımı ile Tutorial sahnesini yükler.
+    /// 5-4-3-2-1 geri sayımı ile newtutorial sahnesini yükler.
     /// </summary>
-    public void LoadTutorial()
+    public void LoadNewTutorial()
     {
-        StartCoroutine(LoadTutorialCountdownCoroutine());
+        StartCoroutine(LoadNewTutorialCountdownCoroutine());
     }
 
-    private IEnumerator LoadTutorialCountdownCoroutine()
+    private IEnumerator LoadNewTutorialCountdownCoroutine()
     {
         if (_transitionCoroutine != null)
         {
@@ -211,9 +211,9 @@ public class UIManager : MonoBehaviour
         if (countdownText != null) countdownText.text = "GO!";
         yield return new WaitForSeconds(1f);
 
-        // Info butonuyla yüklendi - tutorial atlanmasın, tekrar izlensin
+        // Info butonuyla yüklendi - newtutorial sahnesi
         TutorialIntroController.ForceShowTutorialThisLoad = true;
-        SceneManager.LoadScene("Tutorial");
+        SceneManager.LoadScene("newtutorial");
     }
 
     /// <summary>
