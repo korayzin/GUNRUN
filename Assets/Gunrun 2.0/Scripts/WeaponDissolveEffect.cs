@@ -129,6 +129,7 @@ public class WeaponDissolveEffect : MonoBehaviour
             yield return null;
         }
         SetDissolveProgress(0f);
+        // RestoreOriginalMaterials burada çağrılmaz - silah tekrar görünür olur. Gizlendikten sonra EnsureVisible ile restore edilir.
     }
 
     /// <summary>Aşağıdan yukarıya oluşturur (spawn/build). Süre override edilebilir.</summary>
@@ -182,6 +183,15 @@ public class WeaponDissolveEffect : MonoBehaviour
             if (_renderers[i] != null && _originalMaterialsArrays[i] != null)
                 _renderers[i].sharedMaterials = _originalMaterialsArrays[i];
         }
+    }
+
+    /// <summary>Silah manuel geçişte (HUD) aktifleştiğinde dissolve materyalleri kaldırıp orijinale döner. newtutorial'da silah görünürlüğü için.</summary>
+    public void EnsureVisible()
+    {
+        if (SceneManager.GetActiveScene().name != "newtutorial") return;
+        if (!_initialized) CacheRenderers();
+        if (!_initialized) return;
+        RestoreOriginalMaterials();
     }
 
     private void OnDestroy()

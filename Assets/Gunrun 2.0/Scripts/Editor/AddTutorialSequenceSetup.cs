@@ -35,32 +35,6 @@ public static class AddTutorialSequenceSetup
             audioSrc = td.GetComponentInChildren<AudioSource>(true);
         }
 
-        TutorialFloatingCanvas floatingCanvas = Object.FindObjectOfType<TutorialFloatingCanvas>();
-        if (floatingCanvas == null)
-        {
-            var canvasGo = new GameObject("TutorialFloatingCanvas");
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.WorldSpace;
-            canvas.worldCamera = Camera.main;
-            var scaler = canvasGo.AddComponent<UnityEngine.UI.CanvasScaler>();
-            scaler.dynamicPixelsPerUnit = 10f;
-            scaler.referencePixelsPerUnit = 100f;
-            canvasGo.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-            var textGo = new GameObject("Text");
-            textGo.transform.SetParent(canvasGo.transform, false);
-            var tmp = textGo.AddComponent<TextMeshProUGUI>();
-            tmp.text = "";
-            tmp.fontSize = 24f;
-            tmp.alignment = TMPro.TextAlignmentOptions.Center;
-            var rect = textGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(400, 100);
-            rect.anchoredPosition = Vector2.zero;
-            floatingCanvas = canvasGo.AddComponent<TutorialFloatingCanvas>();
-            floatingCanvas.textUI = tmp;
-            floatingCanvas.distanceFromCamera = 1.2f;
-            Debug.Log("TutorialFloatingCanvas oluşturuldu.");
-        }
-
         Transform rightHand = null;
         Transform leftHand = null;
         var ovrRig = Object.FindObjectOfType<OVRCameraRig>();
@@ -92,7 +66,6 @@ public static class AddTutorialSequenceSetup
         so.FindProperty("holographicWeaponHUD").objectReferenceValue = hud;
         so.FindProperty("dialogueTextUI").objectReferenceValue = dialogueText;
         so.FindProperty("dialoguePanel").objectReferenceValue = dialoguePanel != null ? dialoguePanel : (dialogueText != null ? dialogueText.gameObject : null);
-        so.FindProperty("tutorialFloatingCanvas").objectReferenceValue = floatingCanvas;
         so.FindProperty("audioSource").objectReferenceValue = audioSrc;
         so.ApplyModifiedPropertiesWithoutUndo();
 

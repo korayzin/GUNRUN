@@ -17,12 +17,10 @@ public class TutorialSequenceController : MonoBehaviour
     public AdvancedPortalSpawner portalSpawner;
     [Tooltip("Boşsa sahnede aranır. Başta gizli, 9. fazda açılır")]
     public HolographicWeaponHUD holographicWeaponHUD;
-    [Tooltip("Diyalog/metin gösterimi için. TutorialFloatingCanvas varsa ona yazılır")]
+    [Tooltip("Diyalog/metin gösterimi için. Boşsa metin gösterilmez, sesler çalınır.")]
     public TextMeshProUGUI dialogueTextUI;
-    [Tooltip("Metin paneli - göster/gizle. TutorialFloatingCanvas varsa onu kullan")]
+    [Tooltip("Metin paneli - göster/gizle")]
     public GameObject dialoguePanel;
-    [Tooltip("Önde açılan canvas - varsa dialogue yerine buna yazılır")]
-    public TutorialFloatingCanvas tutorialFloatingCanvas;
     [Tooltip("Ses çalmak için")]
     public AudioSource audioSource;
 
@@ -103,7 +101,6 @@ public class TutorialSequenceController : MonoBehaviour
         if (weaponManager == null) weaponManager = FindObjectOfType<WeaponManager>();
         if (portalSpawner == null) portalSpawner = FindObjectOfType<AdvancedPortalSpawner>();
         if (holographicWeaponHUD == null) holographicWeaponHUD = FindObjectOfType<HolographicWeaponHUD>();
-        if (tutorialFloatingCanvas == null) tutorialFloatingCanvas = FindObjectOfType<TutorialFloatingCanvas>();
         if (audioSource == null && dialoguePanel != null) audioSource = dialoguePanel.GetComponentInChildren<AudioSource>();
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
@@ -192,15 +189,8 @@ public class TutorialSequenceController : MonoBehaviour
 
     private void SetDialogueVisible(bool visible)
     {
-        if (tutorialFloatingCanvas != null)
-        {
-            if (!visible) tutorialFloatingCanvas.Hide();
-        }
-        else
-        {
-            if (dialoguePanel != null) dialoguePanel.SetActive(visible);
-            if (dialogueTextUI != null) dialogueTextUI.gameObject.SetActive(visible);
-        }
+        if (dialoguePanel != null) dialoguePanel.SetActive(visible);
+        if (dialogueTextUI != null) dialogueTextUI.gameObject.SetActive(visible);
     }
 
     private IEnumerator ShowWeaponIntroRealtime(int weaponIndex)
@@ -208,11 +198,7 @@ public class TutorialSequenceController : MonoBehaviour
         string text = weaponIndex < weaponIntroText.Length ? weaponIntroText[weaponIndex] : "";
         AudioClip sfx = weaponIndex < weaponIntroSFX.Length ? weaponIntroSFX[weaponIndex] : null;
 
-        if (tutorialFloatingCanvas != null)
-        {
-            tutorialFloatingCanvas.Show(text ?? "");
-        }
-        else if (dialogueTextUI != null)
+        if (dialogueTextUI != null)
         {
             dialogueTextUI.text = text ?? "";
             if (dialoguePanel != null) dialoguePanel.SetActive(true);
@@ -227,9 +213,7 @@ public class TutorialSequenceController : MonoBehaviour
 
     private IEnumerator ShowDialogueRealtime(string text, AudioClip voiceClip, AudioClip sfxClip)
     {
-        if (tutorialFloatingCanvas != null)
-            tutorialFloatingCanvas.Show("");
-        else if (dialogueTextUI != null)
+        if (dialogueTextUI != null)
             dialogueTextUI.text = "";
 
         if (sfxClip != null && audioSource != null)
@@ -240,39 +224,19 @@ public class TutorialSequenceController : MonoBehaviour
             audioSource.Play();
         }
 
-        if (!string.IsNullOrEmpty(text))
+        if (!string.IsNullOrEmpty(text) && dialogueTextUI != null)
         {
-            if (tutorialFloatingCanvas != null)
+            if (typingSpeedPerChar > 0f)
             {
-                if (typingSpeedPerChar > 0f)
+                foreach (char c in text)
                 {
-                    string acc = "";
-                    foreach (char c in text)
-                    {
-                        acc += c;
-                        tutorialFloatingCanvas.Show(acc);
-                        yield return new WaitForSecondsRealtime(typingSpeedPerChar);
-                    }
-                }
-                else
-                {
-                    tutorialFloatingCanvas.Show(text);
+                    dialogueTextUI.text += c;
+                    yield return new WaitForSecondsRealtime(typingSpeedPerChar);
                 }
             }
-            else if (dialogueTextUI != null)
+            else
             {
-                if (typingSpeedPerChar > 0f)
-                {
-                    foreach (char c in text)
-                    {
-                        dialogueTextUI.text += c;
-                        yield return new WaitForSecondsRealtime(typingSpeedPerChar);
-                    }
-                }
-                else
-                {
-                    dialogueTextUI.text = text;
-                }
+                dialogueTextUI.text = text;
             }
         }
 
