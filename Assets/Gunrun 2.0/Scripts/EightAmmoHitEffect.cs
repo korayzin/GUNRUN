@@ -164,7 +164,8 @@ public class EightAmmoHitEffect : MonoBehaviour
         if (_puffMat != null) return _puffMat;
 
         int size = 128;
-        Texture2D tex = new Texture2D(size, size);
+        // RGBA32 + mipChain: false → editör ve build/VR'da aynı görünüm (mipmap kareleşmeyi önler)
+        Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
         float cx = size * 0.5f;
         for (int y = 0; y < size; y++)
         {
@@ -184,8 +185,9 @@ public class EightAmmoHitEffect : MonoBehaviour
                 tex.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Clamp01(alpha)));
             }
         }
-        tex.Apply();
+        tex.Apply(false, true); // updateMipmaps: false → build'de editörle aynı; makeNoLongerReadable: true
         tex.filterMode = FilterMode.Bilinear;
+        tex.wrapMode = TextureWrapMode.Clamp;
 
         Shader sh = Shader.Find("Legacy Shaders/Particles/Alpha Blended") ?? Shader.Find("Particles/Standard Unlit") ?? Shader.Find("Sprites/Default");
         _puffMat = new Material(sh ?? Shader.Find("Sprites/Default"));

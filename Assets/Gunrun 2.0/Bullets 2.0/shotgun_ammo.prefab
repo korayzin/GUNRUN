@@ -138,7 +138,7 @@ MonoBehaviour:
   hitColorEnd: {r: 1, g: 0.75, b: 0.25, a: 1}
   hitGravityModifier: 0.2
   hitEffectDuration: 0.8
-  enablePelletBurstEffect: 1
+  enablePelletBurstEffect: 0
   nearbyEnemySearchRadius: 4
   maxEnemiesToTarget: 4
   pelletBurstConeAngle: 28
