@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using Meta.XR.MRUtilityKit;
@@ -190,8 +191,17 @@ public class SeventhGunWhip : MonoBehaviour
     void Update()
     {
         if (GameManager.IsRetryScreenActive) return; // Retry ekranında sadece HandRayUIInteractor ile butonlara tıklanabilir
-        bool tutorialUnlimited = TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled;
-        if (!tutorialUnlimited && maxWhipShots > 0 && remainingWhipShots <= 0) return;
+        // newtutorial: kırbaç sayısı bitince mermi gibi yenile
+        if (maxWhipShots > 0 && remainingWhipShots <= 0)
+        {
+            if (SceneManager.GetActiveScene().name == "newtutorial")
+                remainingWhipShots = maxWhipShots;
+            else
+            {
+                bool tutorialUnlimited = TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponGunChangeAfterEnabled;
+                if (!tutorialUnlimited) return;
+            }
+        }
         
         if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialSeventhWeaponPhase && !TutorialIntroController.TutorialSeventhWeaponSecondaryEnabled)
             return; // 17. diyalog bitmeden ikincil (kırbaç) kapalı

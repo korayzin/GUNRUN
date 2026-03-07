@@ -257,7 +257,14 @@ public class SixthGunLaser : MonoBehaviour
             // Enerji kontrolü
             if (currentEnergy <= 0f)
             {
-                SetLaserActive(false); // Enerji bitince kapat
+                // newtutorial: enerji bitince mermi gibi yenile
+                if (SceneManager.GetActiveScene().name == "newtutorial")
+                {
+                    currentEnergy = maxEnergy;
+                    UpdateEnergyBar();
+                }
+                else
+                    SetLaserActive(false); // Enerji bitince kapat
             }
         }
         else
@@ -462,10 +469,13 @@ public class SixthGunLaser : MonoBehaviour
 
     private void SetLaserActive(bool active)
     {
-        // Enerji yoksa açma
+        // Enerji yoksa açma (newtutorial'da bitince yenilenir, engelleme yok)
         if (active && currentEnergy <= 0f)
         {
-            return;
+            if (SceneManager.GetActiveScene().name == "newtutorial")
+                currentEnergy = maxEnergy;
+            else
+                return;
         }
         
         isLaserActive = active;

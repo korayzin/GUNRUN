@@ -51,7 +51,19 @@ public class WeaponDissolveEffect : MonoBehaviour
         var dissList = new System.Collections.Generic.List<Material[]>();
 
         _dissolveShader = Shader.Find("Custom/WeaponDissolve");
-        if (_dissolveShader == null) return;
+        if (_dissolveShader == null)
+        {
+            var fallbackMat = Resources.Load<Material>("WeaponDissolveFallback");
+            if (fallbackMat != null && fallbackMat.shader != null)
+                _dissolveShader = fallbackMat.shader;
+        }
+        if (_dissolveShader == null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogWarning("[WeaponDissolveEffect] Custom/WeaponDissolve shader bulunamadı. Graphics > Always Included Shaders'a ekleyin veya Resources/WeaponDissolveFallback.mat oluşturun.");
+#endif
+            return;
+        }
 
         foreach (var r in allRenderers)
         {

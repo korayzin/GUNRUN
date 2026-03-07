@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -213,7 +214,10 @@ public class ToyHelper : MonoBehaviour
         if (state == State.Idle)
         {
             bool tutorialUnlimited = TutorialIntroController.TutorialEighthWeaponPhase && !TutorialIntroController.TutorialCompleteFreehand; // 8. silah tutorial: toy sürekli kullanılabilir (freehand'de normal)
-            if (!tutorialUnlimited && cooldownRemaining > 0f)
+            // newtutorial: cooldown bitince mermi gibi yenile (anında kullanılabilir)
+            if (SceneManager.GetActiveScene().name == "newtutorial" && cooldownRemaining > 0f)
+                cooldownRemaining = 0f;
+            else if (!tutorialUnlimited && cooldownRemaining > 0f)
             {
                 cooldownRemaining -= Time.deltaTime;
                 if (cooldownRemaining < 0f) cooldownRemaining = 0f;

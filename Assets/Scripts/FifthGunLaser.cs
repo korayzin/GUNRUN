@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -224,7 +225,17 @@ public class FifthGunLaser : MonoBehaviour
             showChargeUI = false;
             if (laserCountText != null) laserCountText.gameObject.SetActive(false);
         }
-        if (maxLaserShots > 0 && remainingShots <= 0) return;
+        // newtutorial: yıldırım sayısı bitince mermi gibi yenile
+        if (maxLaserShots > 0 && remainingShots <= 0)
+        {
+            if (SceneManager.GetActiveScene().name == "newtutorial")
+            {
+                remainingShots = maxLaserShots;
+                UpdateLaserCountUI();
+            }
+            else
+                return;
+        }
         
         if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialFifthWeaponPhase && !TutorialIntroController.TutorialFifthWeaponSecondaryEnabled)
             return; // 13. diyalog bitmeden ikincil (yıldırım) kapalı
@@ -245,8 +256,8 @@ public class FifthGunLaser : MonoBehaviour
     
     void StartCharging()
     {
-        // Laser bitti mi kontrol et
-        if (maxLaserShots > 0 && remainingShots <= 0)
+        // Laser bitti mi kontrol et (newtutorial'da bitince yenilenir, burada sadece diğer sahnelerde engelle)
+        if (maxLaserShots > 0 && remainingShots <= 0 && SceneManager.GetActiveScene().name != "newtutorial")
         {
             return; // Laser bitti, charge başlatma
         }
