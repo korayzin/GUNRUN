@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Gunrun 2.0/Scenes 2.0/Tutorial.unity
-    guid: 21b7d2449341cc343b7864d0370eb5fc
+    path: Assets/Gunrun 2.0/Scenes 2.0/newtutorial.unity
+    guid: d68fd9f24a2e50a4baa9f7f93486d130
   - enabled: 1
     path: Assets/Gunrun 2.0/Scenes 2.0/UserName.unity
     guid: 72ddee979fb6fcc4c824d923e1ed6904

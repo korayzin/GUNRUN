@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -77,6 +78,10 @@ public class TutorialSequenceController : MonoBehaviour
     public string finalPhaseText = "bb";
     [Tooltip("3 düşman öldürüldükten sonra çalacak ses")]
     public AudioClip finalPhaseSFX;
+    [Tooltip("Ses/metin bittikten kaç saniye sonra fade out başlasın")]
+    public float finalPhaseDelayBeforeFade = 3f;
+    [Tooltip("Fade out süresi (saniye)")]
+    public float finalPhaseFadeOutDuration = 1.5f;
 
     [Header("VFX / Silah Geçişi")]
     [Tooltip("Silah değişim süreleri: WeaponManager > Tutorial - Silah Değişim Süreleri")]
@@ -275,7 +280,76 @@ public class TutorialSequenceController : MonoBehaviour
 
         _currentPhase = -1;
         SetDialogueVisible(false);
-        // Tutorial bitti
+
+        // Ses bittikten 3 saniye sonra fade out, build settings'teki sıradaki sahneye geç
+        yield return new WaitForSecondsRealtime(finalPhaseDelayBeforeFade);
+        yield return FadeOutAndLoadNextScene();
+    }
+
+    private IEnumerator FadeOutAndLoadNextScene()
+    {
+        // VR'da ScreenSpaceOverlay/ScreenSpaceCamera bazen gözlükte görünmez - World Space + CenterEyeAnchor child kullan
+        Transform fadeParent = null;
+        Camera vrCamera = null;
+        var ovrRig = FindObjectOfType<OVRCameraRig>();
+        if (ovrRig != null && ovrRig.centerEyeAnchor != null)
+        {
+            fadeParent = ovrRig.centerEyeAnchor;
+            vrCamera = ovrRig.centerEyeAnchor.GetComponentInChildren<Camera>(true);
+        }
+        if (vrCamera == null) vrCamera = Camera.main;
+        if (fadeParent == null) fadeParent = vrCamera != null ? vrCamera.transform : null;
+
+        var canvasObj = new GameObject("TutorialFadeOverlay");
+        if (fadeParent != null)
+            canvasObj.transform.SetParent(fadeParent, false);
+        canvasObj.transform.localPosition = new Vector3(0f, 0f, 1f); // Kamera önünde 1m
+        canvasObj.transform.localRotation = Quaternion.identity;
+        canvasObj.transform.localScale = Vector3.one;
+
+        var canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        canvas.worldCamera = vrCamera;
+        canvas.sortingOrder = 32767;
+        var scaler = canvasObj.AddComponent<CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 100f;
+        scaler.referencePixelsPerUnit = 100f;
+        canvasObj.AddComponent<GraphicRaycaster>();
+
+        var rect = canvasObj.GetComponent<RectTransform>();
+        if (rect == null) rect = canvasObj.AddComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(2000f, 2000f); // Büyük alan - görüşü kaplasın
+
+        var imageObj = new GameObject("FadeImage");
+        imageObj.transform.SetParent(canvasObj.transform, false);
+        var imgRect = imageObj.AddComponent<RectTransform>();
+        imgRect.anchorMin = Vector2.zero;
+        imgRect.anchorMax = Vector2.one;
+        imgRect.offsetMin = Vector2.zero;
+        imgRect.offsetMax = Vector2.zero;
+
+        var image = imageObj.AddComponent<Image>();
+        image.color = new Color(0f, 0f, 0f, 0f);
+        if (UICameraStackSetup.Instance != null)
+            UICameraStackSetup.SetLayerRecursivelyToUI(canvasObj);
+
+        float elapsed = 0f;
+        float dur = Mathf.Max(0.1f, finalPhaseFadeOutDuration);
+        while (elapsed < dur)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / dur);
+            t = 1f - (1f - t) * (1f - t);
+            image.color = new Color(0f, 0f, 0f, t);
+            yield return null;
+        }
+        image.color = new Color(0f, 0f, 0f, 1f);
+
+        Time.timeScale = 1f;
+        int nextIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        int sceneCount = SceneManager.sceneCountInBuildSettings;
+        if (nextIndex >= sceneCount) nextIndex = 0;
+        SceneManager.LoadScene(nextIndex);
     }
 
     private void SetDialogueVisible(bool visible)

@@ -71217,6 +71217,8 @@ MonoBehaviour:
   holographicHUDDuration: 5
   finalPhaseText: The tutorial is over. Now it's time for battle. Good luck!
   finalPhaseSFX: {fileID: 8300000, guid: 7b55e71868559bb49b6502d71608cf1f, type: 3}
+  finalPhaseDelayBeforeFade: 3
+  finalPhaseFadeOutDuration: 1.5
   weaponChangeVFXDelay: 0.5
 --- !u!4 &1576583031
 Transform:
@@ -89726,7 +89728,7 @@ MonoBehaviour:
   useLeftJoystick: 1
   joystickThreshold: 0.5
   joystickNeutralDeadzone: 0.2
-  toggleWithXButton: 1
+  toggleWithXButton: 0
   popDuration: 0.2
   popOpenCurve:
     serializedVersion: 2

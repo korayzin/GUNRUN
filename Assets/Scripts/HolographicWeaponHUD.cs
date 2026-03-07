@@ -312,11 +312,33 @@ public class HolographicWeaponHUD : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    /// <summary>Tutorial: Sadece Canvas'ı aç/kapat. GameObject aktif kalır, HUD bileşeni çalışır.</summary>
+    /// <summary>Tutorial: Sadece Canvas'ı aç/kapat. GameObject aktif kalır, HUD bileşeni çalışır. VR'da worldCamera ayarlanır.</summary>
     public void SetCanvasVisible(bool visible)
     {
+        if (visible) gameObject.SetActive(true);
         var c = _canvas != null ? _canvas : GetComponent<Canvas>();
-        if (c != null) c.enabled = visible;
+        if (c == null) return;
+        c.enabled = visible;
+        if (visible && c.renderMode == RenderMode.WorldSpace)
+        {
+            // VR'da World Space canvas için kamera gerekli - yoksa gözlükte görünmez (her açılışta ayarla)
+            if (UICameraStackSetup.Instance != null && UICameraStackSetup.Instance.UIOverlayCamera != null)
+                c.worldCamera = UICameraStackSetup.Instance.UIOverlayCamera;
+            else
+            {
+                var ovr = FindObjectOfType<OVRCameraRig>();
+                if (ovr != null && ovr.centerEyeAnchor != null)
+                {
+                    var cam = ovr.centerEyeAnchor.GetComponentInChildren<Camera>(true);
+                    if (cam != null) c.worldCamera = cam;
+                }
+                if (c.worldCamera == null) c.worldCamera = Camera.main;
+            }
+            if (UICameraStackSetup.Instance != null)
+                UICameraStackSetup.Instance.RegisterWorldSpaceCanvas(c);
+            else
+                UICameraStackSetup.SetLayerRecursivelyToUI(gameObject);
+        }
     }
 
     private IEnumerator PopAnimation()
