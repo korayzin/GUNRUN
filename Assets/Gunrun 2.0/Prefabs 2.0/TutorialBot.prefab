@@ -146,8 +146,9 @@ GameObject:
   - component: {fileID: 1747896337309177077}
   - component: {fileID: 6187744645061605991}
   - component: {fileID: 8060573941528754937}
+  - component: {fileID: 3619164560715303843}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: DialoguePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -211,6 +212,27 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3619164560715303843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5322026223450282823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46c44f8631850fe4a822bf54b82dfb23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueText: {fileID: 3681949999332036130}
+  dialogueTextFallback: {fileID: 0}
+  dialoguePanel: {fileID: 0}
+  spawnPoint: {fileID: 0}
+  lookAtTarget: {fileID: 0}
+  spawnDistanceInFront: 2.5
+  spawnDissolveDuration: 0.5
+  despawnDissolveDuration: 0.4
+  fadeCanvasGroup: {fileID: 0}
 --- !u!1 &5652890989042183794
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,6 +423,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 91ef6fd4d14898c4d8616bf546b58420,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -408,8 +435,34 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3997322099133513107}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 91ef6fd4d14898c4d8616bf546b58420,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4671883162902821975}
   m_SourcePrefab: {fileID: 100100000, guid: 91ef6fd4d14898c4d8616bf546b58420, type: 3}
+--- !u!1 &3889098389999913497 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 91ef6fd4d14898c4d8616bf546b58420,
+    type: 3}
+  m_PrefabInstance: {fileID: 4123524504551962440}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4671883162902821975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3889098389999913497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a849ee220ff5ba8448f2c9de4a2848d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  despawnDuration: 0.4
+  spawnDuration: 0.5
+  edgeGlowColor: {r: 1, g: 0.9, b: 0.6, a: 0.8}
+  edgeGlowWidth: 0.05
 --- !u!4 &4517966730975072419 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 91ef6fd4d14898c4d8616bf546b58420,

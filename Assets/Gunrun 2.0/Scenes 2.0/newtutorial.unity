@@ -96,7 +96,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: b93efb2d2be0b8c40b8196a30ad9d917,
+  m_LightingDataAsset: {fileID: 112000000, guid: 08c242e14fee91f40b7548391954a75e,
     type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: b8f1ed3fbf8e47c4d934140daae57929,
     type: 2}
@@ -58709,6 +58709,37 @@ Transform:
   - {fileID: 1536275252}
   m_Father: {fileID: 1354820818}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1189095197
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1189095198}
+  m_Layer: 0
+  m_Name: BotSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1189095198
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189095197}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.636, y: -0.447, z: -17.046}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1193027836
 GameObject:
   m_ObjectHideFlags: 0
@@ -70242,36 +70273,47 @@ MonoBehaviour:
   dialogueTextUI: {fileID: 0}
   dialoguePanel: {fileID: 0}
   audioSource: {fileID: 0}
+  tutorialBotPrefab: {fileID: 3889098389999913497, guid: 16fafb66710f62a46944e3e0122698a0,
+    type: 3}
+  botSpawnPoint: {fileID: 1189095198}
+  botDissolveSpawnDuration: 0.5
+  botDissolveDespawnDuration: 0.4
   destructiblePhaseDuration: 5
-  destructibleText: "Duvarlar\u0131 mermilerinle k\u0131rabilirsin. Deneyebilirsin!"
-  destructibleVoiceClip: {fileID: 0}
+  destructibleText: 'Hey! Welcome. Let''s start by breaking this reality. Use your
+    guns to destroy these walls! '
+  destructibleVoiceClip: {fileID: 8300000, guid: 86216f3e66bfc03459583830d29e573d,
+    type: 3}
   destructibleSFX: {fileID: 0}
   enemyStopAfterSeconds: 5
   enemySpeed: 7
   typingSpeedPerChar: 0.02
   dialogueEndBuffer: 1
   weaponIntroText:
-  - selam
-  - selam
-  - selam
-  - selam
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Kill the enemies coming towards you from the portals!
+  - 'The weapon has been replaced with a more powerful one. Now test it. '
+  - 'Now you have a weapon with fewer bullets but greater range. Go on, kill the
+    enemies! '
+  - The weapon has changed! You know what to do. Fire!
+  - Dual-wield weapons unlocked! Hold down A button and fire your new gun!
+  - Now You have a slowdown gun in your left hand. Use it to slow down the enemies.
+    And kill them by your right hand!
+  - The weapon has changed! Press A to activate the whip, and enemies will retreat.
+  - You now have a helper-guy. Press A to activate them to kill enemies before you
+    do.
+  - Fire the last weapon! Press A to throw a fireball!
   weaponIntroSFX:
-  - {fileID: 8300000, guid: f89ab7fc4d9d77642b15f2b41d6d920a, type: 3}
-  - {fileID: 8300000, guid: f89ab7fc4d9d77642b15f2b41d6d920a, type: 3}
-  - {fileID: 8300000, guid: f89ab7fc4d9d77642b15f2b41d6d920a, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  holographicHUDText: "Sol joystick ile silahlar aras\u0131nda ge\xE7i\u015F yapabilirsin."
-  holographicHUDSFX: {fileID: 0}
+  - {fileID: 8300000, guid: e2e0b63b28d75984db8ffb76ae873157, type: 3}
+  - {fileID: 8300000, guid: 7ee34576b33a2e74b878fd9e69a91115, type: 3}
+  - {fileID: 8300000, guid: 2113390c237a9224dbb63869d2d99b09, type: 3}
+  - {fileID: 8300000, guid: 3be98db7137d6454fb028cce4bc27e66, type: 3}
+  - {fileID: 8300000, guid: ea0fa599895d50a4487e5bc663b05511, type: 3}
+  - {fileID: 8300000, guid: 6076f09db48f9a947a96020094c7521d, type: 3}
+  - {fileID: 8300000, guid: bc5cc834ebf4b5c43a85d6e08f4f2a29, type: 3}
+  - {fileID: 8300000, guid: a80cab322bea6bb4998c9d93ab8e600a, type: 3}
+  - {fileID: 8300000, guid: 2d728902b902b4248bb0fabb4f2432de, type: 3}
+  holographicHUDText: "All weapons are unlocked. You can play with any weapon you
+    want using the left joystick! \r\n"
+  holographicHUDSFX: {fileID: 8300000, guid: 669e6a3df8db3144099f013202a9cb88, type: 3}
   holographicHUDDuration: 5
   weaponChangeVFXDelay: 0.5
 --- !u!4 &1576583031
@@ -70283,7 +70325,7 @@ Transform:
   m_GameObject: {fileID: 1576583029}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1.744, y: -1.556, z: -17.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -98983,3 +99025,4 @@ SceneRoots:
   - {fileID: 74005713}
   - {fileID: 1299165408}
   - {fileID: 1576583031}
+  - {fileID: 1189095198}

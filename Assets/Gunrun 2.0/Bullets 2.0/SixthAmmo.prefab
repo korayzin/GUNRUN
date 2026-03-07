@@ -231,7 +231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableHitEffect: 1
   hitEffectCooldown: 0.3
-  explosionCount: 120
+  explosionCount: 45
   explosionSpeed: {x: 8, y: 22}
   explosionSize: {x: 0.25, y: 0.6}
   explosionLifetime: {x: 0.35, y: 0.7}
