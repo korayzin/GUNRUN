@@ -99,6 +99,10 @@ public class GunFire : MonoBehaviour
         UpdateAmmoDisplay();
         originalRotation = transform.localRotation;
 
+        // Sol el baretta (1–2–3–7. silah): mermi her zaman bu elin namlusundan çıksın; barrel/target yanlış atanmışsa kendi hierarchy'mizden bul
+        if (isBaretta && isLeftHanded)
+            ResolveLeftHandBarrelAndTarget();
+
         if (bulletPrefab != null)
         {
             GameObject tempPrefab = Instantiate(bulletPrefab);
@@ -107,6 +111,44 @@ public class GunFire : MonoBehaviour
         }
         else
             bulletPrefabRotation = Quaternion.identity;
+    }
+
+    /// <summary>Sol el baretta için barrel1 ve targetDirection1'in bu silahın kendi hierarchy'sinde olduğundan emin olur (7. silah sol elden sağdan çıkma hatası için).</summary>
+    private void ResolveLeftHandBarrelAndTarget()
+    {
+        // Bu silahın kökü: kendimiz veya üstlerden "Barrel" içeren ilk parent (sağ/sol el karışmasın diye sadece kendi silahımız)
+        Transform gunRoot = transform;
+        while (gunRoot != null)
+        {
+            if (FindChildRecursive(gunRoot, "Barrel") != null)
+                break;
+            gunRoot = gunRoot.parent;
+        }
+        if (gunRoot == null) gunRoot = transform;
+        Transform findBarrel = FindChildRecursive(gunRoot, "Barrel");
+        Transform findTarget = FindChildRecursive(gunRoot, "TargetDirection");
+        if (findBarrel != null && (barrel1 == null || !IsInHierarchy(barrel1, gunRoot)))
+            barrel1 = findBarrel;
+        if (findTarget != null && (targetDirection1 == null || !IsInHierarchy(targetDirection1, gunRoot)))
+            targetDirection1 = findTarget;
+    }
+
+    private static bool IsInHierarchy(Transform t, Transform root)
+    {
+        if (t == null) return false;
+        while (t != null) { if (t == root) return true; t = t.parent; }
+        return false;
+    }
+
+    private static Transform FindChildRecursive(Transform parent, string name)
+    {
+        if (parent.name == name) return parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            var found = FindChildRecursive(parent.GetChild(i), name);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     void Update()

@@ -86831,10 +86831,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   restartCanvas: {fileID: 1905863186}
-  scoreText: {fileID: 402126029}
+  scoreText: {fileID: 803201588}
   secondaryScoreText: {fileID: 0}
-  timerText: {fileID: 371876096}
-  timeAndScorePanel: {fileID: 2087939525}
+  timerText: {fileID: 1847184957}
+  timeAndScorePanel: {fileID: 1705471535}
   backgroundMusic: {fileID: 1834682426}
   backgroundMusicDuckVolume: 0
   backgroundMusicDuckFadeDuration: 0.25
