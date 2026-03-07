@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 529effe99ca0da248a1c59b8a44a555c, type: 3}
   m_Name: GameBalance
   m_EditorClassIdentifier: 
-  killToUnlockPerWeapon: 640000000c0000001600000022000000300000003c000000480000005a000000
+  killToUnlockPerWeapon: 040000000c0000001600000022000000300000003c000000480000005a000000
   weapons:
   - weaponName: FirstGun
     damage: 25

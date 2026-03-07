@@ -339,15 +339,11 @@ public class WeaponManager : MonoBehaviour
 
         SetWeaponBalanceIndices();
 
-        // 1. silah baretta ve sol el versiyonu varsa sol eli aç; diğer sol el barettaları kapat
+        // 1. silah sırasında sol el baretta açık olsun (1-2-3-7. silahlar sol elde baretta kullanır)
         for (int i = 1; i <= 8; i++)
             SetLeftHandBarettaActiveForWeaponIndex(i, false);
-        if (firstWeapon != null)
-        {
-            var gf = firstWeapon.GetComponent<GunFire>();
-            if (gf != null && gf.isBaretta)
-                SetLeftHandBarettaActiveForWeaponIndex(0, true);
-        }
+        if (HasLeftHandBarettaForWeaponIndex(0))
+            SetLeftHandBarettaActiveForWeaponIndex(0, true);
     }
 
     private void SetWeaponBalanceIndices()
@@ -368,6 +364,12 @@ public class WeaponManager : MonoBehaviour
         var gunFire = weaponObj.GetComponent<GunFire>();
         if (gunFire != null)
             gunFire.SetWeaponBalanceIndex(index);
+    }
+
+    /// <summary>Bu silah indeksinde sol elde baretta (LeftHandAnchor, isBaretta+isLeftHanded) varsa true. 1., 2., 3. ve 7. silahlar (indeks 0,1,2,6).</summary>
+    private static bool HasLeftHandBarettaForWeaponIndex(int weaponIndex)
+    {
+        return weaponIndex == 0 || weaponIndex == 1 || weaponIndex == 2 || weaponIndex == 6;
     }
 
     /// <summary>Verilen silah indeksine ait sol el baretta'yı açar veya kapatır. isBaretta ve isLeftHanded olan, aynı weaponBalanceIndex'e sahip silah bulunur.</summary>
@@ -704,7 +706,7 @@ public class WeaponManager : MonoBehaviour
         if (nextGunFire != null)
         {
             nextGunFire.enabled = true;
-            if (nextGunFire.isBaretta)
+            if (nextGunFire.isBaretta || HasLeftHandBarettaForWeaponIndex(currentWeapon))
                 SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
             Debug.Log($"{nextWeaponObj.name} silahı açıldı.");
         }
@@ -918,7 +920,7 @@ public class WeaponManager : MonoBehaviour
         if (gunFire != null)
         {
             gunFire.enabled = true;
-            if (gunFire.isBaretta)
+            if (gunFire.isBaretta || HasLeftHandBarettaForWeaponIndex(currentWeapon))
                 SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
         }
 
@@ -1026,7 +1028,7 @@ public class WeaponManager : MonoBehaviour
             if (nextGun != null)
             {
                 nextGun.enabled = true;
-                if (nextGun.isBaretta)
+                if (nextGun.isBaretta || HasLeftHandBarettaForWeaponIndex(index))
                     SetLeftHandBarettaActiveForWeaponIndex(index, true);
             }
         }
