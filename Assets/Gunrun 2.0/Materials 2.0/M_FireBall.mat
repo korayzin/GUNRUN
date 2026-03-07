@@ -33,9 +33,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DistortionStrength: 0.1
+    - _DistortionStrength: 0.508
     m_Colors:
     - _BaseColor: {r: 1, g: 0.010215759, b: 0, a: 1}
-    - _EmissionColor: {r: 2.6449668, g: 0.32239893, b: 0, a: 1}
+    - _EmissionColor: {r: 3.5312383, g: 0.82214, b: 0, a: 1}
     - _Speed: {r: 0.5, g: 0.2, b: 0, a: 0}
   m_BuildTextureStacks: []

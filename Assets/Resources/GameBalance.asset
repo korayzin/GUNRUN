@@ -25,7 +25,7 @@ MonoBehaviour:
     maxAmmo: 30
     fireCooldown: 0.2
   - weaponName: ThirdGun
-    damage: 28
+    damage: 25
     bulletVelocity: 140
     maxAmmo: 25
     fireCooldown: 0.15
@@ -55,7 +55,7 @@ MonoBehaviour:
     maxAmmo: 20
     fireCooldown: 0.5
   - weaponName: LastGun
-    damage: 10000
+    damage: 4000
     bulletVelocity: 10
     maxAmmo: 100
     fireCooldown: 0.08

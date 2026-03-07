@@ -88,6 +88,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7159303464895028072}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c8a85f1fd02665e4c8f9826f937110fc,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8887776665554443332}
   m_SourcePrefab: {fileID: 100100000, guid: c8a85f1fd02665e4c8f9826f937110fc, type: 3}
 --- !u!1 &6618607577627202632 stripped
 GameObject:
@@ -115,6 +119,7 @@ MonoBehaviour:
   useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
+  destructibleMeshAreaDamage: 0
 --- !u!136 &1916902168721234505
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -212,3 +217,42 @@ MonoBehaviour:
   trailMainColor: {r: 0.2, g: 0.6, b: 1, a: 0.8}
   trailGlowColor: {r: 0.1, g: 0.4, b: 0.9, a: 0.3}
   trailCoreColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+--- !u!114 &8887776665554443332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6618607577627202632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableHitEffect: 1
+  hitEffectCooldown: 0.3
+  explosionCount: 120
+  explosionSpeed: {x: 8, y: 22}
+  explosionSize: {x: 0.25, y: 0.6}
+  explosionLifetime: {x: 0.35, y: 0.7}
+  sparkCount: 50
+  sparkSpeed: {x: 12, y: 28}
+  sparkSize: {x: 0.04, y: 0.12}
+  smokeCount: 40
+  smokeSpeed: {x: 2, y: 6}
+  smokeSize: {x: 0.3, y: 0.65}
+  fireCore: {r: 1, g: 1, b: 1, a: 1}
+  fireMid: {r: 1, g: 0.6, b: 0.2, a: 0.95}
+  energyAccent: {r: 0.4, g: 0.85, b: 1, a: 0.9}
+  fireOuter: {r: 0.8, g: 0.25, b: 0.05, a: 0.7}
+  smokeColor: {r: 0.15, g: 0.12, b: 0.1, a: 0.6}
+  enableShockwave: 1
+  shockwaveStartSize: 0.05
+  shockwaveMaxSize: 1.8
+  shockwaveDuration: 0.4
+  shockwaveColor: {r: 0.5, g: 0.8, b: 1, a: 0.7}
+  enableFlash: 1
+  flashIntensity: 25
+  flashRange: 5
+  flashDuration: 0.12
+  effectDuration: 1.5

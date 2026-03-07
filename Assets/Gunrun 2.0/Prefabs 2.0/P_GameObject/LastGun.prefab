@@ -119,6 +119,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 0
   isLeftHanded: 0
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!114 &612345670003

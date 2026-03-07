@@ -16,6 +16,8 @@ public class Bullet : MonoBehaviour
     public bool useGravity = false;
     public AudioClip hitSound;
     public GameObject damageEffectPrefab;
+    [Tooltip("Açıkken destructible mesh'i çarpma noktasında kendi büyüklüğü kadar alan ile kırar (OverlapSphere). Kapalıyken sadece çarpılan segment kırılır.")]
+    public bool destructibleMeshAreaDamage = false;
     private bool isGameOver = false;
     private Vector3 movementDirection; // Hareket yönü (prefab rotasyonundan bağımsız)
     private Quaternion visualRotation; // Görsel rotasyon (prefab rotasyonu + spawn rotasyonu)
@@ -101,6 +103,21 @@ public class Bullet : MonoBehaviour
             FirstGunBulletHitEffect firstGunHit = GetComponent<FirstGunBulletHitEffect>();
             if (firstGunHit != null && firstGunHit.enableHitEffect)
                 firstGunHit.SpawnHitEffect(hitPoint);
+            FifthAmmoHitEffect fifthAmmoHit = GetComponent<FifthAmmoHitEffect>();
+            if (fifthAmmoHit != null && fifthAmmoHit.enableHitEffect)
+                fifthAmmoHit.SpawnHitEffect(hitPoint);
+            SixthAmmoHitEffect sixthAmmoHit = GetComponent<SixthAmmoHitEffect>();
+            if (sixthAmmoHit != null && sixthAmmoHit.enableHitEffect)
+                sixthAmmoHit.SpawnHitEffect(hitPoint);
+            OctopusAmmoHitEffect octopusAmmoHit = GetComponent<OctopusAmmoHitEffect>();
+            if (octopusAmmoHit != null && octopusAmmoHit.enableHitEffect)
+                octopusAmmoHit.SpawnHitEffect(hitPoint);
+            EightAmmoHitEffect eightAmmoHit = GetComponent<EightAmmoHitEffect>();
+            if (eightAmmoHit != null && eightAmmoHit.enableHitEffect)
+                eightAmmoHit.SpawnHitEffect(hitPoint);
+            FireballEffect fireballEffect = GetComponent<FireballEffect>();
+            if (fireballEffect != null && fireballEffect.enableHitEffect)
+                fireballEffect.SpawnHitEffect(hitPoint);
             
             Debug.Log("Dusmana hasar verildi: " + damage);
             int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);
@@ -130,17 +147,8 @@ public class Bullet : MonoBehaviour
         DestructibleMeshComponent destructibleMesh = other.GetComponentInParent<DestructibleMeshComponent>();
         if (destructibleMesh != null && other.gameObject != destructibleMesh.ReservedSegment)
         {
-            destructibleMesh.DestroySegment(other.gameObject);
-            DestructibleMeshHint.NotifyWallDestroyed(); // Duvar ipuçlarını ilk kırılmada kaldır
-            // İlk 2 silah (FirstGun=0, SecondGun=1): destructible mesh'e çarpınca mermi azalmasın (iade et)
-            if ((weaponIndex == 0 || weaponIndex == 1) && sourceGunFire != null)
-                sourceGunFire.RestoreAmmo(1);
-            if (WeaponManager.Instance != null)
-            {
-                WeaponManager.Instance.PlayHitSound();
-                WeaponManager.Instance.TriggerHitHaptic();
-            }
-            Destroy(gameObject);
+            Vector3 hitPoint = other.ClosestPoint(transform.position);
+            DestroyDestructibleMeshSegments(hitPoint, other);
         }
     }
 
@@ -160,6 +168,21 @@ public class Bullet : MonoBehaviour
             FirstGunBulletHitEffect firstGunHit = GetComponent<FirstGunBulletHitEffect>();
             if (firstGunHit != null && firstGunHit.enableHitEffect)
                 firstGunHit.SpawnHitEffect(hitPoint);
+            FifthAmmoHitEffect fifthAmmoHit = GetComponent<FifthAmmoHitEffect>();
+            if (fifthAmmoHit != null && fifthAmmoHit.enableHitEffect)
+                fifthAmmoHit.SpawnHitEffect(hitPoint);
+            SixthAmmoHitEffect sixthAmmoHit = GetComponent<SixthAmmoHitEffect>();
+            if (sixthAmmoHit != null && sixthAmmoHit.enableHitEffect)
+                sixthAmmoHit.SpawnHitEffect(hitPoint);
+            OctopusAmmoHitEffect octopusAmmoHit = GetComponent<OctopusAmmoHitEffect>();
+            if (octopusAmmoHit != null && octopusAmmoHit.enableHitEffect)
+                octopusAmmoHit.SpawnHitEffect(hitPoint);
+            EightAmmoHitEffect eightAmmoHit = GetComponent<EightAmmoHitEffect>();
+            if (eightAmmoHit != null && eightAmmoHit.enableHitEffect)
+                eightAmmoHit.SpawnHitEffect(hitPoint);
+            FireballEffect fireballEffect = GetComponent<FireballEffect>();
+            if (fireballEffect != null && fireballEffect.enableHitEffect)
+                fireballEffect.SpawnHitEffect(hitPoint);
             
             Debug.Log("Dusmana hasar verildi: " + damage);
             int tw = weaponIndex >= 0 ? weaponIndex : (isFromSecondary ? 8 : -1);
@@ -185,18 +208,58 @@ public class Bullet : MonoBehaviour
         DestructibleMeshComponent destructibleMesh = other.GetComponentInParent<DestructibleMeshComponent>();
         if (destructibleMesh != null && other.gameObject != destructibleMesh.ReservedSegment)
         {
-            destructibleMesh.DestroySegment(other.gameObject);
-            DestructibleMeshHint.NotifyWallDestroyed();
-            // İlk 2 silah (FirstGun=0, SecondGun=1): destructible mesh'e çarpınca mermi azalmasın (iade et)
-            if ((weaponIndex == 0 || weaponIndex == 1) && sourceGunFire != null)
-                sourceGunFire.RestoreAmmo(1);
-            if (WeaponManager.Instance != null)
-            {
-                WeaponManager.Instance.PlayHitSound();
-                WeaponManager.Instance.TriggerHitHaptic();
-            }
-            Destroy(gameObject);
+            Vector3 hitPoint = collision.GetContact(0).point;
+            DestroyDestructibleMeshSegments(hitPoint, other);
         }
+    }
+
+    /// <summary>
+    /// Destructible mesh segmentlerini kırar. destructibleMeshAreaDamage açıksa kendi büyüklüğü kadar alan, değilse sadece çarpılan segment.
+    /// </summary>
+    private void DestroyDestructibleMeshSegments(Vector3 hitPoint, Collider hitCollider)
+    {
+        float radius = destructibleMeshAreaDamage ? GetDestructibleMeshAreaRadius() : 0f;
+
+        if (radius > 0f)
+        {
+            Collider[] hits = Physics.OverlapSphere(hitPoint, radius);
+            foreach (Collider col in hits)
+            {
+                DestructibleMeshComponent dm = col.GetComponentInParent<DestructibleMeshComponent>();
+                if (dm != null && col.gameObject != dm.ReservedSegment)
+                {
+                    dm.DestroySegment(col.gameObject);
+                }
+            }
+        }
+        else
+        {
+            if (hitCollider != null)
+            {
+                DestructibleMeshComponent dm = hitCollider.GetComponentInParent<DestructibleMeshComponent>();
+                if (dm != null && hitCollider.gameObject != dm.ReservedSegment)
+                    dm.DestroySegment(hitCollider.gameObject);
+            }
+        }
+
+        DestructibleMeshHint.NotifyWallDestroyed();
+        if ((weaponIndex == 0 || weaponIndex == 1) && sourceGunFire != null)
+            sourceGunFire.RestoreAmmo(1);
+        if (WeaponManager.Instance != null)
+        {
+            WeaponManager.Instance.PlayHitSound();
+            WeaponManager.Instance.TriggerHitHaptic();
+        }
+        Destroy(gameObject);
+    }
+
+    /// <summary>Mermi büyüklüğüne göre destructible mesh kırma yarıçapı (SphereCollider.radius * scale).</summary>
+    private float GetDestructibleMeshAreaRadius()
+    {
+        SphereCollider sc = GetComponent<SphereCollider>();
+        if (sc == null) return 0.5f;
+        float maxScale = Mathf.Max(transform.lossyScale.x, transform.lossyScale.y, transform.lossyScale.z);
+        return sc.radius * maxScale;
     }
 
     public void SetGameOverState(bool state)

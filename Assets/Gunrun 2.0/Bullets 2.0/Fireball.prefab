@@ -14,8 +14,7 @@ GameObject:
   - component: {fileID: 3015533860723281251}
   - component: {fileID: 1295213541403115266}
   - component: {fileID: 8011358023968316117}
-  - component: {fileID: 8011358023968316119}
-  - component: {fileID: 8011358023968316120}
+  - component: {fileID: -2687763342565378327}
   m_Layer: 5
   m_Name: Fireball
   m_TagString: Untagged
@@ -149,10 +148,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 100
+  isFromSecondary: 0
+  weaponIndex: -1
+  sourceGunFire: {fileID: 0}
   speed: 10
+  useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
---- !u!114 &8011358023968316119
+  destructibleMeshAreaDamage: 0
+--- !u!114 &-2687763342565378327
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,29 +165,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 4850890784451435192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2b3c4d5e6f7890123456789abcdef02, type: 3}
+  m_Script: {fileID: 11500000, guid: e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 3
-  explosionDamage: 15
---- !u!114 &8011358023968316120
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4850890784451435192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3c4d5e6f7890123456789abcdef0303, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lineCount: 12
-  lineLength: 0.18
-  baseRadius: 0.45
-  flickerSpeed: 28
-  flickerAmount: 0.06
-  orbitSpeed: 35
-  coreColor: {r: 1, g: 0.95, b: 0.5, a: 0.95}
-  tipColor: {r: 1, g: 0.35, b: 0.05, a: 0.4}
-  lineWidth: 0.03
+  enableHitEffect: 1
+  trailCoreColor: {r: 1.6, g: 0.95, b: 0.4, a: 1}
+  trailMidColor: {r: 1, g: 0.45, b: 0.05, a: 0.95}
+  trailEdgeColor: {r: 0.9, g: 0.15, b: 0, a: 0.5}
+  trailGlowColor: {r: 1, g: 0.35, b: 0, a: 0.4}
+  trailSizeScale: 1
+  lineThickness: 0.08
+  glowWidth: 0.22
+  sphereRadius: 0.4
+  rotationSpeed: 250
+  trailLengthScale: 3.5
+  trailVelocityScale: 0.25
+  explosionCount: 35
+  explosionSpeed: {x: 6, y: 18}
+  explosionSize: {x: 0.1, y: 0.4}
+  explosionLifetime: {x: 0.3, y: 0.65}
+  sparkCount: 1
+  sparkSpeed: {x: 10, y: 24}
+  sparkSize: {x: 0.05, y: 0.14}
+  smokeCount: 1
+  smokeSpeed: {x: 1.5, y: 5}
+  smokeSize: {x: 0.35, y: 0.7}
+  fireCore: {r: 1.4, g: 0.9, b: 0.2, a: 1}
+  fireMid: {r: 1, g: 0.45, b: 0.05, a: 1}
+  fireOuter: {r: 0.9, g: 0.15, b: 0, a: 0.8}
+  smokeColor: {r: 0.25, g: 0.08, b: 0.02, a: 0.6}
+  enableShockwave: 1
+  shockwaveStartSize: 0.05
+  shockwaveMaxSize: 1.6
+  shockwaveDuration: 0.35
+  shockwaveColor: {r: 1, g: 0.35, b: 0, a: 0.75}
+  enableFlash: 1
+  flashIntensity: 20
+  flashRange: 5
+  flashDuration: 0.15
+  hitEffectDuration: 1.2

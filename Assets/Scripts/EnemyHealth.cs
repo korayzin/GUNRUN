@@ -78,9 +78,10 @@ public class EnemyHealth : MonoBehaviour
     public static bool LastKillWasFromSecondary { get; private set; }
     public static int LastKillWeaponIndex { get; private set; } = -1;
 
-    public void TakeDamage(float damage, Collider hitCollider, bool fromFlameSpray = false, bool fromSecondary = false, int tutorialWeaponIndex = -1)
+    /// <summary>Hasar uygular. true dönerse düşman öldü.</summary>
+    public bool TakeDamage(float damage, Collider hitCollider, bool fromFlameSpray = false, bool fromSecondary = false, int tutorialWeaponIndex = -1)
     {
-        if (isInvulnerable) return;
+        if (isInvulnerable) return false;
         Debug.Log(hitCollider.name + " tarafından vuruldu! Hasar: " + damage);
         if (fromFlameSpray)
             ApplyBurnEffect();
@@ -140,6 +141,16 @@ public class EnemyHealth : MonoBehaviour
             LastKillWasFromSecondary = fromSecondary;
             LastKillWeaponIndex = tutorialWeaponIndex >= 0 ? tutorialWeaponIndex : (fromFlameSpray || fromSecondary ? 8 : -1);
             Die();
+            if (damageSFX != null)
+            {
+                if (audioSource == null)
+                    audioSource = GetComponent<AudioSource>();
+                if (audioSource != null)
+                    audioSource.PlayOneShot(damageSFX, damageSFXVolume);
+                else
+                    AudioSource.PlayClipAtPoint(damageSFX, hitCollider != null ? hitCollider.bounds.center : transform.position, damageSFXVolume);
+            }
+            return true;
         }
 
         if (damageSFX != null)
@@ -151,6 +162,7 @@ public class EnemyHealth : MonoBehaviour
             else
                 AudioSource.PlayClipAtPoint(damageSFX, hitCollider != null ? hitCollider.bounds.center : transform.position, damageSFXVolume);
         }
+        return false;
     }
 
     private void ShowFloatingText(float damage, Collider hitCollider, GameObject floatingTextPrefab)

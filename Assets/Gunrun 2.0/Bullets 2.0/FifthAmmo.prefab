@@ -119,6 +119,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2989417574894925513}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8136b9c9df4e66a4bbb2900fd40eaa19,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1741255751951655080}
   m_SourcePrefab: {fileID: 100100000, guid: 8136b9c9df4e66a4bbb2900fd40eaa19, type: 3}
 --- !u!1 &3986653680961476808 stripped
 GameObject:
@@ -139,9 +143,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 50
+  isFromSecondary: 0
+  weaponIndex: -1
+  sourceGunFire: {fileID: 0}
   speed: 20
+  useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
+  destructibleMeshAreaDamage: 0
 --- !u!136 &5230822648304932289
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -239,3 +248,36 @@ MonoBehaviour:
   lightningUpdateRate: 0.05
   lightningCoreWidth: 0.02
   lightningGlowWidth: 0.08
+--- !u!114 &1741255751951655080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3986653680961476808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da338e94ba2255d4dbaf8962aea80484, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableHitEffect: 1
+  explosionParticleCount: 75
+  explosionSpeed: {x: 8, y: 18}
+  explosionSize: {x: 0.2, y: 0.45}
+  explosionLifetime: {x: 0.4, y: 0.7}
+  fireCore: {r: 1, g: 1, b: 1, a: 1}
+  fireMid: {r: 0.4, g: 0.75, b: 1, a: 0.95}
+  fireOuter: {r: 0.15, g: 0.35, b: 0.9, a: 0.8}
+  smokeColor: {r: 0.5, g: 0.7, b: 1, a: 0.4}
+  enableShockwaveRing: 1
+  shockwaveStartSize: 0.1
+  shockwaveMaxSize: 1.2
+  shockwaveDuration: 0.5
+  shockwaveColor: {r: 0.3, g: 0.7, b: 1, a: 0.6}
+  enableFlashLight: 1
+  flashIntensity: 15
+  flashRange: 4
+  flashDuration: 0.15
+  smokeParticleCount: 35
+  sparkParticleCount: 30
+  effectDuration: 1.2

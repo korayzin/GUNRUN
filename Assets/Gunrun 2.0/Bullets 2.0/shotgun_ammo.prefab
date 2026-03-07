@@ -161,7 +161,9 @@ MonoBehaviour:
   enemyShakeDuration: 1
   enemyShakeIntensity: 0.1
   lightningOnAreaTargets: 1
+  lightningDamage: 45
   lightningHeight: 100
+  lightningKillExplosion: 1
   showAreaDamageText: 0
 --- !u!1001 &453002343088657968
 PrefabInstance:

@@ -53,8 +53,15 @@ public class BulletAreaDamage : MonoBehaviour
     [Tooltip("Alan içindeki düşmanlara yukarıdan yıldırım inmesi (hasar anlatımı)")]
     public bool lightningOnAreaTargets = true;
 
+    [Header("Lightning Hasarı")]
+    [Tooltip("Yıldırım hasarı. 0 = alan hasarı (centerDamage * falloff) kullanılır. >0 = bu değer kullanılır.")]
+    public float lightningDamage = 0f;
+
     [Tooltip("Yıldırımın başladığı yükseklik")]
     public float lightningHeight = 8f;
+
+    [Tooltip("Yıldırımla ölen düşmanda patlama efekti çıksın mı?")]
+    public bool lightningKillExplosion = true;
 
     [Tooltip("Vurduktan sonra 'AREA DAMAGE' yazısı çıksın mı?")]
     public bool showAreaDamageText = true;
@@ -87,17 +94,17 @@ public class BulletAreaDamage : MonoBehaviour
     {
         _triggered = true;
 
-        if (explosionEffect)
-        {
-            float holdDur = damageDelayAfterExpand + sphereCloseDelayAfterDamage;
-            SpawnExplosionEffect(center, holdDur);
-        }
-
         Bullet bullet = GetComponent<Bullet>();
         int tutorialWeaponIndex = bullet != null && bullet.weaponIndex >= 0 ? bullet.weaponIndex : (bullet != null && bullet.isFromSecondary ? 8 : -1);
         bool fromSecondary = bullet != null && bullet.isFromSecondary;
         EnemyHealth primaryEnemy = triggerCollider.GetComponentInParent<EnemyHealth>();
         TargetBoardHealth primaryBoard = triggerCollider.GetComponentInParent<TargetBoardHealth>();
+
+        if (explosionEffect)
+        {
+            float holdDur = damageDelayAfterExpand + sphereCloseDelayAfterDamage;
+            SpawnExplosionEffect(center, holdDur, primaryEnemy, primaryBoard, tutorialWeaponIndex, fromSecondary);
+        }
 
         float delay = 0.9f + damageDelayAfterExpand;
         var runner = new GameObject("AreaDamageDelayedRunner").AddComponent<AreaDamageDelayedRunner>();
@@ -152,6 +159,83 @@ public class BulletAreaDamage : MonoBehaviour
         SpawnLightningImpactFlash(targetPos);
 
         Destroy(root, 0.85f);
+    }
+
+    /// <summary>Yıldırımla ölen düşmanda elektrik temalı patlama efekti.</summary>
+    private void SpawnLightningKillExplosion(Vector3 position)
+    {
+        GameObject root = new GameObject("LightningKillExplosion");
+        root.transform.position = position;
+
+        // Elektrik mavisi merkez flaşı
+        GameObject flashGo = new GameObject("LightningExplosionFlash");
+        flashGo.transform.SetParent(root.transform);
+        flashGo.transform.localPosition = Vector3.zero;
+        var ps = flashGo.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.startLifetime = 0.2f;
+        main.startSpeed = new ParticleSystem.MinMaxCurve(4f, 10f);
+        main.startSize = new ParticleSystem.MinMaxCurve(0.4f, 0.9f);
+        main.startColor = new ParticleSystem.MinMaxGradient(
+            new Color(1f, 1f, 1f, 1f),
+            new Color(0.4f, 0.7f, 1f, 1f)
+        );
+        main.maxParticles = 25;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.playOnAwake = true;
+        main.duration = 0.08f;
+        main.loop = false;
+        var em = ps.emission;
+        em.rateOverTime = 0f;
+        em.SetBursts(new[] { new ParticleSystem.Burst(0f, 25) });
+        var shape = ps.shape;
+        shape.shapeType = ParticleSystemShapeType.Sphere;
+        shape.radius = 0.05f;
+        var col = ps.colorOverLifetime;
+        col.enabled = true;
+        var g = new Gradient();
+        g.SetKeys(
+            new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(0.4f, 0.75f, 1f), 0.5f), new GradientColorKey(new Color(0.2f, 0.5f, 1f), 1f) },
+            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.5f, 0.3f), new GradientAlphaKey(0f, 1f) }
+        );
+        col.color = g;
+        SetupParticleRenderer(flashGo);
+
+        // Genişleyen elektrik halkası
+        GameObject ringGo = new GameObject("LightningExplosionRing");
+        ringGo.transform.SetParent(root.transform);
+        ringGo.transform.localPosition = Vector3.zero;
+        var ringPs = ringGo.AddComponent<ParticleSystem>();
+        var ringMain = ringPs.main;
+        ringMain.startLifetime = 0.4f;
+        ringMain.startSpeed = 0f;
+        ringMain.startSize = 0.15f;
+        ringMain.startColor = new Color(0.5f, 0.85f, 1f, 0.9f);
+        ringMain.maxParticles = 1;
+        ringMain.simulationSpace = ParticleSystemSimulationSpace.World;
+        ringMain.playOnAwake = true;
+        var ringEm = ringPs.emission;
+        ringEm.rateOverTime = 0f;
+        ringEm.SetBursts(new[] { new ParticleSystem.Burst(0f, 1) });
+        var sizeOL = ringPs.sizeOverLifetime;
+        sizeOL.enabled = true;
+        sizeOL.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(
+            new Keyframe(0f, 0.5f), new Keyframe(0.2f, 2f), new Keyframe(1f, 4f)
+        ));
+        var colOL = ringPs.colorOverLifetime;
+        colOL.enabled = true;
+        var ringG = new Gradient();
+        ringG.SetKeys(
+            new[] { new GradientColorKey(new Color(0.6f, 0.9f, 1f), 0f), new GradientColorKey(new Color(0.3f, 0.6f, 1f), 1f) },
+            new[] { new GradientAlphaKey(0.8f, 0f), new GradientAlphaKey(0f, 1f) }
+        );
+        colOL.color = ringG;
+        var ringRend = ringPs.GetComponent<ParticleSystemRenderer>();
+        ringRend.material = CreateSoftParticleMaterial();
+        ringRend.renderMode = ParticleSystemRenderMode.Billboard;
+        ringPs.Play();
+
+        Destroy(root, 0.6f);
     }
 
     /// <summary>FifthGunLaser tarzı yıldırım çizgisi: width curve + gradient.</summary>
@@ -286,14 +370,17 @@ public class BulletAreaDamage : MonoBehaviour
                 float dist = Vector3.Distance(center, closest);
                 float t = Mathf.Clamp01(dist / radius);
                 float falloff = Mathf.Lerp(1f, minDamageRatio, Mathf.Pow(t, falloffPower));
-                float damage = centerDamage * falloff;
+                float damage = lightningDamage > 0f ? lightningDamage : (centerDamage * falloff);
                 if (damage < 0.01f) continue;
 
-                eh.TakeDamage(damage, col, fromFlameSpray: false, fromSecondary: fromSecondary, tutorialWeaponIndex: tutorialWeaponIndex);
+                bool killed = eh.TakeDamage(damage, col, fromFlameSpray: false, fromSecondary: fromSecondary, tutorialWeaponIndex: tutorialWeaponIndex);
                 areaDamageHitCount++;
                 ApplyEnemyShake(eh.gameObject);
                 if (lightningOnAreaTargets)
                     SpawnLightningFromAbove(closest);
+
+                if (killed && lightningKillExplosion)
+                    SpawnLightningKillExplosion(closest);
 
                 if (hitEffectPerEnemy)
                     SpawnMinimalRoundHit(closest);
@@ -327,6 +414,37 @@ public class BulletAreaDamage : MonoBehaviour
         if (WeaponManager.Instance != null)
         {
             WeaponManager.Instance.PlayHitSound();
+        }
+    }
+
+    /// <summary>Elipsoid içindeki düşmanlara yıldırım hasarı verir (küre kapanırken).</summary>
+    public void ApplyLightningDamageInEllipsoid(Vector3 center, float radiusX, float radiusY, float radiusZ, EnemyHealth primaryEnemy, TargetBoardHealth primaryBoard, int tutorialWeaponIndex, bool fromSecondary)
+    {
+        if (!lightningOnAreaTargets || (radiusX < 0.01f && radiusY < 0.01f && radiusZ < 0.01f)) return;
+
+        Collider[] hits = Physics.OverlapSphere(center, Mathf.Max(radiusX, radiusY, radiusZ) * 2f);
+        foreach (Collider col in hits)
+        {
+            EnemyHealth eh = col.GetComponentInParent<EnemyHealth>();
+            if (eh == null || eh == primaryEnemy) continue;
+
+            Vector3 closest = col.ClosestPoint(center);
+            Vector3 p = closest - center;
+            float nx = radiusX > 0.01f ? p.x / radiusX : 0f;
+            float ny = radiusY > 0.01f ? p.y / radiusY : 0f;
+            float nz = radiusZ > 0.01f ? p.z / radiusZ : 0f;
+            if (nx * nx + ny * ny + nz * nz > 1f) continue;
+
+            float damage = lightningDamage > 0f ? lightningDamage : centerDamage * minDamageRatio;
+            if (damage < 0.01f) continue;
+
+            bool killed = eh.TakeDamage(damage, col, fromFlameSpray: false, fromSecondary: fromSecondary, tutorialWeaponIndex: tutorialWeaponIndex);
+            ApplyEnemyShake(eh.gameObject);
+            SpawnLightningFromAbove(closest);
+            if (killed && lightningKillExplosion)
+                SpawnLightningKillExplosion(closest);
+            if (hitEffectPerEnemy)
+                SpawnMinimalRoundHit(closest);
         }
     }
 
@@ -388,7 +506,7 @@ public class BulletAreaDamage : MonoBehaviour
     }
 
     /// <summary>2+3 Hibrit: Merkez patlama + parçacıklar + genişleyen/kapanan küre (cooldown ile).</summary>
-    private void SpawnExplosionEffect(Vector3 position, float sphereHoldDuration)
+    private void SpawnExplosionEffect(Vector3 position, float sphereHoldDuration, EnemyHealth primaryEnemy, TargetBoardHealth primaryBoard, int tutorialWeaponIndex, bool fromSecondary)
     {
         bool showSphere = sphereCooldownSeconds <= 0f || (Time.time - _lastSphereSpawnTime) >= sphereCooldownSeconds;
         if (showSphere)
@@ -400,9 +518,9 @@ public class BulletAreaDamage : MonoBehaviour
         CreateExplosionCoreFlash(root.transform);
         CreateExplosionParticles(root.transform);
         if (showSphere)
-            CreateExpandingGroundRing(root.transform, sphereHoldDuration);
+            CreateExpandingGroundRing(root.transform, sphereHoldDuration, position, primaryEnemy, primaryBoard, tutorialWeaponIndex, fromSecondary);
 
-        float totalLife = 0.9f + sphereHoldDuration + 0.6f + 0.2f;
+        float totalLife = 0.9f + sphereHoldDuration + 0.8f + 0.2f;
         Destroy(root, totalLife);
     }
 
@@ -488,8 +606,8 @@ public class BulletAreaDamage : MonoBehaviour
         SetupParticleRenderer(go);
     }
 
-    /// <summary>Ortadan açılan 3D küre - açılır, bekler, kapanır.</summary>
-    private void CreateExpandingGroundRing(Transform parent, float holdDuration)
+    /// <summary>Ortadan açılan 3D küre - açılır, bekler, yukarıdan aşağı kapanır. Kapanma sırasında içerdekiler yıldırım yer.</summary>
+    private void CreateExpandingGroundRing(Transform parent, float holdDuration, Vector3 center, EnemyHealth primaryEnemy, TargetBoardHealth primaryBoard, int tutorialWeaponIndex, bool fromSecondary)
     {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.name = "AreaDamage_Sphere";
@@ -508,8 +626,14 @@ public class BulletAreaDamage : MonoBehaviour
         anim.expandDuration = 0.9f;
         anim.holdDuration = holdDuration;
         anim.shrinkDuration = 0.6f;
+        anim.source = this;
+        anim.center = center;
+        anim.primaryEnemy = primaryEnemy;
+        anim.primaryBoard = primaryBoard;
+        anim.tutorialWeaponIndex = tutorialWeaponIndex;
+        anim.fromSecondary = fromSecondary;
 
-        Destroy(sphere, 0.9f + holdDuration + 0.6f + 0.1f);
+        Destroy(sphere, 0.9f + holdDuration + 0.4f + 0.4f + 0.1f);
     }
 
     private static Texture2D _areaSphereTex;
@@ -566,34 +690,72 @@ public class BulletAreaDamage : MonoBehaviour
         public float expandDuration = 0.9f;
         public float holdDuration = 1.65f;
         public float shrinkDuration = 0.6f;
+        public BulletAreaDamage source;
+        public Vector3 center;
+        public EnemyHealth primaryEnemy;
+        public TargetBoardHealth primaryBoard;
+        public int tutorialWeaponIndex;
+        public bool fromSecondary;
         private float _t;
+        private float _lastLightningTick;
 
         private void Update()
         {
             _t += Time.deltaTime;
-            float s;
+            float sx, sy, sz;
             float fade = 1f;
+            float shrinkStart = expandDuration + holdDuration;
+            float shrinkYDuration = shrinkDuration * 0.5f;
+            float shrinkXZDuration = shrinkDuration * 0.5f;
+
             if (_t < expandDuration)
             {
                 float p = _t / expandDuration;
                 float eased = 1f - (1f - p) * (1f - p);
-                s = targetDiameter * eased;
+                float s = targetDiameter * eased;
+                sx = sy = sz = s;
                 fade = 1f - p * 0.3f;
             }
-            else if (_t < expandDuration + holdDuration)
+            else if (_t < shrinkStart)
             {
-                s = targetDiameter;
+                sx = sy = sz = targetDiameter;
                 fade = 0.95f;
             }
             else
             {
-                float shrinkStart = expandDuration + holdDuration;
-                float p = (_t - shrinkStart) / shrinkDuration;
-                float eased = 1f - p * p;
-                s = targetDiameter * eased;
-                fade = 0.95f * (1f - p);
+                float shrinkElapsed = _t - shrinkStart;
+                if (shrinkElapsed < shrinkYDuration)
+                {
+                    float p = shrinkElapsed / shrinkYDuration;
+                    float eased = 1f - p * p;
+                    sx = sz = targetDiameter;
+                    sy = targetDiameter * eased;
+                    fade = 0.95f * (1f - p * 0.5f);
+                }
+                else
+                {
+                    float p = (shrinkElapsed - shrinkYDuration) / shrinkXZDuration;
+                    float eased = 1f - p * p;
+                    sx = sz = targetDiameter * eased;
+                    sy = 0f;
+                    fade = 0.5f * (1f - p);
+                }
+
+                if (source != null && source.lightningOnAreaTargets)
+                {
+                    if (_t - _lastLightningTick >= 0.2f)
+                    {
+                        _lastLightningTick = _t;
+                        float r = 0.5f;
+                        float rx = Mathf.Max(0.01f, sx * r);
+                        float ry = Mathf.Max(0.01f, sy * r);
+                        float rz = Mathf.Max(0.01f, sz * r);
+                        source.ApplyLightningDamageInEllipsoid(center, rx, ry, rz, primaryEnemy, primaryBoard, tutorialWeaponIndex, fromSecondary);
+                    }
+                }
             }
-            transform.localScale = new Vector3(s, s, s);
+
+            transform.localScale = new Vector3(sx, sy, sz);
 
             var mat = GetComponent<Renderer>()?.material;
             if (mat != null && !mat.shader.name.Contains("InternalError"))

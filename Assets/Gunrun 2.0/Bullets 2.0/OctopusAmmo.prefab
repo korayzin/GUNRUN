@@ -108,6 +108,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2225760949863528563}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ca30fb0923eb047438714a781edbc292,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 843879865921834996}
   m_SourcePrefab: {fileID: 100100000, guid: ca30fb0923eb047438714a781edbc292, type: 3}
 --- !u!1 &1592294681952573691 stripped
 GameObject:
@@ -135,6 +139,7 @@ MonoBehaviour:
   useGravity: 0
   hitSound: {fileID: 0}
   damageEffectPrefab: {fileID: 0}
+  destructibleMeshAreaDamage: 0
 --- !u!136 &5376164086682188425
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -233,3 +238,40 @@ MonoBehaviour:
   tentacleUpdateRate: 0.04
   tentacleCoreWidth: 0.015
   tentacleGlowWidth: 0.06
+--- !u!114 &843879865921834996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592294681952573691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6c9007c1fbe0d04ea6ff9165d80d8f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableHitEffect: 1
+  hitEffectCooldown: 0.5
+  inkStreakCount: 50
+  inkSpeed: {x: 6, y: 16}
+  inkStreakLength: {x: 0.35, y: 0.7}
+  inkLifetime: {x: 0.3, y: 0.55}
+  enableInkJetLines: 1
+  inkJetCount: 8
+  inkJetLength: 0.5
+  inkJetGrowTime: 0.06
+  inkJetWidth: 0.04
+  enableInkRing: 1
+  inkRingMaxRadius: 1.2
+  inkRingDuration: 0.4
+  inkRingSegments: 64
+  inkRingLineWidth: 0.03
+  inkCore: {r: 0.95, g: 0.75, b: 1, a: 1}
+  inkMid: {r: 0.55, g: 0.25, b: 0.9, a: 0.95}
+  inkOuter: {r: 0.35, g: 0.12, b: 0.55, a: 0.6}
+  inkRingColor: {r: 0.5, g: 0.2, b: 0.85, a: 0.9}
+  enableFlash: 1
+  flashIntensity: 14
+  flashRange: 4
+  flashDuration: 0.1
+  effectDuration: 1.1
