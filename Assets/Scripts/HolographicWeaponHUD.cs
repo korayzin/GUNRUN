@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -70,31 +71,120 @@ public class HolographicWeaponHUD : MonoBehaviour
     private Canvas _canvas;
     private CanvasGroup _canvasGroup;
 
-    private void Start()
+    /// <summary>Sahnedeki local position/rotation/scale - her zaman bu değerler korunur.</summary>
+    private Vector3 _sceneLocalPosition;
+    private Quaternion _sceneLocalRotation;
+    private Vector3 _sceneLocalScale;
+
+    private void Awake()
     {
-        if (leftHandAnchor == null)
-        {
-            GameObject anchor = GameObject.Find("LeftHandAnchor");
-            if (anchor != null) leftHandAnchor = anchor.transform;
-            if (leftHandAnchor == null)
-            {
-                anchor = GameObject.Find("LeftHand");
-                if (anchor != null) leftHandAnchor = anchor.transform;
-            }
-        }
+        _sceneLocalPosition = transform.localPosition;
+        _sceneLocalRotation = transform.localRotation;
+        _sceneLocalScale = transform.localScale;
+    }
+
+    /// <summary>Sahnedeki konum ve boyutu uygular - her zaman aynı kalır.</summary>
+    private void ApplySceneTransform()
+    {
+        transform.localPosition = _sceneLocalPosition;
+        transform.localRotation = _sceneLocalRotation;
+        transform.localScale = _sceneLocalScale;
+    }
+
+    /// <summary>newtutorial sahnesinde HUD sahne konumunda kalır, sol ele taşınmaz.</summary>
+    private bool IsNewTutorialScene => SceneManager.GetActiveScene().name == "newtutorial";
+
+    /// <summary>Sol el anchor'ı OVRCameraRig veya sahneden bulur, HUD'u ona parent eder. newtutorial'da atlanır.</summary>
+    private void ResolveAndParentToLeftHand()
+    {
+        if (IsNewTutorialScene) return;
         if (leftHandAnchor != null)
         {
-            // Parent değişince world pozisyonu korumak için true kullan (sahne değerleri bozulmasın)
             transform.SetParent(leftHandAnchor, true);
-            if (!useSceneTransform)
+            if (useSceneTransform)
+            {
+                transform.localPosition = _sceneLocalPosition;
+                transform.localRotation = _sceneLocalRotation;
+                transform.localScale = _sceneLocalScale;
+            }
+            else
             {
                 transform.localPosition = localPositionOffset;
                 transform.localRotation = Quaternion.Euler(localRotationEuler);
                 transform.localScale = Vector3.one * hudScale;
             }
+            return;
         }
+        var ovrRig = FindObjectOfType<OVRCameraRig>();
+        if (ovrRig != null)
+        {
+            if (ovrRig.leftHandOnControllerAnchor != null)
+            {
+                leftHandAnchor = ovrRig.leftHandOnControllerAnchor;
+                transform.SetParent(leftHandAnchor, true);
+                if (useSceneTransform)
+                {
+                    transform.localPosition = _sceneLocalPosition;
+                    transform.localRotation = _sceneLocalRotation;
+                    transform.localScale = _sceneLocalScale;
+                }
+                else
+                {
+                    transform.localPosition = localPositionOffset;
+                    transform.localRotation = Quaternion.Euler(localRotationEuler);
+                    transform.localScale = Vector3.one * hudScale;
+                }
+                return;
+            }
+            var ts = ovrRig.transform.Find("TrackingSpace");
+            if (ts != null)
+            {
+                var anchor = ts.Find("LeftHandAnchor");
+                if (anchor != null)
+                {
+                    leftHandAnchor = anchor;
+                    transform.SetParent(leftHandAnchor, true);
+                    if (useSceneTransform) ApplySceneTransform();
+                    return;
+                }
+            }
+            var direct = ovrRig.transform.Find("LeftHandAnchor");
+            if (direct != null)
+            {
+                leftHandAnchor = direct;
+                transform.SetParent(leftHandAnchor, true);
+                if (useSceneTransform) ApplySceneTransform();
+                return;
+            }
+        }
+        var go = GameObject.Find("LeftHandAnchor");
+        if (go != null)
+        {
+            leftHandAnchor = go.transform;
+            transform.SetParent(leftHandAnchor, true);
+            if (useSceneTransform) ApplySceneTransform();
+            return;
+        }
+        go = GameObject.Find("LeftHand");
+        if (go != null)
+        {
+            leftHandAnchor = go.transform;
+            transform.SetParent(leftHandAnchor, true);
+            if (useSceneTransform) ApplySceneTransform();
+            return;
+        }
+        if (leftHandAnchor != null && !useSceneTransform)
+        {
+            transform.localPosition = localPositionOffset;
+            transform.localRotation = Quaternion.Euler(localRotationEuler);
+            transform.localScale = Vector3.one * hudScale;
+        }
+    }
 
-        _baseScale = transform.localScale;
+    private void Start()
+    {
+        if (!IsNewTutorialScene) ResolveAndParentToLeftHand();
+        _baseScale = useSceneTransform ? _sceneLocalScale : transform.localScale;
         _canvas = GetComponent<Canvas>();
         _canvasGroup = GetComponent<CanvasGroup>();
         if (_canvasGroup == null) _canvasGroup = gameObject.AddComponent<CanvasGroup>();
@@ -117,7 +207,13 @@ public class HolographicWeaponHUD : MonoBehaviour
     private void LateUpdate()
     {
         if (_isPopAnimating) return;
-        if (useSceneTransform) return;
+        if (useSceneTransform)
+        {
+            transform.localPosition = _sceneLocalPosition;
+            transform.localRotation = _sceneLocalRotation;
+            transform.localScale = _isHudVisible ? _sceneLocalScale : Vector3.zero;
+            return;
+        }
         if (leftHandAnchor == null) return;
         if (transform.parent != leftHandAnchor) return;
         transform.localPosition = localPositionOffset;
@@ -173,10 +269,40 @@ public class HolographicWeaponHUD : MonoBehaviour
     /// <summary>Tutorial 12. diyalogda HUD'u açmak için. Kapalıysa açar ve pop animasyonu oynatır.</summary>
     public void EnsureVisible()
     {
+        ResolveAndParentToLeftHand();
         gameObject.SetActive(true);
-        if (_isHudVisible) return;
+        StartCoroutine(EnsureVisibleDelayed());
+    }
+
+    private IEnumerator EnsureVisibleDelayed()
+    {
+        yield return null; // Bir frame bekle - Start() tamamlansın, _baseScale set edilsin
+        if (_canvas == null) _canvas = GetComponent<Canvas>();
+        if (_canvas != null)
+        {
+            _canvas.enabled = true;
+            _canvas.sortingOrder = 100;
+            if (_canvas.renderMode == RenderMode.WorldSpace && _canvas.worldCamera == null)
+            {
+                _canvas.worldCamera = Camera.main;
+                if (_canvas.worldCamera == null)
+                {
+                    var ovr = FindObjectOfType<OVRCameraRig>();
+                    if (ovr != null && ovr.centerEyeAnchor != null)
+                    {
+                        var cam = ovr.centerEyeAnchor.GetComponentInChildren<Camera>(true);
+                        if (cam != null) _canvas.worldCamera = cam;
+                    }
+                }
+            }
+        }
+        if (transform.parent != null) transform.SetAsLastSibling();
+        if (_baseScale == Vector3.zero) _baseScale = useSceneTransform ? _sceneLocalScale : transform.localScale;
+        if (_baseScale == Vector3.zero) _baseScale = useSceneTransform ? _sceneLocalScale : Vector3.one * hudScale;
+        if (transform.localScale.sqrMagnitude < 0.0001f) transform.localScale = _baseScale;
+        if (_isHudVisible) yield break;
         _isHudVisible = true;
-        if (!_isPopAnimating) StartCoroutine(PopAnimation());
+        if (!_isPopAnimating) yield return StartCoroutine(PopAnimation());
     }
 
     /// <summary>Tutorial başında HUD'u gizlemek için.</summary>

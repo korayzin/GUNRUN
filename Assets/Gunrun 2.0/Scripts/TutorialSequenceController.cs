@@ -72,6 +72,12 @@ public class TutorialSequenceController : MonoBehaviour
     [Tooltip("HUD açıklama süresi (saniye)")]
     public float holographicHUDDuration = 5f;
 
+    [Header("Faz 10 - Son 3 Düşman (HUD sonrası)")]
+    [Tooltip("3 düşman öldürüldükten sonra gösterilecek metin")]
+    public string finalPhaseText = "bb";
+    [Tooltip("3 düşman öldürüldükten sonra çalacak ses")]
+    public AudioClip finalPhaseSFX;
+
     [Header("VFX / Silah Geçişi")]
     [Tooltip("Silah değişim süreleri: WeaponManager > Tutorial - Silah Değişim Süreleri")]
     public float weaponChangeVFXDelay = 0.5f;
@@ -93,7 +99,7 @@ public class TutorialSequenceController : MonoBehaviour
         if (weaponManager != null)
             weaponManager.weaponSwitchEnabled = false;
         if (holographicWeaponHUD != null)
-            holographicWeaponHUD.EnsureHidden();
+            holographicWeaponHUD.SetCanvasVisible(false);
     }
 
     private void Start()
@@ -117,7 +123,7 @@ public class TutorialSequenceController : MonoBehaviour
     {
         if (weaponManager == null) weaponManager = FindObjectOfType<WeaponManager>();
         if (portalSpawner == null) portalSpawner = FindObjectOfType<AdvancedPortalSpawner>();
-        if (holographicWeaponHUD == null) holographicWeaponHUD = FindObjectOfType<HolographicWeaponHUD>();
+        if (holographicWeaponHUD == null) holographicWeaponHUD = FindObjectOfType<HolographicWeaponHUD>(true);
         if (audioSource == null && dialoguePanel != null) audioSource = dialoguePanel.GetComponentInChildren<AudioSource>();
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
@@ -236,11 +242,11 @@ public class TutorialSequenceController : MonoBehaviour
                 yield return ShowWeaponIntroRealtime(nextWeaponIndex);
             }
 
-            // Faz 9: HolographicWeaponHUD
+            // Faz 9: HolographicWeaponHUD (sahne konumunda açılır)
             if (phase == 8)
             {
                 if (holographicWeaponHUD != null)
-                    holographicWeaponHUD.EnsureVisible();
+                    holographicWeaponHUD.SetCanvasVisible(true);
                 if (weaponManager != null)
                     weaponManager.SetJoystickWeaponSwitchEnabled(true);
 
@@ -251,6 +257,21 @@ public class TutorialSequenceController : MonoBehaviour
                 }
             }
         }
+
+        // Faz 10: HUD sonrası 3 düşman - öldürünce "bb" metni + ses
+        _phaseKillCount = 0;
+        if (portalSpawner != null)
+        {
+            float stopDuration = enemyStopAfterSeconds;
+            float speed = enemySpeed > 0f ? enemySpeed : 3f;
+            portalSpawner.SpawnSingleEnemyAtPortal("A", stopDuration, 0f, speed);
+            portalSpawner.SpawnSingleEnemyAtPortal("B", stopDuration, 0f, speed);
+            portalSpawner.SpawnSingleEnemyAtPortal("C", stopDuration, 0f, speed);
+        }
+        yield return new WaitForSeconds(enemyStopAfterSeconds);
+        yield return new WaitUntil(() => _phaseKillCount >= 3);
+        if (!string.IsNullOrEmpty(finalPhaseText) || finalPhaseSFX != null)
+            yield return ShowDialogueRealtime(finalPhaseText ?? "bb", null, finalPhaseSFX);
 
         _currentPhase = -1;
         SetDialogueVisible(false);

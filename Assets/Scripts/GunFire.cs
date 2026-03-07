@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using TMPro;
 using Meta.XR.MRUtilityKit;
@@ -116,6 +117,17 @@ public class GunFire : MonoBehaviour
             bool partnerHasAmmo = isBaretta && FindPartnerBaretta() != null && FindPartnerBaretta().GetCurrentAmmo() > 0;
             if (!partnerHasAmmo)
             {
+                // newtutorial: mermi bitince ölme yok, sadece silahı yenile
+                if (SceneManager.GetActiveScene().name == "newtutorial")
+                {
+                    var wm = WeaponManager.Instance != null ? WeaponManager.Instance : FindObjectOfType<WeaponManager>();
+                    if (wm != null)
+                    {
+                        wm.ReloadCurrentWeapon();
+                        isOutOfAmmo = false; // Yenilendi, tekrar ateş edebilir
+                    }
+                    return;
+                }
                 bool inTutorial = FindObjectOfType<TutorialIntroController>() != null;
                 if (inTutorial && TutorialIntroController.TutorialActive)
                 {

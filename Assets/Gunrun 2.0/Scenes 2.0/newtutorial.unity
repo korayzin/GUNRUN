@@ -96,7 +96,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 08c242e14fee91f40b7548391954a75e,
+  m_LightingDataAsset: {fileID: 112000000, guid: b93efb2d2be0b8c40b8196a30ad9d917,
     type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: b8f1ed3fbf8e47c4d934140daae57929,
     type: 2}
@@ -70315,6 +70315,8 @@ MonoBehaviour:
     want using the left joystick! \r\n"
   holographicHUDSFX: {fileID: 8300000, guid: 669e6a3df8db3144099f013202a9cb88, type: 3}
   holographicHUDDuration: 5
+  finalPhaseText: The tutorial is over. Now it's time for battle. Good luck!
+  finalPhaseSFX: {fileID: 8300000, guid: 7b55e71868559bb49b6502d71608cf1f, type: 3}
   weaponChangeVFXDelay: 0.5
 --- !u!4 &1576583031
 Transform:
@@ -72205,6 +72207,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1917262745}
   - {fileID: 1475985881}
   m_Father: {fileID: 1601181434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -72369,10 +72372,6 @@ PrefabInstance:
         type: 3}
       insertIndex: 1
       addedObject: {fileID: 2033912452}
-    - targetCorrespondingSourceObject: {fileID: 459718, guid: 126d619cf4daa52469682f85c1378b4a,
-        type: 3}
-      insertIndex: 6
-      addedObject: {fileID: 1917262745}
     - targetCorrespondingSourceObject: {fileID: 459718, guid: 126d619cf4daa52469682f85c1378b4a,
         type: 3}
       insertIndex: -1
@@ -88718,13 +88717,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1917262744}
-  m_LocalRotation: {x: 0.34330708, y: -0.29087642, z: 0.11272083, w: 0.8859036}
-  m_LocalPosition: {x: 0, y: 0, z: -0.0926}
-  m_LocalScale: {x: 0.001, y: 0.0009999999, z: 0.001}
+  m_LocalRotation: {x: 0.3433071, y: -0.29087645, z: 0.11272084, w: 0.88590366}
+  m_LocalPosition: {x: 0, y: 0, z: -0.092600286}
+  m_LocalScale: {x: 0.0009999999, y: 0.0009999999, z: 0.0009999999}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 979181513}
-  m_Father: {fileID: 1601181430}
+  m_Father: {fileID: 1596891784}
   m_LocalEulerAnglesHint: {x: 42.365, y: -36.354, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -88747,7 +88746,7 @@ MonoBehaviour:
   useSceneTransform: 1
   hudScale: 0.01
   localPositionOffset: {x: 0.02, y: 0, z: 0.06}
-  localRotationEuler: {x: -50, y: 12, z: -55}
+  localRotationEuler: {x: -1, y: 1, z: -1}
   weaponManager: {fileID: 108028051}
   weaponIcons:
   - {fileID: 21300000, guid: 3fc912d4eb0a45a419628c21a914ab31, type: 3}
