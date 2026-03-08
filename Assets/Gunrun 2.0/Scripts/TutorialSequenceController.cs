@@ -346,6 +346,7 @@ public class TutorialSequenceController : MonoBehaviour
         image.color = new Color(0f, 0f, 0f, 1f);
 
         Time.timeScale = 1f;
+        TutorialFirstPlayBootstrap.MarkTutorialCompleted(); // Bir sonraki açılışta newtutorial atlanacak
         int nextIndex = SceneManager.GetActiveScene().buildIndex + 1;
         int sceneCount = SceneManager.sceneCountInBuildSettings;
         if (nextIndex >= sceneCount) nextIndex = 0;
