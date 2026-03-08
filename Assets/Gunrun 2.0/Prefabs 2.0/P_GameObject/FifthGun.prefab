@@ -286,7 +286,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3730717212083738258}
   m_LocalRotation: {x: -0.37623945, y: 0.034299504, z: 0.012175656, w: 0.9258073}
-  m_LocalPosition: {x: 0, y: 0, z: -0.2277}
+  m_LocalPosition: {x: 0, y: 0, z: 0.349}
   m_LocalScale: {x: 0.0016941178, y: 0.0016941178, z: 0.0016941174}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -295,7 +295,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -135.774, y: -173.725, z: 179.739}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.0799, y: 0.2319}
+  m_AnchoredPosition: {x: 0.039, y: 0.427}
   m_SizeDelta: {x: 1281, y: 752}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &2431529764337274515
@@ -601,6 +601,9 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 0
   isLeftHanded: 0
+  weaponBalanceIndex: 0
+  useDualShotVertical: 0
+  dualShotSpacing: 0.04
 --- !u!114 &1425481084244958446
 MonoBehaviour:
   m_ObjectHideFlags: 0

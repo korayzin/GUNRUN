@@ -155,6 +155,7 @@ public class WeaponManager : MonoBehaviour
             EnsureLoopSource();
             if (!_loopSfxSource.isPlaying || _loopSfxSource.clip != weapon6SlowLaserSFX)
             {
+                _loopSfxSource.volume = MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f;
                 _loopSfxSource.clip = weapon6SlowLaserSFX;
                 _loopSfxSource.loop = true;
                 _loopSfxSource.Play();
@@ -186,6 +187,7 @@ public class WeaponManager : MonoBehaviour
             EnsureLoopSource();
             if (!_loopSfxSource.isPlaying || _loopSfxSource.clip != weapon9FlameSprayLoopSFX)
             {
+                _loopSfxSource.volume = MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f;
                 _loopSfxSource.clip = weapon9FlameSprayLoopSFX;
                 _loopSfxSource.loop = true;
                 _loopSfxSource.Play();
@@ -212,6 +214,11 @@ public class WeaponManager : MonoBehaviour
     private void PlaySFX(AudioClip clip)
     {
         if (clip == null) return;
+        if (MusicManager.Instance != null)
+        {
+            MusicManager.Instance.PlaySfx(clip);
+            return;
+        }
         AudioSource src = sfxAudioSource != null ? sfxAudioSource : GetOrCreateSFXSource();
         if (src != null)
             src.PlayOneShot(clip);

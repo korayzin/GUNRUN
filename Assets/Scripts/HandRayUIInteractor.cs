@@ -56,9 +56,13 @@ public class HandRayUIInteractor : MonoBehaviour
     
     private Transform handAnchor;
     private Button currentHoveredButton;
+    private Slider currentHoveredSlider;
     private Vector3 originalButtonScale;
     private bool isRayEnabled = false;
     private int hoverMissFrameCount;
+    private Vector2 currentScreenPoint;
+    private bool isDraggingSlider;
+    private Slider draggedSlider;
 
     private void Awake()
     {
@@ -194,23 +198,42 @@ public class HandRayUIInteractor : MonoBehaviour
 
         Vector3 sp = raycastCam.WorldToScreenPoint(worldPoint);
         Vector2 screenPoint = new Vector2(sp.x + screenOffset.x, sp.y + screenOffset.y);
+        currentScreenPoint = screenPoint;
 
-        // RectTransform ile doğrudan kontrol - GraphicRaycaster World Space'ta offset verebiliyor
-        Button hitButton = FindButtonViaRectTransform(screenPoint, raycastCam);
-        if (hitButton == null)
+        if (pointerEventData == null) pointerEventData = new PointerEventData(eventSystem);
+        pointerEventData.position = screenPoint;
+        raycastResults.Clear();
+        graphicRaycaster.Raycast(pointerEventData, raycastResults);
+
+        Button hitButton = null;
+        Slider hitSlider = null;
+        if (raycastResults.Count > 0)
         {
-            if (pointerEventData == null) pointerEventData = new PointerEventData(eventSystem);
-            pointerEventData.position = new Vector2(screenPoint.x, screenPoint.y);
-            raycastResults.Clear();
-            graphicRaycaster.Raycast(pointerEventData, raycastResults);
-            if (raycastResults.Count > 0)
-            {
-                hitButton = raycastResults[0].gameObject.GetComponent<Button>();
-                if (hitButton == null) hitButton = raycastResults[0].gameObject.GetComponentInParent<Button>();
-            }
+            var first = raycastResults[0].gameObject;
+            hitButton = first.GetComponent<Button>() ?? first.GetComponentInParent<Button>();
+            hitSlider = first.GetComponent<Slider>() ?? first.GetComponentInParent<Slider>();
+        }
+        if (hitButton == null) hitButton = FindButtonViaRectTransform(screenPoint, raycastCam);
+        if (hitSlider == null) hitSlider = FindSliderViaRectTransform(screenPoint, raycastCam);
+
+        if (isDraggingSlider)
+        {
+            hoverMissFrameCount = 0;
+            return;
         }
 
-        if (hitButton != null)
+        if (hitSlider != null && hitSlider.interactable && hitSlider.gameObject.activeInHierarchy)
+        {
+            hoverMissFrameCount = 0;
+            if (hitSlider != currentHoveredSlider)
+            {
+                ClearHoverEffect();
+                currentHoveredSlider = hitSlider;
+                lineRenderer.startColor = rayHoverColor;
+                lineRenderer.endColor = rayHoverColor;
+            }
+        }
+        else if (hitButton != null)
         {
             hoverMissFrameCount = 0;
             if (hitButton != currentHoveredButton)
@@ -235,10 +258,10 @@ public class HandRayUIInteractor : MonoBehaviour
                 lineRenderer.endColor = rayHoverColor;
             }
         }
-        else if (currentHoveredButton != null)
+        else if (currentHoveredButton != null || currentHoveredSlider != null)
         {
             hoverMissFrameCount++;
-            if (hoverMissFrameCount >= hoverExitDelayFrames)
+            if (hoverMissFrameCount >= hoverExitDelayFrames && !isDraggingSlider)
             {
                 ClearHoverEffect();
                 hoverMissFrameCount = 0;
@@ -264,13 +287,112 @@ public class HandRayUIInteractor : MonoBehaviour
         return null;
     }
 
+    private Slider FindSliderViaRectTransform(Vector2 screenPoint, Camera cam)
+    {
+        if (targetCanvas == null || cam == null) return null;
+
+        foreach (var s in targetCanvas.GetComponentsInChildren<Slider>(true))
+        {
+            if (!s.interactable || !s.gameObject.activeInHierarchy) continue;
+
+            RectTransform rect = s.GetComponent<RectTransform>();
+            if (rect != null && RectTransformUtility.RectangleContainsScreenPoint(rect, screenPoint, cam))
+                return s;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Ray pozisyonuna göre slider değerini doğrudan günceller. VR için ExecuteEvents yerine daha güvenilir.
+    /// </summary>
+    private void UpdateSliderValueFromRay(Slider slider)
+    {
+        if (slider == null) return;
+
+        Canvas rootCanvas = slider.GetComponentInParent<Canvas>();
+        Camera cam = null;
+        if (rootCanvas != null)
+        {
+            if (rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                cam = null;
+            else
+                cam = rootCanvas.worldCamera != null ? rootCanvas.worldCamera : Camera.main;
+        }
+        if (cam == null && rootCanvas == null) cam = Camera.main;
+
+        RectTransform trackRect = null;
+        if (slider.fillRect != null && slider.fillRect.parent != null)
+            trackRect = slider.fillRect.parent as RectTransform;
+        if (trackRect == null)
+            trackRect = slider.GetComponent<RectTransform>();
+        if (trackRect == null) return;
+
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(trackRect, currentScreenPoint, cam, out localPoint);
+
+        Rect r = trackRect.rect;
+        float normalized;
+
+        switch (slider.direction)
+        {
+            case Slider.Direction.LeftToRight:
+            case Slider.Direction.RightToLeft:
+                if (Mathf.Abs(r.width) < 0.001f) return;
+                normalized = (slider.direction == Slider.Direction.LeftToRight)
+                    ? (localPoint.x - r.xMin) / r.width
+                    : (r.xMax - localPoint.x) / r.width;
+                break;
+            case Slider.Direction.BottomToTop:
+            case Slider.Direction.TopToBottom:
+                if (Mathf.Abs(r.height) < 0.001f) return;
+                normalized = (slider.direction == Slider.Direction.BottomToTop)
+                    ? (localPoint.y - r.yMin) / r.height
+                    : (r.yMax - localPoint.y) / r.height;
+                break;
+            default:
+                if (Mathf.Abs(r.width) < 0.001f) return;
+                normalized = (localPoint.x - r.xMin) / r.width;
+                break;
+        }
+
+        float value = Mathf.Lerp(slider.minValue, slider.maxValue, Mathf.Clamp01(normalized));
+        if (slider.wholeNumbers)
+            value = Mathf.Round(value);
+        slider.value = value;
+    }
+
     private void HandleInput()
     {
-        // Tetik kontrolü - her iki el için de kontrol et
-        bool triggerPressed = OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) || 
-                              OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger);
+        bool triggerDown = OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) ||
+                           OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger);
+        bool triggerUp = OVRInput.GetUp(OVRInput.Button.PrimaryIndexTrigger) ||
+                         OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger);
 
-        if (triggerPressed && currentHoveredButton != null)
+        if (isDraggingSlider)
+        {
+            if (triggerUp || draggedSlider == null)
+            {
+                if (triggerUp && draggedSlider != null && draggedSlider.gameObject.name == "SoundSlider" && MusicManager.Instance != null)
+                    MusicManager.Instance.PlaySfxPreviewOnRelease();
+                isDraggingSlider = false;
+                draggedSlider = null;
+            }
+            else
+            {
+                UpdateSliderValueFromRay(draggedSlider);
+            }
+            return;
+        }
+
+        if (triggerDown && currentHoveredSlider != null)
+        {
+            draggedSlider = currentHoveredSlider;
+            isDraggingSlider = true;
+            UpdateSliderValueFromRay(draggedSlider);
+            return;
+        }
+
+        if (triggerDown && currentHoveredButton != null)
         {
             Debug.Log($"[HandRayUIInteractor] Buton tıklandı: {currentHoveredButton.gameObject.name}");
             
@@ -281,7 +403,6 @@ public class HandRayUIInteractor : MonoBehaviour
                     animator.OnPressed();
             }
             
-            // Butonu tıkla
             currentHoveredButton.onClick.Invoke();
         }
     }
@@ -304,8 +425,11 @@ public class HandRayUIInteractor : MonoBehaviour
             }
             currentHoveredButton = null;
         }
+        if (currentHoveredSlider != null && !isDraggingSlider)
+        {
+            currentHoveredSlider = null;
+        }
         
-        // Ray rengini normale döndür
         if (lineRenderer != null)
         {
             lineRenderer.startColor = rayColor;
@@ -381,6 +505,8 @@ public class HandRayUIInteractor : MonoBehaviour
     public void DisableRay()
     {
         isRayEnabled = false;
+        isDraggingSlider = false;
+        draggedSlider = null;
         
         if (lineRenderer != null)
         {

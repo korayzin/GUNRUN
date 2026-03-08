@@ -302,6 +302,7 @@ public class GunFire : MonoBehaviour
         {
             audioSource.Stop();
             audioSource.loop = true;
+            audioSource.volume = MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f;
             audioSource.Play();
         }
 
@@ -417,6 +418,7 @@ public class GunFire : MonoBehaviour
 
         if (audioSource != null)
         {
+            audioSource.volume = MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f;
             audioSource.Play();
         }
 

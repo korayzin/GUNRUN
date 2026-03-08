@@ -164,6 +164,8 @@ public class UIManager : MonoBehaviour
     public void ShowOptions()
     {
         ShowPanel(optionsPanel);
+        if (MusicManager.Instance != null)
+            MusicManager.Instance.RefreshSliderBindings();
     }
 
     /// <summary>

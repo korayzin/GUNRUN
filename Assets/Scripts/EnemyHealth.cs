@@ -143,24 +143,26 @@ public class EnemyHealth : MonoBehaviour
             Die();
             if (damageSFX != null)
             {
+                float vol = damageSFXVolume * (MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f);
                 if (audioSource == null)
                     audioSource = GetComponent<AudioSource>();
                 if (audioSource != null)
-                    audioSource.PlayOneShot(damageSFX, damageSFXVolume);
+                    audioSource.PlayOneShot(damageSFX, vol);
                 else
-                    AudioSource.PlayClipAtPoint(damageSFX, hitCollider != null ? hitCollider.bounds.center : transform.position, damageSFXVolume);
+                    AudioSource.PlayClipAtPoint(damageSFX, hitCollider != null ? hitCollider.bounds.center : transform.position, vol);
             }
             return true;
         }
 
         if (damageSFX != null)
         {
+            float vol = damageSFXVolume * (MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f);
             if (audioSource == null)
                 audioSource = GetComponent<AudioSource>();
             if (audioSource != null)
-                audioSource.PlayOneShot(damageSFX, damageSFXVolume);
+                audioSource.PlayOneShot(damageSFX, vol);
             else
-                AudioSource.PlayClipAtPoint(damageSFX, hitCollider != null ? hitCollider.bounds.center : transform.position, damageSFXVolume);
+                AudioSource.PlayClipAtPoint(damageSFX, hitCollider != null ? hitCollider.bounds.center : transform.position, vol);
         }
         return false;
     }
@@ -537,7 +539,8 @@ public class EnemyHealth : MonoBehaviour
         float sfxDuration = 0f;
         if (audioSource != null && deathSFX != null)
         {
-            audioSource.PlayOneShot(deathSFX);
+            float vol = MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f;
+            audioSource.PlayOneShot(deathSFX, vol);
             sfxDuration = deathSFX.length;
         }
 

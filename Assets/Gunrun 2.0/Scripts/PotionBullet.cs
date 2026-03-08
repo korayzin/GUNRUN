@@ -155,7 +155,10 @@ public class PotionBullet : MonoBehaviour
         // Launch sound
         if (launchSound != null)
         {
-            AudioSource.PlayClipAtPoint(launchSound, transform.position, 0.6f);
+            if (MusicManager.Instance != null)
+                MusicManager.Instance.PlaySfxAtPoint(launchSound, transform.position, 0.6f);
+            else
+                AudioSource.PlayClipAtPoint(launchSound, transform.position, 0.6f);
         }
     }
     
@@ -406,7 +409,10 @@ public class PotionBullet : MonoBehaviour
             // Hit sound
             if (hitSound != null)
             {
-                AudioSource.PlayClipAtPoint(hitSound, hitPoint, 0.7f);
+                if (MusicManager.Instance != null)
+                    MusicManager.Instance.PlaySfxAtPoint(hitSound, hitPoint, 0.7f);
+                else
+                    AudioSource.PlayClipAtPoint(hitSound, hitPoint, 0.7f);
             }
         }
     }

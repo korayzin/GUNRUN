@@ -26,7 +26,8 @@ public class TargetBoardHealth : MonoBehaviour
 
         if (audioSource != null && hitSound != null)
         {
-            audioSource.PlayOneShot(hitSound);
+            float vol = MusicManager.Instance != null ? MusicManager.Instance.GetSfxVolume() : 1f;
+            audioSource.PlayOneShot(hitSound, vol);
         }
     }
 

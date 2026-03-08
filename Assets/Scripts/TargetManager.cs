@@ -27,6 +27,15 @@ public class TargetManager : MonoBehaviour
         waveActive = false;
     }
 
+    private void Start()
+    {
+        if (MusicManager.Instance != null)
+        {
+            if (gameMusic != null) MusicManager.Instance.RegisterMusicSource(gameMusic);
+            if (startMusic != null) MusicManager.Instance.RegisterMusicSource(startMusic);
+        }
+    }
+
     public bool isWave()
     {
         return waveActive;

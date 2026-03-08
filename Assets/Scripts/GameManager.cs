@@ -143,6 +143,8 @@ public class GameManager : MonoBehaviour
 
         if (backgroundMusic != null)
         {
+            if (MusicManager.Instance != null)
+                MusicManager.Instance.RegisterMusicSource(backgroundMusic);
             backgroundMusic.Play();
         }
 
@@ -538,8 +540,8 @@ public class GameManager : MonoBehaviour
         isGameOver = false;
         StopAllCoroutines();
         
-        // Ana menü sahnesini yükle (sahne adını projenize göre ayarlayın)
-        SceneManager.LoadScene("MainMenu");
+        // Ana menü sahnesini yükle (Deneme sahnesi)
+        SceneManager.LoadScene("Deneme");
     }
 
     public void SaveBestScores()
