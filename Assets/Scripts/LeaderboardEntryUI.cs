@@ -12,6 +12,14 @@ public class LeaderboardEntryUI : MonoBehaviour
     
     public void SetEntry(int rank, LeaderboardEntry entry, bool isCurrentPlayer = false)
     {
+        // backgroundImage her zaman kontrol et - prefab'da null olabilir, root'ta Image var
+        if (backgroundImage == null)
+        {
+            backgroundImage = GetComponent<Image>();
+            if (backgroundImage == null)
+                backgroundImage = GetComponentInChildren<Image>(true);
+        }
+        
         // Önce otomatik bul (eğer atanmamışsa)
         if (rankText == null || nameText == null || scoreText == null)
         {
@@ -50,11 +58,6 @@ public class LeaderboardEntryUI : MonoBehaviour
                 return;
             }
             
-            // Background Image'ı bul
-            if (backgroundImage == null)
-            {
-                backgroundImage = GetComponent<Image>();
-            }
         }
         
         // Kendi ismin parlasın - özel highlight
@@ -64,77 +67,33 @@ public class LeaderboardEntryUI : MonoBehaviour
             return;
         }
         
-        // Özel renk ve emoji için ilk 3 sırayı vurgula
-        Color textColor = Color.white;
-        string rankPrefix = "";
+        // Bizim dışımızdaki herkes aynı: tek tip arka plan ve beyaz metin
+        string rankPrefix = rank switch { 1 => "🥇 ", 2 => "🥈 ", 3 => "🥉 ", _ => "" };
         
-        if (rank == 1)
+        if (backgroundImage != null)
         {
-            textColor = new Color(1f, 0.84f, 0f); // Altın
-            rankPrefix = "🥇 ";
-            if (backgroundImage != null)
-            {
-                backgroundImage.color = new Color(1f, 0.84f, 0f, 0.15f);
-            }
-        }
-        else if (rank == 2)
-        {
-            textColor = new Color(0.75f, 0.75f, 0.75f); // Gümüş
-            rankPrefix = "🥈 ";
-            if (backgroundImage != null)
-            {
-                backgroundImage.color = new Color(0.75f, 0.75f, 0.75f, 0.15f);
-            }
-        }
-        else if (rank == 3)
-        {
-            textColor = new Color(0.8f, 0.5f, 0.2f); // Bronz
-            rankPrefix = "🥉 ";
-            if (backgroundImage != null)
-            {
-                backgroundImage.color = new Color(0.8f, 0.5f, 0.2f, 0.15f);
-            }
-        }
-        else
-        {
-            // Alternatif satır renkleri
-            if (backgroundImage != null)
-            {
-                backgroundImage.color = (rank % 2 == 0) 
-                    ? new Color(0.2f, 0.2f, 0.2f, 0.3f) 
-                    : new Color(0.15f, 0.15f, 0.15f, 0.3f);
-            }
+            backgroundImage.color = new Color(0.22f, 0.28f, 0.32f, 0.45f); // Hepsi aynı nötr mavi-gri
         }
         
-        // Text'leri set et
         if (rankText != null)
         {
             rankText.text = $"{rankPrefix}{rank}.";
-            rankText.color = textColor;
-            if (rank <= 3)
-            {
-                rankText.fontStyle = FontStyles.Bold;
-            }
+            rankText.color = Color.white;
+            rankText.fontStyle = FontStyles.Normal;
         }
         
         if (nameText != null)
         {
             nameText.text = entry.playerName;
-            nameText.color = textColor;
-            if (rank <= 3)
-            {
-                nameText.fontStyle = FontStyles.Bold;
-            }
+            nameText.color = Color.white;
+            nameText.fontStyle = FontStyles.Normal;
         }
         
         if (scoreText != null)
         {
-            scoreText.text = $"{entry.maxScore:N0}"; // Binlik ayırıcılarla
-            scoreText.color = textColor;
-            if (rank <= 3)
-            {
-                scoreText.fontStyle = FontStyles.Bold;
-            }
+            scoreText.text = $"{entry.maxScore:N0}";
+            scoreText.color = Color.white;
+            scoreText.fontStyle = FontStyles.Normal;
         }
     }
     
@@ -185,14 +144,13 @@ public class LeaderboardEntryUI : MonoBehaviour
     private void ApplyTextGlow(TextMeshProUGUI text)
     {
         if (text == null) return;
-        // TMP outline ile daha parlak parlama efekti
         try
         {
-            Material mat = text.fontMaterial;
-            if (mat != null && mat.HasProperty("_OutlineWidth"))
+            Material instanceMat = text.fontMaterial;
+            if (instanceMat != null && instanceMat.HasProperty(Shader.PropertyToID("_OutlineWidth")))
             {
-                mat.SetFloat("_OutlineWidth", 0.25f);
-                mat.SetColor("_OutlineColor", new Color(1f, 1f, 0.5f, 1f));
+                instanceMat.SetFloat("_OutlineWidth", 0.2f);
+                instanceMat.SetColor("_OutlineColor", new Color(1f, 1f, 0.5f, 1f));
             }
         }
         catch { /* Outline desteklenmiyorsa sessizce geç */ }

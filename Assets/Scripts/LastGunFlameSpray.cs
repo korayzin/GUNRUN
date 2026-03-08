@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using Meta.XR.MRUtilityKit;
@@ -239,14 +240,21 @@ public class LastGunFlameSpray : MonoBehaviour
             if (currentSprayEnergy > maxSprayEnergy) currentSprayEnergy = maxSprayEnergy;
         }
 
-        // Enerji sıfırlanınca bir kez game over
+        // Enerji sıfırlanınca bir kez game over (newtutorial'da ölme yok, enerji yenilenir)
         if (currentSprayEnergy <= 0f && !sprayEnergyGameOverTriggered)
         {
-            sprayEnergyGameOverTriggered = true;
-            if (isSpraying)
-                StopSpray();
-            if (GameManager.Instance != null)
-                GameManager.Instance.GameOver(null);
+            if (SceneManager.GetActiveScene().name == "newtutorial")
+            {
+                currentSprayEnergy = maxSprayEnergy; // Mermi gibi yenile
+            }
+            else
+            {
+                sprayEnergyGameOverTriggered = true;
+                if (isSpraying)
+                    StopSpray();
+                if (GameManager.Instance != null)
+                    GameManager.Instance.GameOver(null);
+            }
         }
 
         if (isSpraying && currentSprayEnergy > 0f)

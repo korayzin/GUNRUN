@@ -50,19 +50,18 @@ public class WeaponDissolveEffect : MonoBehaviour
         var origList = new System.Collections.Generic.List<Material[]>();
         var dissList = new System.Collections.Generic.List<Material[]>();
 
-        _dissolveShader = Shader.Find("Custom/WeaponDissolve");
-        if (_dissolveShader == null)
+        // Fallback materyali şablon olarak kullan - Shader.Find bazen null/pembe döner
+        var fallbackMat = Resources.Load<Material>("WeaponDissolveFallback");
+        if (fallbackMat == null || fallbackMat.shader == null)
         {
-            var fallbackMat = Resources.Load<Material>("WeaponDissolveFallback");
-            if (fallbackMat != null && fallbackMat.shader != null)
-                _dissolveShader = fallbackMat.shader;
-        }
-        if (_dissolveShader == null)
-        {
+            _dissolveShader = Shader.Find("Custom/WeaponDissolve");
+            if (_dissolveShader == null)
+            {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.LogWarning("[WeaponDissolveEffect] Custom/WeaponDissolve shader bulunamadı. Graphics > Always Included Shaders'a ekleyin veya Resources/WeaponDissolveFallback.mat oluşturun.");
+                Debug.LogWarning("[WeaponDissolveEffect] Custom/WeaponDissolve shader ve Resources/WeaponDissolveFallback.mat bulunamadı.");
 #endif
-            return;
+                return;
+            }
         }
 
         foreach (var r in allRenderers)
@@ -77,16 +76,48 @@ public class WeaponDissolveEffect : MonoBehaviour
             {
                 var om = origMats[m];
                 if (om == null) continue;
-                var tex = om.HasProperty("_MainTex") ? om.GetTexture("_MainTex") : om.mainTexture;
+
+                Material dm;
+                if (fallbackMat != null && fallbackMat.shader != null)
+                {
+                    dm = new Material(fallbackMat); // Şablondan kopyala - pembe önlenir
+                }
+                else
+                {
+                    dm = new Material(_dissolveShader);
+                }
+
+                // Texture: URP _BaseMap veya _MainTex (pembe önlemek için her zaman texture ata)
+                var tex = om.HasProperty("_BaseMap") ? om.GetTexture("_BaseMap") : (om.HasProperty("_MainTex") ? om.GetTexture("_MainTex") : om.mainTexture);
+                if (tex == null) tex = Texture2D.whiteTexture;
+                dm.SetTexture("_MainTex", tex);
+                // UV scale/offset - URP _BaseMap veya _MainTex'ten kopyala (shader TRANSFORM_TEX için gerekli)
+                if (om.HasProperty("_BaseMap"))
+                {
+                    dm.SetTextureScale("_MainTex", om.GetTextureScale("_BaseMap"));
+                    dm.SetTextureOffset("_MainTex", om.GetTextureOffset("_BaseMap"));
+                }
+                else if (om.HasProperty("_MainTex"))
+                {
+                    dm.SetTextureScale("_MainTex", om.GetTextureScale("_MainTex"));
+                    dm.SetTextureOffset("_MainTex", om.GetTextureOffset("_MainTex"));
+                }
+                else
+                {
+                    dm.SetTextureScale("_MainTex", new Vector2(1f, 1f));
+                    dm.SetTextureOffset("_MainTex", Vector2.zero);
+                }
+
                 var col = Color.white;
                 if (om.HasProperty("_BaseColor")) col = om.GetColor("_BaseColor");
                 else if (om.HasProperty("_Color")) col = om.GetColor("_Color");
-                dissMats[m] = new Material(_dissolveShader);
-                if (tex != null) dissMats[m].SetTexture("_MainTex", tex);
-                dissMats[m].SetColor("_Color", col);
-                dissMats[m].SetFloat(BuildMode, 0f);
-                dissMats[m].SetColor(EdgeColor, edgeGlowColor);
-                dissMats[m].SetFloat(EdgeWidth, edgeGlowWidth);
+                dm.SetColor("_Color", col);
+
+                dm.SetFloat(BuildMode, 0f);
+                dm.SetColor(EdgeColor, edgeGlowColor);
+                dm.SetFloat(EdgeWidth, edgeGlowWidth);
+
+                dissMats[m] = dm;
                 hasValid = true;
             }
             if (!hasValid) continue;

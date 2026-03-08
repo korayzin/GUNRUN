@@ -20,11 +20,10 @@ Shader "Custom/WeaponDissolve"
         {
             Tags { "LightMode"="UniversalForward" }
             HLSLPROGRAM
+            #pragma target 3.0
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_instancing
-            #pragma multi_compile _ _STEREO_INSTANCING_ON
-            #pragma multi_compile _ _STEREO_MULTIVIEW_ON
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             struct Attributes
@@ -91,5 +90,5 @@ Shader "Custom/WeaponDissolve"
             ENDHLSL
         }
     }
-    FallBack "Universal Render Pipeline/Lit"
+    FallBack Off
 }

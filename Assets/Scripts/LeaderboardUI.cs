@@ -321,40 +321,7 @@ public class LeaderboardUI : MonoBehaviour
         ClearLeaderboard();
         Debug.Log("🧹 Eski leaderboard entry'leri temizlendi");
         
-        // Leaderboard'u çek
-        Debug.Log($"📡 Firebase'den leaderboard çekiliyor... (maxEntries: {maxEntries})");
-        FirebaseLeaderboardManager.Instance.GetLeaderboard((entries) =>
-        {
-            Debug.Log($"📊 CALLBACK! Firebase'den veri geldi: {entries?.Count ?? 0} oyuncu bulundu");
-            
-            if (entries == null)
-            {
-                Debug.LogWarning("⚠️ Entries NULL geldi!");
-            }
-            else if (entries.Count == 0)
-            {
-                Debug.LogWarning("⚠️ Entries boş liste (Count = 0)!");
-            }
-            else
-            {
-                Debug.Log($"✅ {entries.Count} oyuncu verisi başarıyla alındı!");
-                for (int i = 0; i < Mathf.Min(3, entries.Count); i++)
-                {
-                    Debug.Log($"   #{i+1}: {entries[i].playerName} - {entries[i].maxScore}");
-                }
-            }
-            
-            DisplayLeaderboard(entries);
-            isLoadingLeaderboard = false; // Yükleme tamamlandı
-            
-            if (loadingText != null)
-            {
-                loadingText.gameObject.SetActive(false);
-                Debug.Log("✅ Loading text gizlendi");
-            }
-        }, maxEntries);
-        
-        // Kendi max score'unu göster
+        // Önce kendi score'unu al, sonra leaderboard - build'de isMe eşleşmesi için myScore gerekli
         Debug.Log("📡 Kendi max score çekiliyor...");
         FirebaseLeaderboardManager.Instance.GetMyMaxScore((myScore) =>
         {
@@ -364,24 +331,36 @@ public class LeaderboardUI : MonoBehaviour
             {
                 myScoreText.text = $"YOUR HIGH SCORE {myScore}";
                 myScoreText.gameObject.SetActive(true);
-                Debug.Log($"✅ MyScoreText güncellendi: {myScoreText.gameObject.name}");
             }
             else
             {
-                // Otomatik bulmaya çalış
-                Debug.LogWarning("⚠️ myScoreText NULL! Otomatik aranıyor...");
                 FindMyScoreText();
                 if (myScoreText != null)
                 {
                     myScoreText.text = $"YOUR HIGH SCORE {myScore}";
                     myScoreText.gameObject.SetActive(true);
-                    Debug.Log($"✅ MyScoreText otomatik bulundu ve güncellendi: {myScoreText.gameObject.name}");
-                }
-                else
-                {
-                    Debug.LogError("❌ myScoreText bulunamadı!");
                 }
             }
+            
+            // Leaderboard'u çek (myScore ile birlikte gösterilecek)
+            Debug.Log($"📡 Firebase'den leaderboard çekiliyor... (maxEntries: {maxEntries})");
+            FirebaseLeaderboardManager.Instance.GetLeaderboard((entries) =>
+            {
+                Debug.Log($"📊 CALLBACK! Firebase'den veri geldi: {entries?.Count ?? 0} oyuncu bulundu");
+                
+                if (entries == null)
+                    Debug.LogWarning("⚠️ Entries NULL geldi!");
+                else if (entries.Count == 0)
+                    Debug.LogWarning("⚠️ Entries boş liste (Count = 0)!");
+                else
+                    Debug.Log($"✅ {entries.Count} oyuncu verisi başarıyla alındı!");
+                
+                DisplayLeaderboard(entries);
+                isLoadingLeaderboard = false;
+                
+                if (loadingText != null)
+                    loadingText.gameObject.SetActive(false);
+            }, maxEntries);
         });
         
         Debug.Log("📊 LoadLeaderboard() fonksiyonu tamamlandı (callback'ler beklemede)");
@@ -424,7 +403,7 @@ public class LeaderboardUI : MonoBehaviour
         // Başlık ekle
         CreateHeaderEntry();
 
-        // Kendi playerId ve ismimizi al (ismimizin parlaması için)
+        // Kendi playerId ve ismimizi al - sadece cihaz (playerId) ve isim ile eşleşme, score ile değil
         string myPlayerId = FirebaseLeaderboardManager.Instance != null ? FirebaseLeaderboardManager.Instance.GetPlayerId() : "";
         string myPlayerName = FirebaseLeaderboardManager.Instance != null ? FirebaseLeaderboardManager.Instance.GetPlayerName() : "";
         
