@@ -33,7 +33,7 @@ Material:
     - _OutlineThickness: 0.02
     - _ShadowThreshold: 0.5
     m_Colors:
-    - _Color: {r: 0.07075471, g: 1, b: 0.9250578, a: 1}
+    - _Color: {r: 1, g: 0, b: 0.18515778, a: 1}
     - _HighlightColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShadowColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
