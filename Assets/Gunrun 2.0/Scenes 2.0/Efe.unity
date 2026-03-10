@@ -23,10 +23,10 @@ RenderSettings:
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 0.76
+  m_AmbientIntensity: 1.44
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.27340686, g: 0.38826668, b: 0.6792453, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: b94f3fd0f5c67bc4fbf404936b20fb26, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 61062429b822ffa4ea8475d16134425d, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -96,8 +96,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: b93efb2d2be0b8c40b8196a30ad9d917,
-    type: 2}
+  m_LightingDataAsset: {fileID: 0}
   m_LightingSettings: {fileID: 4890085278179872738, guid: b8f1ed3fbf8e47c4d934140daae57929,
     type: 2}
 --- !u!196 &4
@@ -5207,6 +5206,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f603ccb526f7a4949b5a51a818444912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponFireSFX:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  weapon5ChargeReleaseSFX: {fileID: 0}
+  weapon6SlowLaserSFX: {fileID: 0}
+  weapon7WhipSFX: {fileID: 0}
+  weapon8ToyFireSFX: {fileID: 0}
+  weapon9FlameSprayLoopSFX: {fileID: 0}
+  weapon9FireballSFX: {fileID: 0}
+  sfxAudioSource: {fileID: 0}
   hitHapticStrength: 0.4
   hitHapticDuration: 0.06
   firstWeapon: {fileID: 828508232}
@@ -5215,6 +5231,7 @@ MonoBehaviour:
   fourthWeapon: {fileID: 2972479651670665011}
   fifthWeapon: {fileID: 1046036456}
   sixthWeapon: {fileID: 2443542293831071706}
+  sixthWeaponLeftHand: {fileID: 0}
   seventhWeapon: {fileID: 5555600068782280050}
   eighthWeapon: {fileID: 1568333046196313104}
   ninthWeapon: {fileID: 20849705}
@@ -5229,6 +5246,12 @@ MonoBehaviour:
   ninthWeaponImage: {fileID: 0}
   vfxFirst: {fileID: 0}
   vfxSecond: {fileID: 0}
+  tutorialWeaponChangeVFXParentRight: {fileID: 0}
+  tutorialWeaponChangeVFXParentLeft: {fileID: 0}
+  tutorialBarettaWeaponIndex: 1
+  tutorialDespawnDuration: 0.5
+  tutorialDelayBetweenWeapons: 0.3
+  tutorialSpawnDuration: 0.7
   vfxThird: {fileID: 0}
   vfxFourth: {fileID: 0}
   vfxFifth: {fileID: 0}
@@ -5236,6 +5259,7 @@ MonoBehaviour:
   vfxSeventh: {fileID: 0}
   vfxEighth: {fileID: 0}
   vfxNinth: {fileID: 0}
+  weaponSwitchEnabled: 1
   killsToSecond: 6
   killsToThird: 14
   killsToFourth: 24
@@ -5245,6 +5269,7 @@ MonoBehaviour:
   killsToEighth: 64
   killsToNinth: 78
   vfxDelay: 0.5
+  testSixthLeftHandOnSecondWeapon: 1
   activeGlobalScale: 1.2
   inactiveGlobalScale: 1
   activeUIImageScale: 0.8
@@ -8537,8 +8562,18 @@ MonoBehaviour:
   timerText: {fileID: 1587404790}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  backgroundMusicDuckVolume: 0.25
+  backgroundMusicDuckFadeDuration: 0.25
+  portalOpenSound: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
+  stagePortalSoundVolume: 2
   handRayInteractor: {fileID: 0}
   gameDuration: 120
+  tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!65 &196366960
 BoxCollider:
@@ -36430,7 +36465,7 @@ MonoBehaviour:
   m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 1
+  m_SoftShadowQuality: 0
 --- !u!108 &611342079
 Light:
   m_ObjectHideFlags: 0
@@ -36449,7 +36484,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 0.444
@@ -36482,7 +36517,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 2
@@ -45700,6 +45735,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 1
   isLeftHanded: 0
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!1 &829110778
@@ -50329,6 +50365,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 1
   isLeftHanded: 1
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!1001 &948819047
@@ -68044,8 +68081,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.2718642, g: 0.5085736, b: 0.745283, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 0.5849056, g: 0.28417587, b: 0.5707758, a: 1}
+  m_Intensity: 4.44
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -68094,7 +68131,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
-  m_ShadowAngle: 0
+  m_ShadowAngle: 2.4
 --- !u!4 &1502849220
 Transform:
   m_ObjectHideFlags: 0
@@ -74285,8 +74322,17 @@ MonoBehaviour:
     type: 3}
   tur4Enemy: {fileID: 0}
   floatingTextPrefab: {fileID: 0}
+  tur1DamageSFX: {fileID: 0}
+  tur1DamageSFXVolume: 1
+  tur2DamageSFX: {fileID: 0}
+  tur2DamageSFXVolume: 1
+  tur3DamageSFX: {fileID: 0}
+  tur3DamageSFXVolume: 1
+  tur4DamageSFX: {fileID: 0}
+  tur4DamageSFXVolume: 1
   delayBeforeFirstSpawn: 10
   spawnHeightOffset: 1.5
+  spawnLateralOffsetRange: 1.5
   stage2KillThreshold: 24
   stage3KillThreshold: 54
   stage1SpawnInterval: 2.5
@@ -74303,6 +74349,8 @@ MonoBehaviour:
   tur2Score: 50
   tur3Score: 100
   tur4Score: 150
+  tutorialMode: 0
+  tutorialBCSpawnIntervalMultiplier: 2.5
   portalSpawnStartDelay: 7.5
   portalSpawnDuration: 1.5
   portalSpawnDelay: 0.3
@@ -87303,8 +87351,18 @@ MonoBehaviour:
   timerText: {fileID: 1587404790}
   timeAndScorePanel: {fileID: 953788455}
   backgroundMusic: {fileID: 0}
+  backgroundMusicDuckVolume: 0.25
+  backgroundMusicDuckFadeDuration: 0.25
+  portalOpenSound: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
+  stagePortalSoundVolume: 2
   handRayInteractor: {fileID: 0}
   gameDuration: 2
+  tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!4 &1834682428
 Transform:
@@ -88635,8 +88693,18 @@ MonoBehaviour:
   timerText: {fileID: 1587404790}
   timeAndScorePanel: {fileID: 0}
   backgroundMusic: {fileID: 0}
+  backgroundMusicDuckVolume: 0.25
+  backgroundMusicDuckFadeDuration: 0.25
+  portalOpenSound: {fileID: 0}
+  stage1FirstEnemySpawnSound: {fileID: 0}
+  stage2TransitionSound: {fileID: 0}
+  stage3TransitionSound: {fileID: 0}
+  stageSoundsAudioSource: {fileID: 0}
+  stagePortalSoundVolume: 2
   handRayInteractor: {fileID: 0}
   gameDuration: 120
+  tutorialTimerDuration: 360
+  tutorialFinalPhaseDuration: 45
   score: 0
 --- !u!65 &1888667727
 BoxCollider:
@@ -95703,7 +95771,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 0, g: 0.60784316, b: 1, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 1.52
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -95742,7 +95810,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 2
@@ -98021,6 +98089,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 0
   isLeftHanded: 0
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!1001 &2972479651670665009
@@ -98693,6 +98762,7 @@ MonoBehaviour:
   canFire: 1
   isBaretta: 0
   isLeftHanded: 0
+  weaponBalanceIndex: 0
   useDualShotVertical: 0
   dualShotSpacing: 0.04
 --- !u!1001 &6999571474490654985
