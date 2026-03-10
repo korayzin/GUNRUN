@@ -4,6 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>Portal açılma animasyon stili. Barbie sahnesi için SpiralRise önerilir.</summary>
+public enum PortalAnimationStyle
+{
+    [Tooltip("Klasik: scale + dönüş + bounce")]
+    Classic,
+    [Tooltip("Barbie: Yerden yükselirken spiral açılma (daha sinematik)")]
+    SpiralRise,
+    [Tooltip("Elastik pop: Daha fazla bounce/elastik his")]
+    ElasticPop
+}
+
 public class AdvancedPortalSpawner : MonoBehaviour
 {
     [Header("Portal Prefabs")]
@@ -93,6 +104,8 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public float tutorialBCSpawnIntervalMultiplier = 2.5f;
 
     [Header("Portal Spawn Animation")]
+    [Tooltip("Animasyon stili - Barbie sahnesi için SpiralRise önerilir")]
+    public PortalAnimationStyle portalAnimationStyle = PortalAnimationStyle.Classic;
     [Tooltip("Oyun başladıktan kaç saniye sonra portallar açılsın")]
     public float portalSpawnStartDelay = 10f;
     [Tooltip("Portal açılma animasyon süresi")]
@@ -103,6 +116,8 @@ public class AdvancedPortalSpawner : MonoBehaviour
     public float portalSpawnRotation = 360f;
     [Tooltip("Overshoot (bounce) efekti için")]
     public float portalOvershoot = 1.1f;
+    [Tooltip("SpiralRise stili: yerden yükselme miktarı (metre)")]
+    public float portalRiseHeight = 0.8f;
 
     private List<string> portals = new List<string> { "A", "B", "C" };
     private Dictionary<string, GameObject> portalPrefabs;
@@ -456,29 +471,76 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     private IEnumerator AnimatePortalSpawnUnscaled(GameObject portal, Quaternion targetRotation, bool playSound = true)
     {
+        yield return AnimatePortalInternal(portal, targetRotation, playSound, useUnscaledTime: true);
+    }
+
+    private IEnumerator AnimatePortalInternal(GameObject portal, Quaternion targetRotation, bool playSound, bool useUnscaledTime)
+    {
         if (portal == null) yield break;
 
         Transform portalTransform = portal.transform;
         Vector3 targetScale = portalTransform.localScale;
+        Vector3 targetPos = portalTransform.position;
         portalTransform.localScale = Vector3.zero;
 
         float elapsed = 0f;
         float startRotationY = targetRotation.eulerAngles.y - portalSpawnRotation;
+        float deltaTime() => useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
 
-        while (elapsed < portalSpawnDuration)
+        switch (portalAnimationStyle)
         {
-            elapsed += Time.unscaledDeltaTime;
-            float t = elapsed / portalSpawnDuration;
-            float easedT = EaseOutBack(t, portalOvershoot);
-            portalTransform.localScale = Vector3.LerpUnclamped(Vector3.zero, targetScale, easedT);
-            float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, EaseOutCubic(t));
-            portalTransform.rotation = Quaternion.Euler(targetRotation.eulerAngles.x, currentRotationY, targetRotation.eulerAngles.z);
-            yield return null;
+            case PortalAnimationStyle.SpiralRise:
+                // Yerden yukarı doğru yükselirken spiral açılma
+                portalTransform.position = targetPos + Vector3.down * portalRiseHeight;
+                while (elapsed < portalSpawnDuration)
+                {
+                    elapsed += deltaTime();
+                    float t = elapsed / portalSpawnDuration;
+                    float easeScale = EaseOutCubic(t);
+                    float easeRot = EaseOutQuad(t);
+                    portalTransform.localScale = Vector3.Lerp(Vector3.zero, targetScale, easeScale);
+                    float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, easeRot);
+                    portalTransform.rotation = Quaternion.Euler(targetRotation.eulerAngles.x, currentRotationY, targetRotation.eulerAngles.z);
+                    portalTransform.position = Vector3.Lerp(targetPos + Vector3.down * portalRiseHeight, targetPos, easeScale);
+                    yield return null;
+                }
+                break;
+
+            case PortalAnimationStyle.ElasticPop:
+                // Elastik bounce ile pop
+                while (elapsed < portalSpawnDuration)
+                {
+                    elapsed += deltaTime();
+                    float t = elapsed / portalSpawnDuration;
+                    float easedT = EaseOutElastic(t);
+                    portalTransform.localScale = Vector3.LerpUnclamped(Vector3.zero, targetScale, easedT);
+                    float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, EaseOutQuad(t));
+                    portalTransform.rotation = Quaternion.Euler(targetRotation.eulerAngles.x, currentRotationY, targetRotation.eulerAngles.z);
+                    yield return null;
+                }
+                break;
+
+            default: // Classic
+                while (elapsed < portalSpawnDuration)
+                {
+                    elapsed += deltaTime();
+                    float t = elapsed / portalSpawnDuration;
+                    float easedT = EaseOutBack(t, portalOvershoot);
+                    portalTransform.localScale = Vector3.LerpUnclamped(Vector3.zero, targetScale, easedT);
+                    float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, EaseOutCubic(t));
+                    portalTransform.rotation = Quaternion.Euler(targetRotation.eulerAngles.x, currentRotationY, targetRotation.eulerAngles.z);
+                    yield return null;
+                }
+                break;
         }
 
         portalTransform.localScale = targetScale;
         portalTransform.rotation = targetRotation;
-        yield return StartCoroutine(PulseEffectUnscaled(portalTransform, targetScale));
+        portalTransform.position = targetPos;
+        if (useUnscaledTime)
+            yield return StartCoroutine(PulseEffectUnscaled(portalTransform, targetScale));
+        else
+            yield return StartCoroutine(PulseEffect(portalTransform, targetScale));
 
         if (playSound && GameManager.Instance != null)
             GameManager.Instance.PlayPortalOpenSound();
@@ -654,48 +716,7 @@ public class AdvancedPortalSpawner : MonoBehaviour
 
     IEnumerator AnimatePortalSpawn(GameObject portal, Quaternion targetRotation, bool playSound = true)
     {
-        if (portal == null) yield break;
-
-        Transform portalTransform = portal.transform;
-        Vector3 targetScale = portalTransform.localScale;
-        
-        // Başlangıç: sıfır scale
-        portalTransform.localScale = Vector3.zero;
-        
-        float elapsed = 0f;
-        float startRotationY = targetRotation.eulerAngles.y - portalSpawnRotation;
-        
-        while (elapsed < portalSpawnDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / portalSpawnDuration;
-            
-            // Elastic/Bounce easing fonksiyonu
-            float easedT = EaseOutBack(t, portalOvershoot);
-            
-            // Scale animasyonu (sıfırdan hedefe)
-            portalTransform.localScale = Vector3.LerpUnclamped(Vector3.zero, targetScale, easedT);
-            
-            // Dönme animasyonu
-            float currentRotationY = Mathf.Lerp(startRotationY, targetRotation.eulerAngles.y, EaseOutCubic(t));
-            portalTransform.rotation = Quaternion.Euler(
-                targetRotation.eulerAngles.x,
-                currentRotationY,
-                targetRotation.eulerAngles.z
-            );
-            
-            yield return null;
-        }
-        
-        // Son değerleri garanti et
-        portalTransform.localScale = targetScale;
-        portalTransform.rotation = targetRotation;
-        
-        // Pulse efekti (tatlı bir son dokunuş)
-        yield return StartCoroutine(PulseEffect(portalTransform, targetScale));
-
-        if (playSound && GameManager.Instance != null)
-            GameManager.Instance.PlayPortalOpenSound();
+        yield return AnimatePortalInternal(portal, targetRotation, playSound, useUnscaledTime: false);
     }
 
     IEnumerator PulseEffect(Transform portalTransform, Vector3 baseScale)
@@ -737,6 +758,20 @@ public class AdvancedPortalSpawner : MonoBehaviour
     float EaseOutCubic(float t)
     {
         return 1f - Mathf.Pow(1f - t, 3f);
+    }
+
+    float EaseOutQuad(float t)
+    {
+        return 1f - (1f - t) * (1f - t);
+    }
+
+    /// <summary>Elastik bounce - fazla overshoot ile yumuşak zıplama hissi</summary>
+    float EaseOutElastic(float t)
+    {
+        if (t <= 0f) return 0f;
+        if (t >= 1f) return 1f;
+        float c4 = (2f * Mathf.PI) / 3f;
+        return Mathf.Pow(2f, -10f * t) * Mathf.Sin((t * 10f - 0.75f) * c4) + 1f;
     }
 
     IEnumerator SpawnEnemiesContinuously()

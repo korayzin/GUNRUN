@@ -9,11 +9,18 @@ Shader "Custom/M_Cartoonish"
         _ShadowThreshold ("Shadow Threshold", Range(0,1)) = 0.5
         _OutlineColor ("Outline Color", Color) = (0,0,0,1)
         _OutlineThickness ("Outline Thickness", Range(0.0, 0.05)) = 0.02
+        _Opacity ("Opacity", Range(0.0, 1.0)) = 0.85
+        [Header(Jelly Effect)]
+        _MutationSpeed ("Mutation Speed", Float) = 3.0
+        _MutationScale ("Mutation Scale", Float) = 5.0
+        _MutationStrength ("Mutation Strength", Range(0.0, 0.2)) = 0.08
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalPipeline" }
         LOD 200
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
         Pass
         {
             Name "ToonLit"
@@ -48,11 +55,26 @@ Shader "Custom/M_Cartoonish"
                 float4 _OutlineColor;
                 float _ShadowThreshold;
                 float _OutlineThickness;
+                float _Opacity;
+                float _MutationSpeed, _MutationScale, _MutationStrength;
             CBUFFER_END
+            float hash(float n) { return frac(sin(n) * 43758.5453123); }
+            float noise(float3 x) {
+                float3 p = floor(x);
+                float3 f = frac(x);
+                f = f * f * (3.0 - 2.0 * f);
+                float n = p.x + p.y * 57.0 + 113.0 * p.z;
+                return lerp(lerp(lerp(hash(n + 0.0), hash(n + 1.0), f.x),
+                            lerp(hash(n + 57.0), hash(n + 58.0), f.x), f.y),
+                        lerp(lerp(hash(n + 113.0), hash(n + 114.0), f.x),
+                            lerp(hash(n + 170.0), hash(n + 171.0), f.x), f.y), f.z);
+            }
             Varyings vert(Attributes input) {
                 Varyings o;
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                float n = noise(input.positionOS.xyz * _MutationScale + _Time.y * _MutationSpeed);
+                input.positionOS.xyz += input.normalOS * n * _MutationStrength;
                 VertexPositionInputs vpos = GetVertexPositionInputs(input.positionOS.xyz);
                 o.positionHCS = vpos.positionCS;
                 o.uv = input.uv;
@@ -69,9 +91,11 @@ Shader "Custom/M_Cartoonish"
                 float NdotL = dot(normal, lightDir);
                 float shadowStep = step(_ShadowThreshold, NdotL);
                 float3 shadowCol = lerp(_ShadowColor.rgb, _HighlightColor.rgb, shadowStep);
-                float3 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv).rgb * _Color.rgb;
+                float4 texSample = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                float3 texCol = texSample.rgb * _Color.rgb;
                 float3 finalCol = texCol * shadowCol;
-                return float4(finalCol, 1.0);
+                float alpha = texSample.a * _Color.a * _Opacity;
+                return float4(finalCol, alpha);
             }
             ENDHLSL
         }
@@ -100,19 +124,33 @@ Shader "Custom/M_Cartoonish"
             CBUFFER_START(UnityPerMaterial)
                 float4 _OutlineColor;
                 float _OutlineThickness;
+                float _Opacity;
+                float _MutationSpeed, _MutationScale, _MutationStrength;
             CBUFFER_END
+            float hash(float n) { return frac(sin(n) * 43758.5453123); }
+            float noise(float3 x) {
+                float3 p = floor(x);
+                float3 f = frac(x);
+                f = f * f * (3.0 - 2.0 * f);
+                float n = p.x + p.y * 57.0 + 113.0 * p.z;
+                return lerp(lerp(lerp(hash(n + 0.0), hash(n + 1.0), f.x),
+                            lerp(hash(n + 57.0), hash(n + 58.0), f.x), f.y),
+                        lerp(lerp(hash(n + 113.0), hash(n + 114.0), f.x),
+                            lerp(hash(n + 170.0), hash(n + 171.0), f.x), f.y), f.z);
+            }
             Varyings vert(Attributes input) {
                 Varyings o;
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                float3 norm = TransformObjectToWorldNormal(input.normalOS);
-                float3 pos = input.positionOS.xyz + norm * _OutlineThickness;
+                float n = noise(input.positionOS.xyz * _MutationScale + _Time.y * _MutationSpeed);
+                input.positionOS.xyz += input.normalOS * n * _MutationStrength;
+                float3 pos = input.positionOS.xyz + input.normalOS * _OutlineThickness;
                 o.positionHCS = TransformObjectToHClip(pos);
                 return o;
             }
             float4 frag(Varyings i) : SV_Target {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-                return _OutlineColor;
+                return float4(_OutlineColor.rgb, _OutlineColor.a * _Opacity);
             }
             ENDHLSL
         }

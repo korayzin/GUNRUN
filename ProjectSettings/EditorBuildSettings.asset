@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Gunrun 2.0/Scenes 2.0/Koray.unity
     guid: c43c68c8759d08a42a43aa4a286c4e99
+  - enabled: 1
+    path: Assets/Gunrun 2.0/Scenes 2.0/Barbie.unity
+    guid: 766faf5113be0dc4fbf4b7791eeb73d3
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: a66456cc8bfcea843a958fa90d81556d,
       type: 2}
