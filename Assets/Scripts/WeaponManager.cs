@@ -491,7 +491,6 @@ public class WeaponManager : MonoBehaviour
             DisableAllBarettaWeapons();
             if (firstWeapon != null)
             {
-                firstWeapon.SetActive(false);
                 GunFire gunFire = firstWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
@@ -509,7 +508,6 @@ public class WeaponManager : MonoBehaviour
             if (testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null) sixthWeaponLeftHand.SetActive(false);
             if (secondWeapon != null)
             {
-                secondWeapon.SetActive(false);
                 GunFire gunFire = secondWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
@@ -524,7 +522,6 @@ public class WeaponManager : MonoBehaviour
             isSwitchingWeapon = true;
             if (thirdWeapon != null)
             {
-                thirdWeapon.SetActive(false);
                 GunFire gunFire = thirdWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
@@ -539,7 +536,6 @@ public class WeaponManager : MonoBehaviour
             isSwitchingWeapon = true;
             if (fourthWeapon != null)
             {
-                fourthWeapon.SetActive(false);
                 GunFire gunFire = fourthWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
@@ -556,7 +552,6 @@ public class WeaponManager : MonoBehaviour
             isSwitchingWeapon = true;
             if (fifthWeapon != null)
             {
-                fifthWeapon.SetActive(false);
                 GunFire gunFire = fifthWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
@@ -585,11 +580,9 @@ public class WeaponManager : MonoBehaviour
             isSwitchingWeapon = true;
             if (sixthWeapon != null)
             {
-                sixthWeapon.SetActive(false);
                 GunFire gunFire = sixthWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
-            if (sixthWeaponLeftHand != null) sixthWeaponLeftHand.SetActive(false);
             StartCoroutine(SwitchWeaponWithVFX(sixthWeapon, seventhWeapon, vfxSixth, vfxSeventh));
             currentWeapon = 6;
             HandleBarettaSwitch(seventhWeapon);
@@ -603,7 +596,6 @@ public class WeaponManager : MonoBehaviour
             isSwitchingWeapon = true;
             if (seventhWeapon != null)
             {
-                seventhWeapon.SetActive(false);
                 GunFire gunFire = seventhWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
@@ -620,7 +612,6 @@ public class WeaponManager : MonoBehaviour
             isSwitchingWeapon = true;
             if (eighthWeapon != null)
             {
-                eighthWeapon.SetActive(false);
                 GunFire gunFire = eighthWeapon.GetComponent<GunFire>();
                 if (gunFire != null) gunFire.enabled = false;
             }
@@ -663,7 +654,7 @@ public class WeaponManager : MonoBehaviour
     private IEnumerator SwitchWeaponWithVFX(GameObject currentWeaponObj, GameObject nextWeaponObj, GameObject currentWeaponVFX, GameObject nextWeaponVFX)
     {
         StopLoopSFX();
-        // Yeni silah null ise coroutine'i güvenli şekilde bitir (seventh weapon atanmamış olabilir)
+        // Yeni silah null ise coroutine'i güvenli şekilde bitir
         if (nextWeaponObj == null)
         {
             Debug.LogError("WeaponManager: Geçilecek silah (nextWeaponObj) atanmamış! Inspector'da ilgili weapon slot'unu kontrol edin.");
@@ -673,56 +664,107 @@ public class WeaponManager : MonoBehaviour
             yield break;
         }
 
-        // Önceki silahın sol el baretta'sını kapat (2. ve 3. silahta sol el açıksa kapansın)
-        if (currentWeaponObj != null)
-        {
-            var prevGun = currentWeaponObj.GetComponent<GunFire>();
-            if (prevGun != null)
-                SetLeftHandBarettaActiveForWeaponIndex(prevGun.WeaponBalanceIndex, false);
-        }
+        var prevGun = currentWeaponObj != null ? currentWeaponObj.GetComponent<GunFire>() : null;
+        int prevWeaponIndex = prevGun != null ? prevGun.WeaponBalanceIndex : -1;
+        GameObject leftHandBaretta = (prevGun != null && HasLeftHandBarettaForWeaponIndex(prevWeaponIndex)) ? GetLeftHandBarettaGameObject(prevWeaponIndex) : null;
 
-        // Önceki silah zaten CheckWeaponSwitch'te kapatıldı, burada sadece VFX'i kapat
         if (currentWeaponVFX != null)
         {
             if (currentWeaponVFX.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
-            {
                 ps.Stop();
-            }
             currentWeaponVFX.SetActive(false);
         }
 
-        yield return new WaitForSeconds(vfxDelay); 
+        // Dissolve: Mevcut silahı yukarıdan aşağıya siler
+        var dissolveCurrent = currentWeaponObj != null ? (currentWeaponObj.GetComponent<WeaponDissolveEffect>() ?? currentWeaponObj.AddComponent<WeaponDissolveEffect>()) : null;
+        if (dissolveCurrent != null)
+            yield return dissolveCurrent.PlayDespawn(tutorialDespawnDuration);
+        else if (currentWeaponObj != null)
+            yield return new WaitForSeconds(tutorialDespawnDuration);
+
+        // Sol el despawn
+        if (leftHandBaretta != null && leftHandBaretta.activeSelf)
+        {
+            var dissolveLeft = leftHandBaretta.GetComponent<WeaponDissolveEffect>() ?? leftHandBaretta.AddComponent<WeaponDissolveEffect>();
+            yield return dissolveLeft.PlayDespawn(tutorialDespawnDuration);
+        }
+
+        if (currentWeaponObj != null)
+            currentWeaponObj.SetActive(false);
+        if (prevGun != null)
+            SetLeftHandBarettaActiveForWeaponIndex(prevGun.WeaponBalanceIndex, false);
+        if (dissolveCurrent != null) dissolveCurrent.EnsureVisible();
+        if (leftHandBaretta != null)
+        {
+            var dl = leftHandBaretta.GetComponent<WeaponDissolveEffect>();
+            if (dl != null) dl.EnsureVisible();
+        }
+
+        // 6. silahtan çıkarken sol eli de despawn et
+        GameObject sixthLeft = (currentWeaponObj == sixthWeapon && sixthWeaponLeftHand != null && sixthWeaponLeftHand.activeSelf) ? sixthWeaponLeftHand : null;
+        if (sixthLeft != null)
+        {
+            var dissolveSixthLeft = sixthLeft.GetComponent<WeaponDissolveEffect>() ?? sixthLeft.AddComponent<WeaponDissolveEffect>();
+            yield return dissolveSixthLeft.PlayDespawn(tutorialDespawnDuration);
+            sixthLeft.SetActive(false);
+            dissolveSixthLeft.EnsureVisible();
+        }
+
+        yield return new WaitForSeconds(tutorialDelayBetweenWeapons);
+
+        nextWeaponObj.SetActive(true);
+        var dissolveNext = nextWeaponObj.GetComponent<WeaponDissolveEffect>() ?? nextWeaponObj.AddComponent<WeaponDissolveEffect>();
+        var gunFire = nextWeaponObj.GetComponent<GunFire>();
+        if (gunFire != null) gunFire.enabled = false;
 
         if (nextWeaponVFX != null)
         {
-            nextWeaponVFX.SetActive(true); // **Yeni VFX açılıyor**
-
+            nextWeaponVFX.SetActive(true);
             if (nextWeaponVFX.TryGetComponent<ParticleSystem>(out ParticleSystem psNext))
-            {
                 psNext.Play();
-                Debug.Log("Silah değiştirme VFX oynatılıyor...");
+        }
 
-                yield return new WaitForSeconds(psNext.main.duration);
+        yield return dissolveNext.PlaySpawn(tutorialSpawnDuration);
 
-                psNext.Stop(); 
+        if (nextWeaponVFX != null && nextWeaponVFX.TryGetComponent<ParticleSystem>(out ParticleSystem psVfx))
+        {
+            yield return new WaitForSeconds(psVfx.main.duration);
+            psVfx.Stop();
+        }
+
+        if (gunFire != null)
+        {
+            gunFire.enabled = true;
+            if (gunFire.isBaretta || HasLeftHandBarettaForWeaponIndex(currentWeapon))
+            {
+                GameObject leftHandNew = GetLeftHandBarettaGameObject(currentWeapon);
+                if (leftHandNew != null)
+                {
+                    leftHandNew.SetActive(true);
+                    var dissolveLeftNew = leftHandNew.GetComponent<WeaponDissolveEffect>() ?? leftHandNew.AddComponent<WeaponDissolveEffect>();
+                    yield return dissolveLeftNew.PlaySpawn(tutorialSpawnDuration);
+                    SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
+                }
+                else
+                {
+                    SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
+                }
             }
         }
 
-        nextWeaponObj.SetActive(true);
-        Debug.Log("Yeni silaha geçildi: " + nextWeaponObj.name);
-
-        GunFire nextGunFire = nextWeaponObj.GetComponent<GunFire>();
-        if (nextGunFire != null)
+        if (currentWeapon == 5 && !testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null)
         {
-            nextGunFire.enabled = true;
-            if (nextGunFire.isBaretta || HasLeftHandBarettaForWeaponIndex(currentWeapon))
-                SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
-            Debug.Log($"{nextWeaponObj.name} silahı açıldı.");
+            sixthWeaponLeftHand.SetActive(true);
+            var dissolveSixthLeft = sixthWeaponLeftHand.GetComponent<WeaponDissolveEffect>() ?? sixthWeaponLeftHand.AddComponent<WeaponDissolveEffect>();
+            yield return dissolveSixthLeft.PlaySpawn(tutorialSpawnDuration);
+            var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
+            if (laserOnLeft != null) laserOnLeft.enabled = true;
         }
 
         UpdateWeaponUI();
         isSwitchingWeapon = false;
         OnWeaponChanged?.Invoke(currentWeapon);
+        Debug.Log("Yeni silaha geçildi: " + nextWeaponObj.name);
     }
 
     public void NextWeaponManual()
@@ -775,192 +817,7 @@ public class WeaponManager : MonoBehaviour
         GameObject currentVFX = GetVFXAt(currentWeapon);
         GameObject nextVFX = GetVFXAt(targetIndex);
         currentWeapon = targetIndex;
-        StartCoroutine(TutorialSwitchWeaponWithVFX(currentObj, nextObj, currentVFX, nextVFX));
-    }
-
-    /// <summary>Tutorial için: Silah mesh dissolve (yukarıdan aşağı gider / aşağıdan yukarı gelir) + el VFX.</summary>
-    private IEnumerator TutorialSwitchWeaponWithVFX(GameObject currentWeaponObj, GameObject nextWeaponObj, GameObject currentWeaponVFX, GameObject nextWeaponVFX)
-    {
-        StopLoopSFX();
-        if (nextWeaponObj == null)
-        {
-            Debug.LogError("WeaponManager: Geçilecek silah (nextWeaponObj) atanmamış!");
-            UpdateWeaponUI();
-            isSwitchingWeapon = false;
-            OnWeaponChanged?.Invoke(currentWeapon);
-            yield break;
-        }
-
-        GunFire nextGun = nextWeaponObj.GetComponent<GunFire>();
-        bool useBothHands = (currentWeapon == tutorialBarettaWeaponIndex) && (tutorialWeaponChangeVFXParentRight != null && tutorialWeaponChangeVFXParentLeft != null);
-        bool isLeftHanded = nextGun != null && nextGun.isLeftHanded;
-
-        bool useHandParent = false; // El partikülleri kapatıldı - sadece dissolve kullanılıyor
-        GameObject[] vfxToPlay = null;
-        bool mustInstantiate = nextWeaponVFX != null && !nextWeaponVFX.scene.IsValid();
-
-        if (useHandParent)
-        {
-            if (useBothHands)
-            {
-                var cloneRight = Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentRight);
-                cloneRight.transform.localPosition = Vector3.zero;
-                cloneRight.transform.localRotation = Quaternion.identity;
-                var cloneLeft = Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentLeft);
-                cloneLeft.transform.localPosition = Vector3.zero;
-                cloneLeft.transform.localRotation = Quaternion.identity;
-                vfxToPlay = new[] { cloneRight, cloneLeft };
-            }
-            else if (!useBothHands && isLeftHanded && tutorialWeaponChangeVFXParentLeft != null)
-            {
-                var vfx = mustInstantiate ? Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentLeft) : nextWeaponVFX;
-                if (!mustInstantiate) vfx.transform.SetParent(tutorialWeaponChangeVFXParentLeft);
-                vfx.transform.localPosition = Vector3.zero;
-                vfx.transform.localRotation = Quaternion.identity;
-                vfxToPlay = new[] { vfx };
-            }
-            else if (!useBothHands && tutorialWeaponChangeVFXParentRight != null)
-            {
-                var vfx = mustInstantiate ? Object.Instantiate(nextWeaponVFX, tutorialWeaponChangeVFXParentRight) : nextWeaponVFX;
-                if (!mustInstantiate) vfx.transform.SetParent(tutorialWeaponChangeVFXParentRight);
-                vfx.transform.localPosition = Vector3.zero;
-                vfx.transform.localRotation = Quaternion.identity;
-                vfxToPlay = new[] { vfx };
-            }
-            else
-            {
-                vfxToPlay = nextWeaponVFX != null ? new[] { nextWeaponVFX } : null;
-            }
-        }
-
-        var prevGun = currentWeaponObj != null ? currentWeaponObj.GetComponent<GunFire>() : null;
-        int prevWeaponIndex = prevGun != null ? prevGun.WeaponBalanceIndex : -1;
-        GameObject leftHandBaretta = (prevGun != null && HasLeftHandBarettaForWeaponIndex(prevWeaponIndex)) ? GetLeftHandBarettaGameObject(prevWeaponIndex) : null;
-
-        if (currentWeaponVFX != null)
-        {
-            if (currentWeaponVFX.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
-                ps.Stop();
-            currentWeaponVFX.SetActive(false);
-        }
-
-        var dissolveCurrent = currentWeaponObj != null ? (currentWeaponObj.GetComponent<WeaponDissolveEffect>() ?? currentWeaponObj.AddComponent<WeaponDissolveEffect>()) : null;
-        if (dissolveCurrent != null)
-        {
-            yield return dissolveCurrent.PlayDespawn(tutorialDespawnDuration);
-        }
-        else
-        {
-            yield return new WaitForSeconds(tutorialDespawnDuration);
-        }
-
-        // Sol el despawn - sağ eli gizlemeden ÖNCE yap (sol el sağ elin child'ı olabilir, gizlenince activeSelf false olur)
-        if (leftHandBaretta != null && leftHandBaretta.activeSelf)
-        {
-            var dissolveLeft = leftHandBaretta.GetComponent<WeaponDissolveEffect>() ?? leftHandBaretta.AddComponent<WeaponDissolveEffect>();
-            yield return dissolveLeft.PlayDespawn(tutorialDespawnDuration);
-        }
-
-        // Sağ eli gizle (sol el despawn tamamlandıktan sonra)
-        if (currentWeaponObj != null)
-            currentWeaponObj.SetActive(false);
-
-        if (prevGun != null)
-            SetLeftHandBarettaActiveForWeaponIndex(prevGun.WeaponBalanceIndex, false);
-        if (dissolveCurrent != null) dissolveCurrent.EnsureVisible();
-        if (leftHandBaretta != null)
-        {
-            var dl = leftHandBaretta.GetComponent<WeaponDissolveEffect>();
-            if (dl != null) dl.EnsureVisible();
-        }
-
-        // 6. silahtan çıkarken sol eli de despawn et
-        GameObject sixthLeft = (currentWeaponObj == sixthWeapon && sixthWeaponLeftHand != null && sixthWeaponLeftHand.activeSelf) ? sixthWeaponLeftHand : null;
-        if (sixthLeft != null)
-        {
-            var dissolveSixthLeft = sixthLeft.GetComponent<WeaponDissolveEffect>() ?? sixthLeft.AddComponent<WeaponDissolveEffect>();
-            yield return dissolveSixthLeft.PlayDespawn(tutorialDespawnDuration);
-            sixthLeft.SetActive(false);
-            dissolveSixthLeft.EnsureVisible();
-        }
-
-        yield return new WaitForSeconds(tutorialDelayBetweenWeapons);
-
-        nextWeaponObj.SetActive(true);
-        var dissolveNext = nextWeaponObj.GetComponent<WeaponDissolveEffect>() ?? nextWeaponObj.AddComponent<WeaponDissolveEffect>();
-        var gunFire = nextWeaponObj.GetComponent<GunFire>();
-        if (gunFire != null) gunFire.enabled = false;
-
-        GameObject[] activeVfxArr = vfxToPlay;
-        if (activeVfxArr == null && nextWeaponVFX != null && useHandParent)
-            activeVfxArr = mustInstantiate ? new[] { Object.Instantiate(nextWeaponVFX) } : new[] { nextWeaponVFX };
-
-        if (activeVfxArr != null)
-        {
-            foreach (var vfx in activeVfxArr)
-            {
-                if (vfx == null) continue;
-                vfx.SetActive(true);
-                if (vfx.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
-                    ps.Play();
-            }
-        }
-
-        yield return dissolveNext.PlaySpawn(tutorialSpawnDuration);
-
-        float vfxDur = 0f;
-        if (activeVfxArr != null)
-        {
-            foreach (var vfx in activeVfxArr)
-            {
-                if (vfx != null && vfx.TryGetComponent<ParticleSystem>(out ParticleSystem ps))
-                    vfxDur = Mathf.Max(vfxDur, ps.main.duration);
-            }
-            if (vfxDur > 0f) yield return new WaitForSeconds(vfxDur);
-            foreach (var vfx in activeVfxArr)
-            {
-                if (vfx == null) continue;
-                if (vfx.TryGetComponent<ParticleSystem>(out ParticleSystem pps))
-                    pps.Stop();
-                if (vfx != nextWeaponVFX)
-                    Object.Destroy(vfx);
-            }
-        }
-        if (nextWeaponVFX != null && useHandParent && !useBothHands && !mustInstantiate)
-            nextWeaponVFX.transform.SetParent(null);
-
-        if (gunFire != null)
-        {
-            gunFire.enabled = true;
-            if (gunFire.isBaretta || HasLeftHandBarettaForWeaponIndex(currentWeapon))
-            {
-                GameObject leftHandNew = GetLeftHandBarettaGameObject(currentWeapon);
-                if (leftHandNew != null)
-                {
-                    leftHandNew.SetActive(true);
-                    var dissolveLeftNew = leftHandNew.GetComponent<WeaponDissolveEffect>() ?? leftHandNew.AddComponent<WeaponDissolveEffect>();
-                    yield return dissolveLeftNew.PlaySpawn(tutorialSpawnDuration);
-                    SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
-                }
-                else
-                {
-                    SetLeftHandBarettaActiveForWeaponIndex(currentWeapon, true);
-                }
-            }
-        }
-
-        if (currentWeapon == 5 && !testSixthLeftHandOnSecondWeapon && sixthWeaponLeftHand != null)
-        {
-            sixthWeaponLeftHand.SetActive(true);
-            var dissolveSixthLeft = sixthWeaponLeftHand.GetComponent<WeaponDissolveEffect>() ?? sixthWeaponLeftHand.AddComponent<WeaponDissolveEffect>();
-            yield return dissolveSixthLeft.PlaySpawn(tutorialSpawnDuration);
-            var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
-            if (laserOnLeft != null) laserOnLeft.enabled = true;
-        }
-
-        UpdateWeaponUI();
-        isSwitchingWeapon = false;
-        OnWeaponChanged?.Invoke(currentWeapon);
+        StartCoroutine(SwitchWeaponWithVFX(currentObj, nextObj, currentVFX, nextVFX));
     }
 
     private GameObject GetVFXAt(int index)
@@ -1044,11 +901,8 @@ public class WeaponManager : MonoBehaviour
         if (next != null)
         {
             next.SetActive(true);
-            if (SceneManager.GetActiveScene().name == "newtutorial")
-            {
-                var dissolve = next.GetComponent<WeaponDissolveEffect>();
-                if (dissolve != null) dissolve.EnsureVisible();
-            }
+            var dissolve = next.GetComponent<WeaponDissolveEffect>();
+            if (dissolve != null) dissolve.EnsureVisible();
             GunFire nextGun = next.GetComponent<GunFire>();
             if (nextGun != null)
             {
@@ -1060,11 +914,8 @@ public class WeaponManager : MonoBehaviour
         if (showSixthLeft && sixthWeaponLeftHand != null)
         {
             sixthWeaponLeftHand.SetActive(true);
-            if (SceneManager.GetActiveScene().name == "newtutorial")
-            {
-                var dissolve = sixthWeaponLeftHand.GetComponent<WeaponDissolveEffect>();
-                if (dissolve != null) dissolve.EnsureVisible();
-            }
+            var dissolve = sixthWeaponLeftHand.GetComponent<WeaponDissolveEffect>();
+            if (dissolve != null) dissolve.EnsureVisible();
             var laserOnLeft = sixthWeaponLeftHand.GetComponent<SixthGunLaser>();
             if (laserOnLeft != null) laserOnLeft.enabled = true;
         }

@@ -12,6 +12,8 @@ public class LeaderboardUI : MonoBehaviour
     public GameObject leaderboardHeaderPrefab;
     public TextMeshProUGUI loadingText;
     public TextMeshProUGUI myScoreText;
+    [Tooltip("Bu turdaki puan (Score). Boş bırakılırsa otomatik aranır. High score olsa da buraya o anki puan yazılır.")]
+    public TextMeshProUGUI currentScoreText;
     public Button refreshButton;
     
     [Header("Settings")]
@@ -189,6 +191,7 @@ public class LeaderboardUI : MonoBehaviour
 
         // My score text'i otomatik bul
         FindMyScoreText();
+        FindCurrentScoreText();
     }
 
     private void FindMyScoreText()
@@ -229,6 +232,66 @@ public class LeaderboardUI : MonoBehaviour
                         break;
                     }
                 }
+            }
+        }
+    }
+
+    /// <summary>Score (bu turdaki puan) text'ini bul. "puan text" LABEL'dır (score yazısı), değer alanı değil.</summary>
+    private void FindCurrentScoreText()
+    {
+        if (currentScoreText != null) return;
+
+        if (leaderboardPanel == null) return;
+
+        TextMeshProUGUI[] texts = leaderboardPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (TextMeshProUGUI text in texts)
+        {
+            if (text == myScoreText) continue;
+            string name = text.gameObject.name.ToLower();
+            // "puan text" = label (sadece "score" yazacak), değer alanı DEĞİL - atla
+            if (name == "puan text" || (name.Contains("puan") && name.Contains("text")))
+                continue;
+            // ScoreText veya "Text (TMP) (1)" gibi değer alanları - "score" veya parent'ı "Score" olan
+            bool isScoreValue = name.Contains("scoretext") || name.Contains("score text") ||
+                (text.transform.parent != null && text.transform.parent.name.Equals("Score", System.StringComparison.OrdinalIgnoreCase) && name != "puan text");
+            if (isScoreValue)
+            {
+                currentScoreText = text;
+                Debug.Log($"🔍 Current score text bulundu: {text.gameObject.name}");
+                break;
+            }
+        }
+        // Bulunamazsa "Score" parent'ındaki "puan text" olmayan text'i al (Text (TMP) (1) vb.)
+        if (currentScoreText == null)
+        {
+            foreach (TextMeshProUGUI text in texts)
+            {
+                if (text == myScoreText) continue;
+                string name = text.gameObject.name.ToLower();
+                if (name == "puan text") continue;
+                if (text.transform.parent != null && text.transform.parent.name.Equals("Score", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    currentScoreText = text;
+                    Debug.Log($"🔍 Current score text (Score child) bulundu: {text.gameObject.name}");
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>"puan text" label'ını "score" olarak sabitle - sadece bu label güncellenir, puan yazılmaz.</summary>
+    private void EnsureScoreLabelStatic()
+    {
+        if (leaderboardPanel == null) return;
+
+        TextMeshProUGUI[] texts = leaderboardPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (TextMeshProUGUI text in texts)
+        {
+            if (text.gameObject.name.Equals("puan text", System.StringComparison.OrdinalIgnoreCase))
+            {
+                text.text = "score";
+                Debug.Log("✅ puan text label olarak 'score' ayarlandı");
+                break;
             }
         }
     }
@@ -321,15 +384,26 @@ public class LeaderboardUI : MonoBehaviour
         ClearLeaderboard();
         Debug.Log("🧹 Eski leaderboard entry'leri temizlendi");
         
+        // "puan text" label'ını "score" yap (bir kez), değer alanına puan yazılacak
+        EnsureScoreLabelStatic();
+
         // Önce kendi score'unu al, sonra leaderboard - build'de isMe eşleşmesi için myScore gerekli
         Debug.Log("📡 Kendi max score çekiliyor...");
         FirebaseLeaderboardManager.Instance.GetMyMaxScore((myScore) =>
         {
             Debug.Log($"✅ CALLBACK! Kendi max score: {myScore}");
             
+            // High score yapılmışsa Firebase henüz güncellenmemiş olabilir - o anki puanı kullan
+            int displayScore = myScore;
+            if (GameManager.Instance != null && GameManager.Instance.score > myScore)
+            {
+                displayScore = GameManager.Instance.score;
+                Debug.Log($"✅ Yeni high score! O anki puan gösteriliyor: {displayScore}");
+            }
+            
             if (myScoreText != null)
             {
-                myScoreText.text = $"YOUR HIGH SCORE {myScore}";
+                myScoreText.text = $"YOUR HIGH SCORE {displayScore}";
                 myScoreText.gameObject.SetActive(true);
             }
             else
@@ -337,8 +411,20 @@ public class LeaderboardUI : MonoBehaviour
                 FindMyScoreText();
                 if (myScoreText != null)
                 {
-                    myScoreText.text = $"YOUR HIGH SCORE {myScore}";
+                    myScoreText.text = $"YOUR HIGH SCORE {displayScore}";
                     myScoreText.gameObject.SetActive(true);
+                }
+            }
+
+            // Score kısmına her zaman o anki puanı yaz (high score olsa da olmasa da)
+            if (GameManager.Instance != null)
+            {
+                FindCurrentScoreText();
+                if (currentScoreText != null && currentScoreText != myScoreText)
+                {
+                    currentScoreText.text = GameManager.Instance.score.ToString();
+                    currentScoreText.gameObject.SetActive(true);
+                    Debug.Log($"✅ Score kısmı güncellendi: {GameManager.Instance.score}");
                 }
             }
             

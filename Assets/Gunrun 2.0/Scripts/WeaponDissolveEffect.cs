@@ -1,13 +1,12 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Silah mesh'ine dissolve/build efekti uygular. Tutorial silah geçişlerinde:
+/// Silah mesh'ine dissolve/build efekti uygular. Silah geçişlerinde (tutorial ve normal oyun):
 /// - Despawn: Yukarıdan aşağıya yavaşça siler (wipe)
 /// - Spawn: Kabza (aşağı) ile tepeden (yukarı) yavaşça oluşturur (build)
 /// Prefab içindeki TÜM renderer'lara ve her renderer'ın TÜM materyallerine uygulanır.
-/// Sadece newtutorial sahnesinde aktif.
+/// Tüm sahnelerde çalışır.
 /// </summary>
 public class WeaponDissolveEffect : MonoBehaviour
 {
@@ -38,7 +37,6 @@ public class WeaponDissolveEffect : MonoBehaviour
 
     private void Awake()
     {
-        if (SceneManager.GetActiveScene().name != "newtutorial") return;
         CacheRenderers();
     }
 
@@ -228,10 +226,9 @@ public class WeaponDissolveEffect : MonoBehaviour
         }
     }
 
-    /// <summary>Silah manuel geçişte (HUD) aktifleştiğinde dissolve materyalleri kaldırıp orijinale döner. newtutorial'da silah görünürlüğü için.</summary>
+    /// <summary>Silah manuel geçişte (HUD) aktifleştiğinde dissolve materyalleri kaldırıp orijinale döner.</summary>
     public void EnsureVisible()
     {
-        if (SceneManager.GetActiveScene().name != "newtutorial") return;
         if (!_initialized) CacheRenderers();
         if (!_initialized) return;
         RestoreOriginalMaterials();

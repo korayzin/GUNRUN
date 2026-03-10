@@ -28,6 +28,7 @@ public class LeaderboardEntryUI : MonoBehaviour
             if (texts.Length >= 3)
             {
                 // Child object'lerin isimlerine göre ata
+                TextMeshProUGUI fallbackScoreText = null; // rank/name dışındaki son text (değer alanı)
                 foreach (TextMeshProUGUI text in texts)
                 {
                     string name = text.gameObject.name.ToLower();
@@ -39,16 +40,32 @@ public class LeaderboardEntryUI : MonoBehaviour
                     {
                         nameText = text;
                     }
+                    else if (name == "puan text")
+                    {
+                        // "puan text" = label (sadece "score"), değer alanı DEĞİL - atla
+                    }
                     else if (name.Contains("score") || name.Contains("puan"))
                     {
                         scoreText = text;
                     }
+                    else
+                    {
+                        // "Text (TMP) (1)" gibi - muhtemelen puan değeri
+                        fallbackScoreText = text;
+                    }
                 }
-                
-                // Hala null'sa sırayla ata
+                if (scoreText == null) scoreText = fallbackScoreText;
+
+                // Hala null'sa sırayla ata (puan text hariç)
                 if (rankText == null) rankText = texts[0];
                 if (nameText == null) nameText = texts[1];
-                if (scoreText == null) scoreText = texts[2];
+                if (scoreText == null)
+                {
+                    foreach (var t in texts)
+                        if (t != rankText && t != nameText && t.gameObject.name != "puan text")
+                        { scoreText = t; break; }
+                }
+                if (scoreText == null) scoreText = texts.Length > 2 ? texts[2] : texts[0];
             }
             else if (texts.Length >= 1)
             {

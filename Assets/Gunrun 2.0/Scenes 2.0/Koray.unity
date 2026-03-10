@@ -60993,6 +60993,7 @@ MonoBehaviour:
     type: 3}
   loadingText: {fileID: 0}
   myScoreText: {fileID: 156890061}
+  currentScoreText: {fileID: 0}
   refreshButton: {fileID: 0}
   maxEntries: 50
   addTestPlayersButton: {fileID: 0}
