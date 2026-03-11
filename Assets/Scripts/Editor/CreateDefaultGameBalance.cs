@@ -14,11 +14,11 @@ public static class CreateDefaultGameBalance
         balance.weapons[1] = new GameBalance.WeaponBalanceData { weaponName = "SecondGun", damage = 30, bulletVelocity = 200, maxAmmo = 30, fireCooldown = 0.1f };
         balance.weapons[2] = new GameBalance.WeaponBalanceData { weaponName = "ThirdGun", damage = 25, bulletVelocity = 100, maxAmmo = 10, fireCooldown = 0.5f };
         balance.weapons[3] = new GameBalance.WeaponBalanceData { weaponName = "FourthGun", damage = 50, bulletVelocity = 80, maxAmmo = 100, fireCooldown = 0.05f };
-        balance.weapons[4] = new GameBalance.WeaponBalanceData { weaponName = "FifthGun", damage = 50, bulletVelocity = 20, maxAmmo = 60, fireCooldown = 0.01f };
+        balance.weapons[4] = new GameBalance.WeaponBalanceData { weaponName = "FifthGun", damage = 50, bulletVelocity = 20, maxAmmo = 60, fireCooldown = 0.01f, secondaryDamage = 9999f, secondaryMaxAmmo = 5 };
         balance.weapons[5] = new GameBalance.WeaponBalanceData { weaponName = "SixthGun", damage = 25, bulletVelocity = 15, maxAmmo = 25, fireCooldown = 0.5f };
         balance.weapons[6] = new GameBalance.WeaponBalanceData { weaponName = "SeventhGun", damage = 5, bulletVelocity = 0, maxAmmo = 25, fireCooldown = 0.5f };
         balance.weapons[7] = new GameBalance.WeaponBalanceData { weaponName = "EightGun", damage = 50, bulletVelocity = 20, maxAmmo = 20, fireCooldown = 0.5f };
-        balance.weapons[8] = new GameBalance.WeaponBalanceData { weaponName = "LastGun", damage = 12, bulletVelocity = 10, maxAmmo = 100, fireCooldown = 0.08f };
+        balance.weapons[8] = new GameBalance.WeaponBalanceData { weaponName = "LastGun", damage = 12, bulletVelocity = 10, maxAmmo = 100, fireCooldown = 0.08f, secondaryDamage = 100f, secondaryMaxAmmo = 0 };
 
         balance.stage2ScoreThreshold = 1500;
         balance.stage3ScoreThreshold = 8000;

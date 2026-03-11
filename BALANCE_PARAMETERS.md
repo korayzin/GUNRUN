@@ -106,9 +106,9 @@
 | Parametre | Değer | Açıklama |
 |-----------|-------|----------|
 | **Tuş** | A (Button.One / Button.Three) | Basılı tut = charge, bırak = yıldırım |
-| **Yıldırım hasarı** | 9999 | Anlık öldürme |
+| **Yıldırım hasarı** | 9999 | Anlık öldürme (GameBalance FifthGun.secondaryDamage) |
 | **Yıldırım menzili** | 100 metre | |
-| **Max yıldırım atışı** | 100 | |
+| **Max yıldırım atışı** | 5 | GameBalance FifthGun.secondaryMaxAmmo |
 | **Şarj süresi** | 1.5 saniye | Tam şarj için |
 | **Minimum şarj oranı** | %30 | Bu seviyeye gelmeden ateşlenmez |
 
@@ -200,7 +200,7 @@
 | Parametre | Değer | Açıklama |
 |-----------|-------|----------|
 | **Tuş** | Index trigger (basılı tut) | Tetik |
-| **Saniyedeki hasar (DPS)** | 12 | |
+| **Saniyedeki hasar (DPS)** | 12 | GameBalance LastGun.damage |
 | **Püskürtme menzili** | 8 metre | |
 | **Hasar kontrol aralığı** | 0.08 saniye | |
 | **Max püskürtme enerjisi** | 100 | |
@@ -214,7 +214,7 @@
 | Parametre | Değer | Açıklama |
 |-----------|-------|----------|
 | **Tuş** | A (Button.One) | Tek basış |
-| **Fireball hasarı** | 100 | |
+| **Fireball hasarı** | 100 | GameBalance LastGun.secondaryDamage |
 | **Mermi hızı** | 80 | |
 | **Maksimum mermi** | 8 | |
 

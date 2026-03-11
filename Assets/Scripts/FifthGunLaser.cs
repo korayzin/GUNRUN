@@ -21,8 +21,8 @@ public class FifthGunLaser : MonoBehaviour
     [Tooltip("Hasar (9999 = instant kill)")]
     public float laserDamage = 9999f;
     
-    [Tooltip("Kaç kez ateşlenebilir (0 = sınırsız)")]
-    public int maxLaserShots = 2;
+    [Tooltip("Kaç kez ateşlenebilir (0 = sınırsız). GameBalance.secondaryMaxAmmo varsa oradan alınır.")]
+    public int maxLaserShots = 5;
     
     [Header("=== CHARGE SİSTEMİ ===")]
     [Tooltip("Charge süresi (saniye)")]
@@ -193,15 +193,14 @@ public class FifthGunLaser : MonoBehaviour
     {
         if (GameBalanceManager.Instance == null) return;
         var d = GameBalanceManager.Instance.GetWeaponData(4);
-        laserDamage = d.damage;
-        if (d.maxAmmo > 0) maxLaserShots = d.maxAmmo;
+        if (d.secondaryDamage > 0) laserDamage = d.secondaryDamage;
+        if (d.secondaryMaxAmmo > 0) maxLaserShots = d.secondaryMaxAmmo;
     }
 
     void Start()
     {
         gunFire = GetComponent<GunFire>();
         ApplyBalanceFromManager();
-        if (maxLaserShots != 2) maxLaserShots = 2;
         remainingShots = maxLaserShots;
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
@@ -1036,14 +1035,10 @@ public class FifthGunLaser : MonoBehaviour
     {
         if (laserCountText == null) return;
         
-        // maxLaserShots'i 2 olarak garanti et
-        int displayMaxShots = maxLaserShots > 0 ? maxLaserShots : 2;
-        if (displayMaxShots != 2) displayMaxShots = 2;
-        
-        // remainingShots'i sınırla
+        int displayMaxShots = maxLaserShots > 0 ? maxLaserShots : 999;
         int displayRemainingShots = Mathf.Clamp(remainingShots, 0, displayMaxShots);
         
-        // Text'i güncelle: remainingShots/maxLaserShots (her zaman 2/2 formatında)
+        // Text'i güncelle: remainingShots/maxLaserShots
         laserCountText.text = $"{displayRemainingShots}/{displayMaxShots}";
         
         // 0/2 olduğunda kırmızı, diğer durumlarda normal renk

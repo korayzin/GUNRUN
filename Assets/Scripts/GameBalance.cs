@@ -75,6 +75,10 @@ public class GameBalance : ScriptableObject
         public int maxAmmo;
         [Tooltip("Fire cooldown in seconds")]
         public float fireCooldown;
+        [Tooltip("Secondary damage (e.g. FifthGun lightning). 0 = use script default")]
+        public float secondaryDamage;
+        [Tooltip("Secondary max ammo/shots (e.g. FifthGun lightning count). 0 = use script default")]
+        public int secondaryMaxAmmo;
     }
 
     [System.Serializable]

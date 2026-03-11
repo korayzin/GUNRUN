@@ -55,11 +55,11 @@ public class GameBalanceManager : MonoBehaviour
             case 1: d.weaponName = "SecondGun"; d.damage = 30;  d.bulletVelocity = 200; d.maxAmmo = 30;  d.fireCooldown = 0.1f; break;
             case 2: d.weaponName = "ThirdGun";  d.damage = 25;  d.bulletVelocity = 100; d.maxAmmo = 10;  d.fireCooldown = 0.5f; break;
             case 3: d.weaponName = "FourthGun"; d.damage = 50;  d.bulletVelocity = 80;  d.maxAmmo = 100; d.fireCooldown = 0.05f; break;
-            case 4: d.weaponName = "FifthGun";  d.damage = 50;  d.bulletVelocity = 20;  d.maxAmmo = 60;  d.fireCooldown = 0.01f; break;
+            case 4: d.weaponName = "FifthGun";  d.damage = 50;  d.bulletVelocity = 20;  d.maxAmmo = 60;  d.fireCooldown = 0.01f; d.secondaryDamage = 9999f; d.secondaryMaxAmmo = 5; break;
             case 5: d.weaponName = "SixthGun";  d.damage = 25;  d.bulletVelocity = 15;  d.maxAmmo = 25;  d.fireCooldown = 0.5f; break;
             case 6: d.weaponName = "SeventhGun"; d.damage = 5;   d.bulletVelocity = 0;   d.maxAmmo = 25;  d.fireCooldown = 0.5f; break;
             case 7: d.weaponName = "EightGun";  d.damage = 50;  d.bulletVelocity = 20;  d.maxAmmo = 20;  d.fireCooldown = 0.5f; break;
-            case 8: d.weaponName = "LastGun";  d.damage = 12;  d.bulletVelocity = 10;  d.maxAmmo = 100; d.fireCooldown = 0.08f; break;
+            case 8: d.weaponName = "LastGun";  d.damage = 12;  d.bulletVelocity = 10;  d.maxAmmo = 100; d.fireCooldown = 0.08f; d.secondaryDamage = 100f; d.secondaryMaxAmmo = 0; break;
         }
         return d;
     }
