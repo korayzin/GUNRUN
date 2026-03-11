@@ -82,12 +82,12 @@ MonoBehaviour:
   stage2KillThreshold: 36
   stage3KillThreshold: 72
   useScoreForStage: 1
-  stage1SpawnInterval: 1.75
-  stage2SpawnInterval: 1
-  stage3SpawnInterval: 0.75
+  stage1SpawnInterval: 2.5
+  stage2SpawnInterval: 2
+  stage3SpawnInterval: 1.5
   stage1EnemySpeed: 1.5
   stage2EnemySpeed: 2
-  stage3EnemySpeed: 2.5
+  stage3EnemySpeed: 2.1
   enemyHPByStage:
   - weak: 100
     medium: 120
