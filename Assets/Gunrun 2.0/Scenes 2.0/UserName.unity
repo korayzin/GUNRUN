@@ -1982,7 +1982,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Choose a random username or write
+  m_Text: Type a username or press the random button to select one at random.
 --- !u!222 &1127986119
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2007,8 +2007,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 8.1, y: 0}
-  m_SizeDelta: {x: 458.63, y: 25.58}
+  m_AnchoredPosition: {x: 17, y: -205}
+  m_SizeDelta: {x: 679.1, y: 25.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1284539566
 GameObject:
@@ -2904,7 +2904,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextSceneName: Deneme
-  showOnlyOncePerDevice: 0
   nameInputTMP: {fileID: 0}
   nameInputLegacy: {fileID: 1514470122}
   randomButton: {fileID: 1591776070}
@@ -3014,7 +3013,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -6, y: 292.1}
+  m_AnchoredPosition: {x: -6, y: 353.1}
   m_SizeDelta: {x: 236, y: 38.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1789905941

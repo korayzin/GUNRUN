@@ -78,55 +78,55 @@ MonoBehaviour:
     secondaryDamage: 100
     secondaryMaxAmmo: 30
   stage2ScoreThreshold: 1500
-  stage3ScoreThreshold: 2000
+  stage3ScoreThreshold: 5500
   stage2KillThreshold: 36
-  stage3KillThreshold: 72
+  stage3KillThreshold: 110
   useScoreForStage: 1
   stage1SpawnInterval: 2.5
-  stage2SpawnInterval: 2
-  stage3SpawnInterval: 1.5
-  stage1EnemySpeed: 1.5
-  stage2EnemySpeed: 2
-  stage3EnemySpeed: 2.1
+  stage2SpawnInterval: 1.8
+  stage3SpawnInterval: 1.2
+  stage1EnemySpeed: 2
+  stage2EnemySpeed: 2.5
+  stage3EnemySpeed: 3.2
   enemyHPByStage:
-  - weak: 100
+  - weak: 80
     medium: 120
-    strong: 200
+    strong: 180
     tank: 0
-  - weak: 140
-    medium: 180
-    strong: 220
-    tank: 250
-  - weak: 250
-    medium: 270
-    strong: 300
+  - weak: 130
+    medium: 190
+    strong: 280
     tank: 350
+  - weak: 200
+    medium: 280
+    strong: 400
+    tank: 550
   enemyScoreByStage:
   - weak: 25
     medium: 50
     strong: 100
     tank: 150
-  - weak: 25
-    medium: 50
-    strong: 100
-    tank: 150
-  - weak: 25
-    medium: 50
-    strong: 100
-    tank: 150
+  - weak: 35
+    medium: 70
+    strong: 140
+    tank: 200
+  - weak: 50
+    medium: 100
+    strong: 200
+    tank: 300
   enemySpawnWeights:
-  - weak: 60
-    medium: 35
+  - weak: 70
+    medium: 25
     strong: 5
     tank: 0
-  - weak: 30
-    medium: 50
+  - weak: 40
+    medium: 40
     strong: 15
     tank: 5
   - weak: 10
-    medium: 20
+    medium: 25
     strong: 45
-    tank: 25
+    tank: 20
   portalWeights: {x: 33, y: 33, z: 33}
   bagSize: 12
   bagRefillWhenSlotsBelow: 1

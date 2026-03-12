@@ -14547,6 +14547,7 @@ MonoBehaviour:
     type: 3}
   loadingText: {fileID: 0}
   myScoreText: {fileID: 156890061}
+  currentScoreText: {fileID: 0}
   refreshButton: {fileID: 0}
   maxEntries: 50
   addTestPlayersButton: {fileID: 0}
@@ -18946,11 +18947,13 @@ MonoBehaviour:
   tur4Score: 150
   tutorialMode: 1
   tutorialBCSpawnIntervalMultiplier: 2.5
+  portalAnimationStyle: 0
   portalSpawnStartDelay: 7.5
   portalSpawnDuration: 1.5
   portalSpawnDelay: 0.3
   portalSpawnRotation: 360
   portalOvershoot: 1.1
+  portalRiseHeight: 0.8
 --- !u!4 &1622565105
 Transform:
   m_ObjectHideFlags: 0
@@ -23496,7 +23499,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2033912452
 RectTransform:
   m_ObjectHideFlags: 0

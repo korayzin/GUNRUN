@@ -32,12 +32,16 @@ Material:
     - _Cull: 0
     - _JellyPower: 3
     - _JellyStrength: 0.15
+    - _MutationScale: 5
+    - _MutationSpeed: 3
+    - _MutationStrength: 0.08
+    - _Opacity: 0.85
     - _OutlineThickness: 0.02
     - _ShadowThreshold: 0.5
     m_Colors:
-    - _Color: {r: 1, g: 0, b: 0.7608104, a: 1}
+    - _Color: {r: 1, g: 0.3160377, b: 0.83638537, a: 1}
     - _HighlightColor: {r: 1, g: 1, b: 1, a: 1}
     - _JellyRimColor: {r: 1, g: 0.85, b: 0.95, a: 0.5}
-    - _OutlineColor: {r: 0.9319598, g: 0.5896226, b: 1, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShadowColor: {r: 0.4339623, g: 0.4339623, b: 0.4339623, a: 1}
   m_BuildTextureStacks: []
