@@ -38164,7 +38164,7 @@ MonoBehaviour:
   stage3TransitionSound: {fileID: 8300000, guid: 30867246ee57d2e43949f07345b858a5,
     type: 3}
   stageSoundsAudioSource: {fileID: 1834682426}
-  stagePortalSoundVolume: 3
+  stagePortalSoundVolume: 5
   handRayInteractor: {fileID: 1026554547}
   gameDuration: 360
   tutorialTimerDuration: 360

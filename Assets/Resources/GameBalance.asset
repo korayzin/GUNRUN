@@ -82,8 +82,8 @@ MonoBehaviour:
   stage2KillThreshold: 36
   stage3KillThreshold: 110
   useScoreForStage: 1
-  stage1SpawnInterval: 2.5
-  stage2SpawnInterval: 1.8
+  stage1SpawnInterval: 2
+  stage2SpawnInterval: 1.75
   stage3SpawnInterval: 1.2
   stage1EnemySpeed: 2
   stage2EnemySpeed: 2.5
@@ -115,8 +115,8 @@ MonoBehaviour:
     strong: 200
     tank: 300
   enemySpawnWeights:
-  - weak: 70
-    medium: 25
+  - weak: 60
+    medium: 30
     strong: 5
     tank: 0
   - weak: 40
