@@ -27,14 +27,19 @@ public class CountdownManager : MonoBehaviour
     {
         if (countdownText) countdownText.gameObject.SetActive(true);
 
+        var tooltipMgr = CountdownTooltipManager.Instance;
+        if (tooltipMgr != null) tooltipMgr.BeginCountdownTooltips(countdownTime);
+
         float timeLeft = countdownTime;
         while (timeLeft > 0)
         {
-            if (countdownText) countdownText.text = timeLeft.ToString("F0");
+            int num = Mathf.RoundToInt(timeLeft);
+            if (countdownText) countdownText.text = num.ToString();
             yield return new WaitForSeconds(1f);
             timeLeft--;
         }
 
+        if (tooltipMgr != null) tooltipMgr.StopCountdownTooltips();
         if (countdownText) countdownText.text = "GO!";
         yield return new WaitForSeconds(1f);
 

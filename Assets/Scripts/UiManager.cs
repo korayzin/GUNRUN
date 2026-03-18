@@ -204,12 +204,16 @@ public class UIManager : MonoBehaviour
         TextMeshProUGUI countdownText = CountdownManager.Instance != null ? CountdownManager.Instance.countdownText : null;
         if (countdownText != null) countdownText.gameObject.SetActive(true);
 
+        var tooltipMgr = CountdownTooltipManager.Instance;
+        if (tooltipMgr != null) tooltipMgr.BeginCountdownTooltips(5f);
+
         for (int i = 5; i >= 1; i--)
         {
             if (countdownText != null) countdownText.text = i.ToString();
             yield return new WaitForSeconds(1f);
         }
 
+        if (tooltipMgr != null) tooltipMgr.StopCountdownTooltips();
         if (countdownText != null) countdownText.text = "GO!";
         yield return new WaitForSeconds(1f);
 

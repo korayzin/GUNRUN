@@ -91,14 +91,19 @@ public class TutorialSequenceController : MonoBehaviour
     private int _phaseKillCount;
     private bool _portalsOpened;
 
+    /// <summary>Tutorial sırasında düşmanlar oyuncuya değse bile ölüm olmaz.</summary>
+    public static bool IsPlayerInvulnerable { get; private set; }
+
     private void Awake()
     {
         if (SceneManager.GetActiveScene().name != "newtutorial")
         {
+            IsPlayerInvulnerable = false;
             enabled = false;
             return;
         }
 
+        IsPlayerInvulnerable = true;
         ResolveReferences();
         Time.timeScale = 0f;
         if (weaponManager != null)
@@ -122,6 +127,8 @@ public class TutorialSequenceController : MonoBehaviour
     private void OnDisable()
     {
         EnemyHealth.OnEnemyKilled -= OnEnemyKilled;
+        if (SceneManager.GetActiveScene().name == "newtutorial")
+            IsPlayerInvulnerable = false;
     }
 
     private void ResolveReferences()
@@ -346,6 +353,7 @@ public class TutorialSequenceController : MonoBehaviour
         image.color = new Color(0f, 0f, 0f, 1f);
 
         Time.timeScale = 1f;
+        IsPlayerInvulnerable = false; // Geçiş öncesi oyuncu dokunulmazlığını kapat
         TutorialFirstPlayBootstrap.MarkTutorialCompleted(); // Bir sonraki açılışta newtutorial atlanacak
         int nextIndex = SceneManager.GetActiveScene().buildIndex + 1;
         int sceneCount = SceneManager.sceneCountInBuildSettings;

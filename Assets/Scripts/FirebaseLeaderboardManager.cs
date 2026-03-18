@@ -26,6 +26,9 @@ public class FirebaseLeaderboardManager : MonoBehaviour
     [Header("Firebase Config")]
     public string firebaseDatabaseUrl = "https://gunrundata-default-rtdb.europe-west1.firebasedatabase.app"; // Firebase Console'dan alınacak
     
+    /// <summary>Sondaki slash olmadan base URL (//leaderboard gibi çift slash hatalarını önler)</summary>
+    private string FirebaseBaseUrl => firebaseDatabaseUrl?.TrimEnd('/') ?? "";
+    
     private string playerId;
     private string playerName = "Player";
     
@@ -98,7 +101,7 @@ public class FirebaseLeaderboardManager : MonoBehaviour
     
     private IEnumerator GetPlayerMaxScore(Action<int> onComplete)
     {
-        string url = $"{firebaseDatabaseUrl}/leaderboard/{playerId}/maxScore.json";
+        string url = $"{FirebaseBaseUrl}/leaderboard/{playerId}/maxScore.json";
         
         using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Get(url))
         {
@@ -136,13 +139,14 @@ public class FirebaseLeaderboardManager : MonoBehaviour
         };
         
         string json = JsonUtility.ToJson(entry);
-        string url = $"{firebaseDatabaseUrl}/leaderboard/{playerId}.json";
+        string url = $"{FirebaseBaseUrl}/leaderboard/{playerId}.json";
         
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
         
         using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Put(url, bodyRaw))
         {
             request.SetRequestHeader("Content-Type", "application/json");
+            Debug.Log($"📤 Firebase'e gönderiliyor - URL: {url}");
             yield return request.SendWebRequest();
             
             if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
@@ -153,6 +157,10 @@ public class FirebaseLeaderboardManager : MonoBehaviour
             else
             {
                 Debug.LogError($"❌ Firebase Save Error: {request.error}");
+                Debug.LogError($"❌ HTTP Status: {request.responseCode}");
+                Debug.LogError($"❌ URL: {url}");
+                if (request.downloadHandler != null && !string.IsNullOrEmpty(request.downloadHandler.text))
+                    Debug.LogError($"❌ Response: {request.downloadHandler.text}");
                 onComplete?.Invoke(false);
             }
         }
@@ -164,10 +172,69 @@ public class FirebaseLeaderboardManager : MonoBehaviour
         StartCoroutine(GetLeaderboardCoroutine(onComplete, limit));
     }
     
+    #region Realtime Leaderboard (Polling)
+    
+    private Coroutine realtimeLeaderboardCoroutine;
+    private int realtimeMaxEntries = 50;
+    private float realtimeIntervalSeconds = 3f;
+    
+    /// <summary>Leaderboard paneli açıkken gerçek zamanlı güncelleme için dinlemeyi başlat.
+    /// Her intervalSeconds saniyede bir veriyi çekip onUpdate callback'ini çağırır.</summary>
+    public void StartRealtimeLeaderboard(Action<List<LeaderboardEntry>> onUpdate, int maxEntries = 50, float intervalSeconds = 3f)
+    {
+        StopRealtimeLeaderboard();
+        realtimeMaxEntries = maxEntries;
+        realtimeIntervalSeconds = Mathf.Max(1f, intervalSeconds);
+        realtimeLeaderboardCoroutine = StartCoroutine(RealtimeLeaderboardCoroutine(onUpdate));
+        Debug.Log($"📡 Realtime leaderboard başlatıldı (her {realtimeIntervalSeconds}s güncelleme)");
+    }
+    
+    /// <summary>Realtime leaderboard dinlemesini durdur.</summary>
+    public void StopRealtimeLeaderboard()
+    {
+        if (realtimeLeaderboardCoroutine != null)
+        {
+            StopCoroutine(realtimeLeaderboardCoroutine);
+            realtimeLeaderboardCoroutine = null;
+            Debug.Log("📡 Realtime leaderboard durduruldu");
+        }
+    }
+    
+    private IEnumerator RealtimeLeaderboardCoroutine(Action<List<LeaderboardEntry>> onUpdate)
+    {
+        if (onUpdate == null) yield break;
+        
+        while (true)
+        {
+            yield return new WaitForSecondsRealtime(realtimeIntervalSeconds);
+            
+            string url = $"{FirebaseBaseUrl}/leaderboard.json";
+            using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Get(url))
+            {
+                yield return request.SendWebRequest();
+                
+                if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+                {
+                    string json = request.downloadHandler.text;
+                    if (!string.IsNullOrEmpty(json) && json != "null" && json != "{}")
+                    {
+                        List<LeaderboardEntry> entries = ParseLeaderboardJson(json);
+                        entries = entries.OrderByDescending(e => e.maxScore).ThenBy(e => e.timestamp).ToList();
+                        if (entries.Count > realtimeMaxEntries)
+                            entries = entries.Take(realtimeMaxEntries).ToList();
+                        onUpdate?.Invoke(entries);
+                    }
+                }
+            }
+        }
+    }
+    
+    #endregion
+    
     private IEnumerator GetLeaderboardCoroutine(Action<List<LeaderboardEntry>> onComplete, int limit)
     {
         // Firebase'den TÜM oyuncuları çek (sıralama client-side yapılacak)
-        string url = $"{firebaseDatabaseUrl}/leaderboard.json";
+        string url = $"{FirebaseBaseUrl}/leaderboard.json";
         Debug.Log($"📊 Firebase'den TÜM oyuncuların leaderboard verisi çekiliyor...");
         Debug.Log($"📊 URL: {url}");
         
@@ -424,7 +491,7 @@ public class FirebaseLeaderboardManager : MonoBehaviour
             };
             
             string json = JsonUtility.ToJson(entry);
-            string url = $"{firebaseDatabaseUrl}/leaderboard/{testPlayerId}.json";
+            string url = $"{FirebaseBaseUrl}/leaderboard/{testPlayerId}.json";
             byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
             
             using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Put(url, bodyRaw))
@@ -475,7 +542,7 @@ public class FirebaseLeaderboardManager : MonoBehaviour
         {
             if (entry.playerId.StartsWith("test_"))
             {
-                string url = $"{firebaseDatabaseUrl}/leaderboard/{entry.playerId}.json";
+                string url = $"{FirebaseBaseUrl}/leaderboard/{entry.playerId}.json";
                 
                 using (UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Delete(url))
                 {

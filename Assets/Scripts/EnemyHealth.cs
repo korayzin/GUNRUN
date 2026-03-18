@@ -603,6 +603,10 @@ public class EnemyHealth : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Tutorial'da ölüm yok - düşmanlar dokunsa bile oyuncu ölmez
+        if (TutorialSequenceController.IsPlayerInvulnerable)
+            return;
+
         // VR sistemi için farklı tag'ler kontrol et
         if (other.CompareTag("Player") || other.CompareTag("MainCamera") || other.name.Contains("OVRCameraRig") || other.transform.root.name.Contains("OVRCameraRig"))
         {

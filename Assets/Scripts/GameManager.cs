@@ -42,9 +42,9 @@ public class GameManager : MonoBehaviour
     public AudioClip stage3TransitionSound;
     [Tooltip("Stage/portal sesleri için AudioSource. ÖNEMLİ: backgroundMusic ile AYNI olmamalı! Boş veya aynıysa PlayClipAtPoint kullanılır.")]
     public AudioSource stageSoundsAudioSource;
-    [Tooltip("Portal ve stage seslerinin çalma seviyesi (1 = normal, 5 = 5x güçlü)")]
-    [Range(0.5f, 5f)]
-    public float stagePortalSoundVolume = 2f;
+    [Tooltip("Portal ve stage seslerinin çalma seviyesi (1 = normal). Duyulmuyorsa artırın.")]
+    [Range(1f, 10f)]
+    public float stagePortalSoundVolume = 5f;
     
     [Header("Hand Ray UI Interactor")]
     [Tooltip("Retry menüsünde el ray etkileşimi için - otomatik bulunur eğer atanmazsa")]
@@ -281,6 +281,7 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Portal/stage SFX çalar. backgroundMusic ile aynı AudioSource kullanılmaz (duck çakışmasını önler).
+    /// stageSoundsAudioSource yoksa geçici AudioSource ile stagePortalSoundVolume tam uygulanır (PlayClipAtPoint 1 ile sınırlıydı).
     /// </summary>
     private void PlayStagePortalSFX(AudioClip clip)
     {
@@ -291,8 +292,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Vector3 pos = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
-            AudioSource.PlayClipAtPoint(clip, pos, Mathf.Min(1f, stagePortalSoundVolume));
+            // PlayClipAtPoint volume 0-1 ile sınırlı; geçici source ile stagePortalSoundVolume tam uygulanır
+            var go = new GameObject("TempStagePortalSFX");
+            var aux = go.AddComponent<AudioSource>();
+            aux.spatialBlend = 0f;
+            aux.PlayOneShot(clip, stagePortalSoundVolume);
+            Destroy(go, clip != null ? clip.length + 0.5f : 2f);
         }
     }
 

@@ -70,8 +70,8 @@ public class LastGunFlameSpray : MonoBehaviour
     [Tooltip("Tetik basılıyken saniyede tüketilen enerji")]
     public float drainRate = 25f;
 
-    [Tooltip("Tetik bırakıldığında saniyede yenilenen enerji")]
-    public float regenRate = 15f;
+    [Tooltip("Tetik bırakıldığında saniyede yenilenen enerji (düşük = yavaş dolma)")]
+    public float regenRate = 7f;
 
     [Header("=== HASAR AYARLARI ===")]
     [Tooltip("Saniyede verilen hasar (sürekli püskürtme)")]
@@ -97,11 +97,11 @@ public class LastGunFlameSpray : MonoBehaviour
     [Tooltip("Prefab içinden atanacak Transform: UI'ın konumu bu objenin pozisyonudur. Boş bırakılırsa prefab içinde 'SprayEnergyUIPosition' aranır veya oluşturulur.")]
     public Transform uiPosition;
 
-    [Tooltip("UI offset (uiPosition'a göre local X,Y,Z)")]
-    public Vector3 uiOffset = Vector3.zero;
+    [Tooltip("UI offset (uiPosition'a göre local X,Y,Z) - Z pozitif = namlu/ön tarafa")]
+    public Vector3 uiOffset = new Vector3(0f, 0f, 0.2f);
 
-    [Tooltip("UI boyutu")]
-    public float uiSize = 0.06f;
+    [Tooltip("UI boyutu (VR'da daha belirgin olması için 0.1)")]
+    public float uiSize = 0.1f;
 
     [Tooltip("Ana renk (ateş)")]
     public Color uiColor = new Color(1f, 0.4f, 0.1f, 1f);
@@ -109,9 +109,9 @@ public class LastGunFlameSpray : MonoBehaviour
     [Tooltip("Arka plan rengi")]
     public Color uiBgColor = new Color(0.1f, 0.1f, 0.15f, 0.8f);
 
-    [Tooltip("Daire arc kalınlığı (0-1)")]
+    [Tooltip("Daire arc kalınlığı (0-1) - daha kalın = daha belirgin")]
     [Range(0.05f, 0.5f)]
-    public float uiArcThickness = 0.15f;
+    public float uiArcThickness = 0.22f;
 
     // Private
     private float currentSprayEnergy;
@@ -125,7 +125,6 @@ public class LastGunFlameSpray : MonoBehaviour
     private HashSet<EnemyHealth> hitEnemiesThisSpray = new HashSet<EnemyHealth>();
     private GunFire gunFire;
     private Coroutine hapticCoroutine;
-    private bool sprayEnergyGameOverTriggered;
 
     // UI (FifthGun tarzı circle/arc)
     private GameObject uiContainer;
@@ -136,6 +135,8 @@ public class LastGunFlameSpray : MonoBehaviour
     private Image outerHaloImage;
     private Image progressDotImage;
     private RectTransform progressDotRect;
+    private TextMeshProUGUI percentTextCenter;
+    private float _lowEnergyHapticCooldown;
 
     /// <summary>GameBalanceManager'dan normal oyun değerlerini al. Tutorial da dahil her zaman aynı hasar kullanılır.</summary>
     private void ApplyBalanceFromManager()
@@ -240,21 +241,11 @@ public class LastGunFlameSpray : MonoBehaviour
             if (currentSprayEnergy > maxSprayEnergy) currentSprayEnergy = maxSprayEnergy;
         }
 
-        // Enerji sıfırlanınca bir kez game over (newtutorial'da ölme yok, enerji yenilenir)
-        if (currentSprayEnergy <= 0f && !sprayEnergyGameOverTriggered)
+        // Enerji sıfırlanınca: newtutorial'da yenile, diğer sahnelerde sadece püskürtme durur (regen ile dolar)
+        if (currentSprayEnergy <= 0f)
         {
             if (SceneManager.GetActiveScene().name == "newtutorial")
-            {
-                currentSprayEnergy = maxSprayEnergy; // Mermi gibi yenile
-            }
-            else
-            {
-                sprayEnergyGameOverTriggered = true;
-                if (isSpraying)
-                    StopSpray();
-                if (GameManager.Instance != null)
-                    GameManager.Instance.GameOver(null);
-            }
+                currentSprayEnergy = maxSprayEnergy;
         }
 
         if (isSpraying && currentSprayEnergy > 0f)
@@ -286,7 +277,6 @@ public class LastGunFlameSpray : MonoBehaviour
     public void RefillSprayEnergy()
     {
         currentSprayEnergy = maxSprayEnergy;
-        sprayEnergyGameOverTriggered = false;
         UpdateEnergyUI();
     }
 
@@ -590,7 +580,7 @@ public class LastGunFlameSpray : MonoBehaviour
         // 4. Outer halo
         GameObject halo = CreateArcElement("OuterHalo", uiContainer.transform, 130);
         outerHaloImage = halo.GetComponent<Image>();
-        outerHaloImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0.08f);
+        outerHaloImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0.18f);
         outerHaloImage.fillAmount = 1f;
         halo.GetComponent<RectTransform>().SetAsFirstSibling();
 
@@ -604,6 +594,19 @@ public class LastGunFlameSpray : MonoBehaviour
         progressDotRect = dot.GetComponent<RectTransform>();
         progressDotRect.sizeDelta = new Vector2(10, 10);
         progressDotRect.anchoredPosition = Vector2.zero;
+        
+        // 6. Ortada yüzdelik (75%, 20% - basılı tutarken azalır)
+        GameObject textObj = new GameObject("PercentText");
+        textObj.transform.SetParent(uiContainer.transform, false);
+        percentTextCenter = textObj.AddComponent<TextMeshProUGUI>();
+        percentTextCenter.text = "100%";
+        percentTextCenter.fontSize = 28;
+        percentTextCenter.alignment = TextAlignmentOptions.Center;
+        percentTextCenter.fontStyle = FontStyles.Bold;
+        percentTextCenter.raycastTarget = false;
+        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.sizeDelta = new Vector2(90, 45);
+        textRect.anchoredPosition = Vector2.zero;
     }
 
     private GameObject CreateArcElement(string name, Transform parent, float size)
@@ -679,6 +682,28 @@ public class LastGunFlameSpray : MonoBehaviour
         if (flameSprayUnlimited) return;
 
         float percent = maxSprayEnergy > 0f ? currentSprayEnergy / maxSprayEnergy : 1f;
+        
+        // Ortada yüzdelik yaz (100%, 75%, 20% vb.)
+        if (percentTextCenter != null)
+        {
+            int pct = Mathf.Clamp(Mathf.RoundToInt(percent * 100f), 0, 100);
+            percentTextCenter.text = pct + "%";
+            percentTextCenter.color = (percent <= 0.2f) ? new Color(1f, 0.3f, 0.2f, 1f) : Color.white;
+        }
+        
+        // %20 altında haptic (throttle: ~0.25s aralık)
+        if (percent >= 0.2f)
+            _lowEnergyHapticCooldown = 0f;
+        else if (percent > 0f && isSpraying)
+        {
+            if (_lowEnergyHapticCooldown <= 0f)
+            {
+                OVRInput.Controller c = isLeftHanded ? OVRInput.Controller.LTouch : OVRInput.Controller.RTouch;
+                OVRInput.SetControllerVibration(0.5f, 0.4f, c);
+                _lowEnergyHapticCooldown = 0.25f;
+            }
+            _lowEnergyHapticCooldown -= Time.deltaTime;
+        }
 
         if (Camera.main != null)
         {
@@ -704,8 +729,8 @@ public class LastGunFlameSpray : MonoBehaviour
 
         if (outerHaloImage != null)
         {
-            float haloAlpha = 0.06f + percent * 0.14f;
-            if (percent >= 0.99f) haloAlpha = 0.15f + Mathf.Sin(Time.time * 10f) * 0.05f;
+            float haloAlpha = 0.14f + percent * 0.18f;
+            if (percent >= 0.99f) haloAlpha = 0.25f + Mathf.Sin(Time.time * 10f) * 0.06f;
             outerHaloImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, haloAlpha);
         }
 

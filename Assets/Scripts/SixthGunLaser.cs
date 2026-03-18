@@ -86,11 +86,11 @@ public class SixthGunLaser : MonoBehaviour
     [Tooltip("Laser kapalıyken dolma hızı (saniyede)")]
     public float rechargeRate = 2f; // Saniyede 2 birim dolar
     
-    [Tooltip("UI boyutu")]
-    public float uiSize = 0.06f;
+    [Tooltip("UI boyutu (VR'da daha belirgin olması için 0.1)")]
+    public float uiSize = 0.1f;
     
-    [Tooltip("UI offset (X=sağ, Y=yukarı, Z=ileri)")]
-    public Vector3 uiOffset = new Vector3(0f, 0.08f, -0.25f);
+    [Tooltip("UI offset (X=sağ, Y=yukarı, Z=ileri) - silahın önünde")]
+    public Vector3 uiOffset = new Vector3(0f, 0.08f, 0.18f);
     
     [Tooltip("Ana renk")]
     public Color uiColor = new Color(0f, 0.7f, 1f, 1f); // Mavi
@@ -98,9 +98,9 @@ public class SixthGunLaser : MonoBehaviour
     [Tooltip("Arka plan rengi")]
     public Color uiBgColor = new Color(0.1f, 0.1f, 0.15f, 0.8f);
     
-    [Tooltip("Arc kalınlığı (0-1)")]
+    [Tooltip("Arc kalınlığı (0-1) - daha kalın = daha belirgin")]
     [Range(0.05f, 0.5f)]
-    public float uiArcThickness = 0.15f;
+    public float uiArcThickness = 0.22f;
     
     // Private değişkenler
     private LineRenderer laserMain;
@@ -692,13 +692,13 @@ public class SixthGunLaser : MonoBehaviour
             glowImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, glowAlpha);
         }
 
-        // Outer halo - enerji ile hafif güçlensin
+        // Outer halo - enerji ile hafif güçlensin (daha belirgin görünüm)
         if (outerHaloImage != null)
         {
-            float haloPulse = 0.06f + energyPercent * 0.14f;
+            float haloPulse = 0.14f + energyPercent * 0.18f;
             if (energyPercent < 0.2f)
             {
-                haloPulse = 0.15f + Mathf.Sin(Time.time * 10f) * 0.05f;
+                haloPulse = 0.25f + Mathf.Sin(Time.time * 10f) * 0.06f;
             }
             outerHaloImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, haloPulse);
         }
@@ -748,11 +748,8 @@ public class SixthGunLaser : MonoBehaviour
         // World Space Canvas
         energyBarCanvas = energyBarContainer.AddComponent<Canvas>();
         energyBarCanvas.renderMode = RenderMode.WorldSpace;
-        // Quest standalone build'de UI Overlay bazen stack'e eklenmediği için enerji bar görünmüyor; sadece PC/Editor'da overlay kullan
-        if (Application.platform != RuntimePlatform.Android)
-            UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(energyBarCanvas);
-        else
-            energyBarCanvas.worldCamera = null; // Camera.main ile çizilsin, Default layer'da kalsın
+        // Tüm platformlarda UICameraStackSetup ile kaydet (passthrough'ta görünür)
+        UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(energyBarCanvas);
         
         RectTransform canvasRect = energyBarCanvas.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(2, 2);
@@ -781,7 +778,7 @@ public class SixthGunLaser : MonoBehaviour
         // 4. Outer halo (tam daire, çok yumuşak)
         GameObject halo = CreateArcElement("OuterHalo", energyBarContainer.transform, 130);
         outerHaloImage = halo.GetComponent<Image>();
-        outerHaloImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0.08f);
+        outerHaloImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0.18f);
         outerHaloImage.fillAmount = 1f;
         RectTransform haloRect = halo.GetComponent<RectTransform>();
         haloRect.SetAsFirstSibling();

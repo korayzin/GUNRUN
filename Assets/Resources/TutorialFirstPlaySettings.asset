@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34af21330e3959740b48c21c762c7833, type: 3}
   m_Name: TutorialFirstPlaySettings
   m_EditorClassIdentifier: 
-  skipTutorialAfterFirstPlay: 0
+  skipTutorialAfterFirstPlay: 1
   sceneIndexAfterTutorial: 1

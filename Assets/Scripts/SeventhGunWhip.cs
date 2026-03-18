@@ -86,11 +86,11 @@ public class SeventhGunWhip : MonoBehaviour
     [Tooltip("UI pozisyonu (Transform - kullanıcı tarafından atanacak)")]
     public Transform uiPosition;
     
-    [Tooltip("UI boyutu")]
-    public float uiSize = 0.08f;
+    [Tooltip("UI boyutu (VR'da daha belirgin olması için 0.12)")]
+    public float uiSize = 0.12f;
     
-    [Tooltip("UI offset (X=sağ, Y=yukarı, Z=ileri) - uiPosition'a göre")]
-    public Vector3 uiOffset = new Vector3(0f, 0f, 0f);
+    [Tooltip("UI offset (X=sağ, Y=yukarı, Z=ileri) - uiPosition'a göre, silahın önünde")]
+    public Vector3 uiOffset = new Vector3(0f, 0f, 0.2f);
     
     [Tooltip("Ana renk (kırbaç teması)")]
     public Color uiColor = new Color(0.5f, 0.3f, 0.8f, 1f); // Mor-mavi
@@ -104,17 +104,17 @@ public class SeventhGunWhip : MonoBehaviour
     [Tooltip("Text'in kırmızı rengi (0/5 olduğunda)")]
     public Color textEmptyColor = Color.red;
     
-    [Tooltip("Batarya genişliği")]
-    public float batteryWidth = 3f;
+    [Tooltip("Batarya genişliği (daha geniş = daha belirgin)")]
+    public float batteryWidth = 4f;
     
-    [Tooltip("Batarya yüksekliği")]
-    public float batteryHeight = 1f;
+    [Tooltip("Batarya yüksekliği (daha yüksek = daha belirgin)")]
+    public float batteryHeight = 1.4f;
     
     [Tooltip("Segment arası boşluk")]
     public float segmentGap = 0.1f;
     
-    [Tooltip("Batarya outline kalınlığı")]
-    public float outlineThickness = 0.15f;
+    [Tooltip("Batarya outline kalınlığı (daha kalın = daha belirgin çerçeve)")]
+    public float outlineThickness = 0.25f;
     
     // Private değişkenler
     private LineRenderer whipMain;

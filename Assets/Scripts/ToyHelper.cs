@@ -118,12 +118,15 @@ public class ToyHelper : MonoBehaviour
     [Header("=== COOLDOWN UI (VR optimize - minimal) ===")]
     [Tooltip("Cooldown UI konumu - boşsa Toy veya transform kullanılır")]
     public Transform cooldownUIPosition;
-    public float cooldownUISize = 0.05f;
-    public Vector3 cooldownUIOffset = new Vector3(0.05f, 0.08f, 0f);
+    [Tooltip("Cooldown circle boyutu (VR'da daha belirgin olması için 0.1)")]
+    public float cooldownUISize = 0.1f;
+    [Tooltip("UI offset - Z pozitif = silahın ön tarafına")]
+    public Vector3 cooldownUIOffset = new Vector3(0.05f, 0.08f, 0.2f);
     public Color cooldownUIColor = new Color(1f, 0.5f, 0.2f, 1f);
     public Color cooldownUIBgColor = new Color(0.1f, 0.1f, 0.15f, 0.8f);
+    [Tooltip("Arc kalınlığı - daha kalın = daha belirgin")]
     [Range(0.05f, 0.5f)]
-    public float cooldownUIArcThickness = 0.2f;
+    public float cooldownUIArcThickness = 0.25f;
 
     // State
     private State state = State.Idle;

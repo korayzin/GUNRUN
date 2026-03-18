@@ -18,12 +18,20 @@ public class LeaderboardUI : MonoBehaviour
     
     [Header("Settings")]
     public int maxEntries = 50;
+    [Tooltip("Leaderboard açıkken kaç saniyede bir otomatik yenilenecek (realtime güncelleme)")]
+    public float realtimeUpdateInterval = 3f;
     
     [Header("Debug Buttons (Optional)")]
     public Button addTestPlayersButton;
     public Button clearTestPlayersButton;
     
     private bool isLoadingLeaderboard = false; // Çift yükleme engellemesi
+    
+    private void OnDisable()
+    {
+        if (FirebaseLeaderboardManager.Instance != null)
+            FirebaseLeaderboardManager.Instance.StopRealtimeLeaderboard();
+    }
     
     private void Start()
     {
@@ -338,6 +346,9 @@ public class LeaderboardUI : MonoBehaviour
     
     public void HideLeaderboard()
     {
+        if (FirebaseLeaderboardManager.Instance != null)
+            FirebaseLeaderboardManager.Instance.StopRealtimeLeaderboard();
+        
         if (leaderboardPanel != null)
         {
             leaderboardPanel.SetActive(false);
@@ -446,6 +457,20 @@ public class LeaderboardUI : MonoBehaviour
                 
                 if (loadingText != null)
                     loadingText.gameObject.SetActive(false);
+                
+                // Realtime güncelleme: Panel açıkken periyodik olarak leaderboard'u yenile
+                if (FirebaseLeaderboardManager.Instance != null && leaderboardPanel != null && leaderboardPanel.activeSelf)
+                {
+                    FirebaseLeaderboardManager.Instance.StartRealtimeLeaderboard(
+                        (updatedEntries) =>
+                        {
+                            if (leaderboardPanel != null && leaderboardPanel.activeSelf)
+                                DisplayLeaderboard(updatedEntries);
+                        },
+                        maxEntries,
+                        realtimeUpdateInterval
+                    );
+                }
             }, maxEntries);
         });
         

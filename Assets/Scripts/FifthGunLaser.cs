@@ -137,11 +137,14 @@ public class FifthGunLaser : MonoBehaviour
     [Tooltip("Charge UI'ı göster")]
     public bool showChargeUI = true;
     
-    [Tooltip("UI boyutu")]
-    public float uiSize = 0.06f;
+    [Tooltip("UI spawn point - boşsa prefab'da LightningUIPosition veya EnergyUIPosition aranır")]
+    public Transform uiPosition;
     
-    [Tooltip("UI offset (X=sağ, Y=yukarı, Z=ileri)")]
-    public Vector3 uiOffset = new Vector3(0f, 0.08f, -0.25f);
+    [Tooltip("UI offset (uiPosition'a göre local X,Y,Z)")]
+    public Vector3 uiOffset = new Vector3(0f, 0f, 0f);
+    
+    [Tooltip("UI boyutu (VR'da daha belirgin olması için 0.1)")]
+    public float uiSize = 0.1f;
     
     [Tooltip("Ana renk")]
     public Color uiColor = new Color(0.4f, 0.7f, 1f, 1f);
@@ -149,22 +152,22 @@ public class FifthGunLaser : MonoBehaviour
     [Tooltip("Arka plan rengi")]
     public Color uiBgColor = new Color(0.1f, 0.1f, 0.15f, 0.8f);
     
-    [Tooltip("Arc kalınlığı (0-1)")]
+    [Tooltip("Arc kalınlığı (0-1) - daha kalın = daha belirgin")]
     [Range(0.05f, 0.5f)]
-    public float uiArcThickness = 0.15f;
+    public float uiArcThickness = 0.22f;
     
     [Header("=== LAYER ===")]
     public LayerMask raycastLayerMask = ~0;
     
     [Header("=== LASER UI ===")]
-    [Tooltip("Laser kullanım sayısını gösteren text (örn: 2/2)")]
+    [Tooltip("Kullanılmıyor - circle ortasında sayı gösteriliyor. Prefab uyumluluğu için bırakıldı.")]
     public TextMeshProUGUI laserCountText;
     
-    [Tooltip("Text'in normal rengi")]
+    [Tooltip("Circle ortası sayı rengi (normal)")]
     public Color textNormalColor = Color.white;
     
-    [Tooltip("Text'in kırmızı rengi (0/2 olduğunda)")]
-    public Color textEmptyColor = Color.red;
+    [Tooltip("1 atış kaldığında kırmızı")]
+    public Color textLowColor = Color.red;
     
     // Private değişkenler
     private int remainingShots;
@@ -176,7 +179,7 @@ public class FifthGunLaser : MonoBehaviour
     private Light chargeLight;
     private Coroutine chargeCoroutine;
     
-    // UI değişkenleri
+    // UI değişkenleri (sadece charge sırasında görünür)
     private GameObject chargeUIContainer;
     private Canvas chargeCanvas;
     private Image backgroundImage;
@@ -186,6 +189,7 @@ public class FifthGunLaser : MonoBehaviour
     private Image progressDotImage;
     private RectTransform progressDotRect;
     private Image minChargeMarkerImage;
+    private TextMeshProUGUI countTextCenter;
     
     private bool _tutorialUnlimitedApplied;
 
@@ -210,7 +214,10 @@ public class FifthGunLaser : MonoBehaviour
             if (laserChild != null)
                 laserSpawnPoint = laserChild;
         }
-        UpdateLaserCountUI();
+        ResolveUIPosition();
+        if (showChargeUI && uiPosition != null)
+            CreateChargeUI(); // Her zaman görünür, hiç gitmesin
+        if (laserCountText != null) laserCountText.gameObject.SetActive(false); // Circle ortasında sayı yeterli
     }
     
     void Update()
@@ -222,22 +229,28 @@ public class FifthGunLaser : MonoBehaviour
             maxLaserShots = 0;
             remainingShots = 999;
             showChargeUI = false;
+            if (chargeUIContainer != null) chargeUIContainer.SetActive(false);
             if (laserCountText != null) laserCountText.gameObject.SetActive(false);
         }
         // newtutorial: yıldırım sayısı bitince mermi gibi yenile
         if (maxLaserShots > 0 && remainingShots <= 0)
         {
             if (SceneManager.GetActiveScene().name == "newtutorial")
-            {
                 remainingShots = maxLaserShots;
-                UpdateLaserCountUI();
-            }
             else
+            {
+                // 0 olsa bile circle UI güncelle (0 yazsın)
+                if (chargeUIContainer != null) UpdateChargeUI();
                 return;
+            }
         }
         
         if (!TutorialIntroController.TutorialCompleteFreehand && TutorialIntroController.TutorialFifthWeaponPhase && !TutorialIntroController.TutorialFifthWeaponSecondaryEnabled)
             return; // 13. diyalog bitmeden ikincil (yıldırım) kapalı
+        
+        // Circle UI güncelle (billboard + ortada sayı)
+        if (chargeUIContainer != null)
+            UpdateChargeUI();
         
         // A tuşu basılı tutulunca CHARGE
         bool buttonHeld = OVRInput.Get(OVRInput.Button.One) || OVRInput.Get(OVRInput.Button.Three);
@@ -280,11 +293,7 @@ public class FifthGunLaser : MonoBehaviour
 
         UICameraStackSetup.SetLayerRecursivelyToUI(chargeEffectContainer);
         
-        // Charge UI oluştur
-        if (showChargeUI)
-        {
-            CreateChargeUI();
-        }
+        // Charge circle zaten Start'ta oluşturuldu, kalıcı
         
         // Charge coroutine başlat
         chargeCoroutine = StartCoroutine(ChargeRoutine());
@@ -357,8 +366,8 @@ public class FifthGunLaser : MonoBehaviour
             chargeLight.transform.position = spawnPos;
         }
         
-        // UI güncelle
-        if (showChargeUI)
+        // Charge circle güncelle (rengi charge ile değişir)
+        if (showChargeUI && chargeUIContainer != null)
         {
             UpdateChargeUI();
         }
@@ -455,8 +464,10 @@ public class FifthGunLaser : MonoBehaviour
         chargeBolts.Clear();
         chargeLight = null;
         
-        // UI temizle
-        DestroyChargeUI();
+        // Charge arc sıfırla (circle kalıcı, sadece dolum sıfırlanır)
+        if (fillImage != null) fillImage.fillAmount = 0f;
+        if (glowImage != null) glowImage.fillAmount = 0f;
+        if (progressDotImage != null) progressDotImage.color = new Color(1f, 1f, 1f, 0f);
         
         if (chargeCoroutine != null)
         {
@@ -473,7 +484,6 @@ public class FifthGunLaser : MonoBehaviour
         {
             remainingShots--;
             Debug.Log($"⚡ YILDIRIM! Charge: {chargeAmount:P0} | Kalan: {remainingShots}");
-            UpdateLaserCountUI();
         }
         
         // BÜYÜK HAPTİK
@@ -1009,7 +1019,6 @@ public class FifthGunLaser : MonoBehaviour
     public void ResetLaser()
     {
         remainingShots = maxLaserShots;
-        UpdateLaserCountUI();
     }
     
     public bool HasLaserBeenFired()
@@ -1025,31 +1034,23 @@ public class FifthGunLaser : MonoBehaviour
     public void AddLaserShots(int amount)
     {
         remainingShots += amount;
-        UpdateLaserCountUI();
     }
     
-    /// <summary>
-    /// Laser kullanım sayısını UI'da günceller ve renk değiştirir
-    /// </summary>
-    void UpdateLaserCountUI()
+    /// <summary>uiPosition prefab içinden atanmamışsa child'da ara veya oluştur.</summary>
+    private void ResolveUIPosition()
     {
-        if (laserCountText == null) return;
-        
-        int displayMaxShots = maxLaserShots > 0 ? maxLaserShots : 999;
-        int displayRemainingShots = Mathf.Clamp(remainingShots, 0, displayMaxShots);
-        
-        // Text'i güncelle: remainingShots/maxLaserShots
-        laserCountText.text = $"{displayRemainingShots}/{displayMaxShots}";
-        
-        // 0/2 olduğunda kırmızı, diğer durumlarda normal renk
-        if (displayRemainingShots <= 0)
-        {
-            laserCountText.color = textEmptyColor;
-        }
-        else
-        {
-            laserCountText.color = textNormalColor;
-        }
+        if (uiPosition != null) return;
+        Transform found = transform.Find("LightningUIPosition");
+        if (found != null) { uiPosition = found; return; }
+        found = transform.Find("EnergyUIPosition");
+        if (found != null) { uiPosition = found; return; }
+        GameObject anchor = new GameObject("LightningUIPosition");
+        anchor.transform.SetParent(transform);
+        anchor.transform.localPosition = new Vector3(0.05f, 0.08f, 0.18f); // Silahın önü
+        anchor.transform.localRotation = Quaternion.identity;
+        anchor.transform.localScale = Vector3.one;
+        uiPosition = anchor.transform;
+        UICameraStackSetup.SetLayerRecursivelyToUI(anchor);
     }
     
     void OnDrawGizmosSelected()
@@ -1062,65 +1063,59 @@ public class FifthGunLaser : MonoBehaviour
         }
     }
     
-    // ==================== CHARGE UI (MİNİMAL) ====================
+    // ==================== CHARGE UI (uiPosition'daki empty object'ta, sadece charge sırasında) ====================
     
     void CreateChargeUI()
     {
-        // Ana container - silaha parent'la
+        if (uiPosition == null) return;
+        
         chargeUIContainer = new GameObject("ChargeUI");
-        chargeUIContainer.transform.SetParent(transform); // Silahın child'ı
+        chargeUIContainer.transform.SetParent(uiPosition, false);
         chargeUIContainer.transform.localPosition = uiOffset;
         chargeUIContainer.transform.localRotation = Quaternion.identity;
+        chargeUIContainer.transform.localScale = Vector3.one;
         
-        // World Space Canvas
         chargeCanvas = chargeUIContainer.AddComponent<Canvas>();
         chargeCanvas.renderMode = RenderMode.WorldSpace;
         UICameraStackSetup.Instance?.RegisterWorldSpaceCanvas(chargeCanvas);
         
-        RectTransform canvasRect = chargeCanvas.GetComponent<RectTransform>();
+        RectTransform canvasRect = chargeUIContainer.GetComponent<RectTransform>();
         canvasRect.sizeDelta = new Vector2(2, 2);
         canvasRect.localScale = Vector3.one * uiSize * 0.01f;
         
-        // Minimal tasarım - sadece ince arc
-        
-        // 1. Arka plan arc (koyu, tam daire)
+        // 1. Arka plan arc
         GameObject bgArc = CreateArcElement("BgArc", chargeUIContainer.transform, 100);
         backgroundImage = bgArc.GetComponent<Image>();
         backgroundImage.color = uiBgColor;
         backgroundImage.fillAmount = 1f;
         
-        // 2. Progress arc (parlak, dolan)
+        // 2. Progress arc (charge ile dolan, renk değişir)
         GameObject progressArc = CreateArcElement("ProgressArc", chargeUIContainer.transform, 100);
         fillImage = progressArc.GetComponent<Image>();
         fillImage.color = uiColor;
         fillImage.fillAmount = 0f;
         
-        // 3. Glow (daha cafcaflı)
+        // 3. Glow
         GameObject glowArc = CreateArcElement("GlowArc", chargeUIContainer.transform, 118);
         glowImage = glowArc.GetComponent<Image>();
         glowImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0f);
         glowImage.fillAmount = 0f;
-        RectTransform glowRect = glowArc.GetComponent<RectTransform>();
-        glowRect.SetAsFirstSibling();
+        glowArc.GetComponent<RectTransform>().SetAsFirstSibling();
 
-        // 4. Outer halo (tam daire, çok yumuşak)
+        // 4. Outer halo
         GameObject halo = CreateArcElement("OuterHalo", chargeUIContainer.transform, 130);
         outerHaloImage = halo.GetComponent<Image>();
-        outerHaloImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0.08f);
+        outerHaloImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0.18f);
         outerHaloImage.fillAmount = 1f;
-        RectTransform haloRect = halo.GetComponent<RectTransform>();
-        haloRect.SetAsFirstSibling();
+        halo.GetComponent<RectTransform>().SetAsFirstSibling();
 
-        // 5. Minimum charge marker (ince işaret)
+        // 5. Min charge marker
         GameObject marker = CreateArcElement("MinChargeMarker", chargeUIContainer.transform, 106);
         minChargeMarkerImage = marker.GetComponent<Image>();
         minChargeMarkerImage.color = new Color(1f, 1f, 1f, 0.25f);
-        minChargeMarkerImage.fillAmount = Mathf.Clamp01(minChargeToFire);
-        // marker sadece küçük bir yay olsun: fillAmount'ı küçük tutup, rotasyonla konumlandır
-        // Bunu UpdateChargeUI'da angle ile yapacağız; şimdilik 0.02 gibi küçük bir arc
         minChargeMarkerImage.fillAmount = 0.02f;
 
-        // 6. Progress dot (dolum ucunda parlayan nokta)
+        // 6. Progress dot
         GameObject dot = new GameObject("ProgressDot");
         dot.transform.SetParent(chargeUIContainer.transform, false);
         progressDotImage = dot.AddComponent<Image>();
@@ -1130,6 +1125,40 @@ public class FifthGunLaser : MonoBehaviour
         progressDotRect = dot.GetComponent<RectTransform>();
         progressDotRect.sizeDelta = new Vector2(10, 10);
         progressDotRect.anchoredPosition = Vector2.zero;
+        
+        // 7. Ortada sayı (3, 2, 1) - maxLaserShots > 0 iken
+        if (maxLaserShots > 0)
+        {
+            GameObject textObj = new GameObject("CountText");
+            textObj.transform.SetParent(chargeUIContainer.transform, false);
+            countTextCenter = textObj.AddComponent<TextMeshProUGUI>();
+            countTextCenter.text = remainingShots.ToString();
+            countTextCenter.fontSize = 36;
+            countTextCenter.alignment = TextAlignmentOptions.Center;
+            countTextCenter.fontStyle = FontStyles.Bold;
+            countTextCenter.raycastTarget = false;
+            RectTransform textRect = textObj.GetComponent<RectTransform>();
+            textRect.sizeDelta = new Vector2(80, 50);
+            textRect.anchoredPosition = Vector2.zero;
+        }
+    }
+    
+    void DestroyChargeUI()
+    {
+        if (chargeUIContainer != null)
+        {
+            Destroy(chargeUIContainer);
+            chargeUIContainer = null;
+        }
+        chargeCanvas = null;
+        backgroundImage = null;
+        fillImage = null;
+        glowImage = null;
+        outerHaloImage = null;
+        progressDotImage = null;
+        progressDotRect = null;
+        minChargeMarkerImage = null;
+        countTextCenter = null;
     }
     
     GameObject CreateArcElement(string name, Transform parent, float size)
@@ -1204,27 +1233,52 @@ public class FifthGunLaser : MonoBehaviour
     {
         if (chargeUIContainer == null || fillImage == null) return;
         
-        // Billboard - her zaman kameraya baksın
+        // Billboard - kameraya baksın
         if (Camera.main != null)
         {
             Vector3 lookDir = chargeUIContainer.transform.position - Camera.main.transform.position;
             if (lookDir != Vector3.zero)
-            {
                 chargeUIContainer.transform.rotation = Quaternion.LookRotation(lookDir);
-            }
         }
         
-        // Fill amount - smooth
+        // Ortada sayı - her zaman güncelle
+        if (countTextCenter != null && maxLaserShots > 0)
+        {
+            int displayRemaining = Mathf.Clamp(remainingShots, 0, maxLaserShots);
+            countTextCenter.text = displayRemaining.ToString();
+            countTextCenter.color = (displayRemaining <= 1) ? textLowColor : textNormalColor;
+        }
+        
+        if (!isCharging)
+        {
+            fillImage.fillAmount = Mathf.Lerp(fillImage.fillAmount, 0f, Time.deltaTime * 15f);
+            fillImage.color = uiColor;
+            if (glowImage != null) { glowImage.fillAmount = fillImage.fillAmount; glowImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0f); glowImage.rectTransform.localScale = Vector3.one; }
+            if (outerHaloImage != null) outerHaloImage.color = new Color(uiColor.r, uiColor.g, uiColor.b, 0.18f);
+            if (progressDotImage != null) progressDotImage.color = new Color(1f, 1f, 1f, 0f);
+            return;
+        }
+        
         fillImage.fillAmount = Mathf.Lerp(fillImage.fillAmount, currentCharge, Time.deltaTime * 15f);
         
-        // Renk - charge arttıkça parlak
-        float intensity = 0.8f + currentCharge * 0.4f;
-        Color currentColor = new Color(
-            uiColor.r * intensity,
-            uiColor.g * intensity,
-            uiColor.b * intensity,
-            uiColor.a
-        );
+        // Charge ile renk değişimi: mavi (başlangıç) -> cyan -> sarı/beyaz (tam charge)
+        Color currentColor;
+        if (currentCharge < 0.35f)
+        {
+            float t = currentCharge / 0.35f;
+            currentColor = Color.Lerp(uiColor, new Color(0.3f, 0.9f, 1f, 1f), t); // Mavi -> Cyan
+        }
+        else if (currentCharge < 0.75f)
+        {
+            float t = (currentCharge - 0.35f) / 0.4f;
+            currentColor = Color.Lerp(new Color(0.3f, 0.9f, 1f, 1f), new Color(0.9f, 0.95f, 1f, 1f), t); // Cyan -> Açık mavi-beyaz
+        }
+        else
+        {
+            float t = (currentCharge - 0.75f) / 0.25f;
+            float pulse = 0.9f + Mathf.Sin(Time.time * 15f) * 0.1f;
+            currentColor = Color.Lerp(new Color(0.9f, 0.95f, 1f, 1f), new Color(1f, 1f, 0.95f, 1f) * pulse, t); // Beyaz-sarı (tam charge)
+        }
         fillImage.color = currentColor;
         
         // Glow - sadece yüksek charge'da
@@ -1255,13 +1309,13 @@ public class FifthGunLaser : MonoBehaviour
             glowImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, glowAlpha);
         }
 
-        // Outer halo - charge ile hafif güçlensin
+        // Outer halo - charge ile hafif güçlensin (daha belirgin görünüm)
         if (outerHaloImage != null)
         {
-            float haloPulse = 0.06f + currentCharge * 0.14f;
+            float haloPulse = 0.14f + currentCharge * 0.18f;
             if (currentCharge >= 0.99f)
             {
-                haloPulse = 0.15f + Mathf.Sin(Time.time * 10f) * 0.05f;
+                haloPulse = 0.25f + Mathf.Sin(Time.time * 10f) * 0.06f;
             }
             outerHaloImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, haloPulse);
         }
@@ -1310,22 +1364,6 @@ public class FifthGunLaser : MonoBehaviour
         }
     }
     
-    void DestroyChargeUI()
-    {
-        if (chargeUIContainer != null)
-        {
-            Destroy(chargeUIContainer);
-            chargeUIContainer = null;
-        }
-        chargeCanvas = null;
-        backgroundImage = null;
-        fillImage = null;
-        glowImage = null;
-        outerHaloImage = null;
-        progressDotImage = null;
-        progressDotRect = null;
-        minChargeMarkerImage = null;
-    }
 
     Sprite CreateDotSprite(int resolution)
     {
