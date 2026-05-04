@@ -24,7 +24,14 @@ public class FirebaseLeaderboardManager : MonoBehaviour
     public static FirebaseLeaderboardManager Instance;
     
     [Header("Firebase Config")]
-    public string firebaseDatabaseUrl = "https://gunrundata-default-rtdb.europe-west1.firebasedatabase.app"; // Firebase Console'dan alınacak
+    public string firebaseDatabaseUrl = "https://blitzgun-e3b9b-default-rtdb.firebaseio.com"; // Firebase Console'dan alınacak
+
+    [Header("Firebase Config (Runtime Override)")]
+    [Tooltip("Açılış sahnelerine göre farklı URL serialize olmasın diye runtime'da tek bir URL kullanır.\nPlayerPrefs anahtarı: FirebaseDatabaseUrlOverride")]
+    public bool useRuntimeUrlOverride = true;
+    
+    private const string DefaultFirebaseDatabaseUrl = "https://blitzgun-e3b9b-default-rtdb.firebaseio.com";
+    private const string FirebaseDatabaseUrlOverrideKey = "FirebaseDatabaseUrlOverride";
     
     /// <summary>Sondaki slash olmadan base URL (//leaderboard gibi çift slash hatalarını önler)</summary>
     private string FirebaseBaseUrl => firebaseDatabaseUrl?.TrimEnd('/') ?? "";
@@ -38,12 +45,28 @@ public class FirebaseLeaderboardManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            ApplyFirebaseUrlOverrideIfNeeded();
             InitializePlayer();
         }
         else
         {
             Destroy(gameObject);
         }
+    }
+
+    private void ApplyFirebaseUrlOverrideIfNeeded()
+    {
+        if (!useRuntimeUrlOverride)
+        {
+            firebaseDatabaseUrl = (firebaseDatabaseUrl ?? "").Trim();
+            Debug.Log($"🌐 Firebase URL (Inspector): {firebaseDatabaseUrl}");
+            return;
+        }
+        
+        string overrideUrl = PlayerPrefs.GetString(FirebaseDatabaseUrlOverrideKey, "").Trim();
+        string chosen = string.IsNullOrEmpty(overrideUrl) ? DefaultFirebaseDatabaseUrl : overrideUrl;
+        firebaseDatabaseUrl = chosen.Trim();
+        Debug.Log($"🌐 Firebase URL (Runtime Override): {firebaseDatabaseUrl}");
     }
     
     private void InitializePlayer()
