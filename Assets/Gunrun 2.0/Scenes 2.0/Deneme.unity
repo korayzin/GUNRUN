@@ -721,7 +721,7 @@ GameObject:
   - component: {fileID: 202763944}
   - component: {fileID: 202763943}
   m_Layer: 0
-  m_Name: Button_Barbie
+  m_Name: Button_Pinkverse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4994,7 +4994,7 @@ GameObject:
   - component: {fileID: 998926095}
   - component: {fileID: 998926094}
   m_Layer: 0
-  m_Name: Image_Barbie
+  m_Name: Image_Pinkverse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9877,7 +9877,7 @@ GameObject:
   - component: {fileID: 1871431348}
   - component: {fileID: 1871431347}
   m_Layer: 0
-  m_Name: Text_Barbie
+  m_Name: Text_Pinkverse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9922,7 +9922,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: BARBIE
+  m_text: PINKVERSE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ee2aa7e02bf19c48b930f8a5380d604, type: 2}
   m_sharedMaterial: {fileID: 4014516665143271651, guid: 2ee2aa7e02bf19c48b930f8a5380d604,
@@ -11690,7 +11690,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Map 5
+  m_text: 'Map 4
 
 '
   m_isRightToLeft: 0

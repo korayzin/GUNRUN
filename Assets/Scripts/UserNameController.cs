@@ -49,6 +49,8 @@ public class UserNameController : MonoBehaviour
     private Camera _mainCam;
     private Button _currentHoveredButton;
     private TouchScreenKeyboard _keyboard;
+    private bool _isChildUser;
+    private bool _childRestrictionApplied;
 
     private void Start()
     {
@@ -75,6 +77,40 @@ public class UserNameController : MonoBehaviour
             SetupRayLine();
             DisableOtherRays();
         }
+
+        TryApplyAgeRestriction();
+    }
+
+    private void DisableCustomUsernameInput()
+    {
+        _isChildUser = true;
+
+        if (_keyboard != null && _keyboard.active)
+            _keyboard.active = false;
+        _keyboard = null;
+
+        if (nameInputTMP != null)
+            nameInputTMP.interactable = false;
+        if (nameInputLegacy != null)
+            nameInputLegacy.interactable = false;
+
+        var inputGo = nameInputTMP != null ? nameInputTMP.gameObject : (nameInputLegacy != null ? nameInputLegacy.gameObject : null);
+        if (inputGo != null)
+        {
+            var inputCollider = inputGo.GetComponent<Collider>();
+            if (inputCollider != null)
+                inputCollider.enabled = false;
+        }
+    }
+
+    private void TryApplyAgeRestriction()
+    {
+        if (_childRestrictionApplied) return;
+        if (!MetaAgeCategoryManager.IsAgeCategoryResolved) return;
+        if (!MetaAgeCategoryManager.IsChildUser) return;
+
+        DisableCustomUsernameInput();
+        _childRestrictionApplied = true;
     }
 
     private void SetupRayLine()
@@ -206,6 +242,9 @@ public class UserNameController : MonoBehaviour
     /// </summary>
     private void FocusNameInputAndShowKeyboard()
     {
+        if (_isChildUser)
+            return;
+
         if (_keyboard != null && _keyboard.active)
             return;
 
@@ -236,6 +275,9 @@ public class UserNameController : MonoBehaviour
 
     private void UpdateKeyboardInput()
     {
+        if (_isChildUser)
+            return;
+
         if (_keyboard == null) return;
 
 #if !UNITY_EDITOR && !UNITY_STANDALONE
@@ -326,6 +368,7 @@ public class UserNameController : MonoBehaviour
 
     private void Update()
     {
+        TryApplyAgeRestriction();
         UpdateKeyboardInput();
 
         if (rayOrigin == null) return;
