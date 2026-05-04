@@ -15,5 +15,7 @@
     <meta-data android:name="com.oculus.telemetry.project_guid" android:value="61351877-0d4f-4afc-af11-37c4b42df74c" />
     <meta-data android:name="com.oculus.supportedDevices" android:value="quest|quest2|questpro|quest3|quest3s" />
   </application>
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-feature android:name="android.hardware.vr.headtracking" android:version="1" android:required="true" />
 </manifest>
